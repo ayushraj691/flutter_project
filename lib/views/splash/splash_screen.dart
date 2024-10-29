@@ -5,7 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:paycron/utils/image_assets.dart';
 import 'package:paycron/views/app_home_screen/home_screen.dart';
 import 'package:paycron/views/auth/login_screen.dart';
-import 'package:paycron/views/dashboard/bottom_nav_bar_screen.dart';
+import 'package:paycron/views/dashboard/bottom_floating_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../utils/color_constants.dart';
 import '../../utils/common_variable.dart';

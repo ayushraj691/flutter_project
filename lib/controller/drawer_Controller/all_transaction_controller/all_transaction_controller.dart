@@ -1,63 +1,24 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:paycron/controller/variable_controller.dart';
 import 'package:paycron/model/drawer_model/transaction_model/ResAllTransaction.dart';
+import 'package:paycron/network/api_call/api_call.dart';
+import 'package:paycron/network/api_call/url.dart';
+import 'package:paycron/utils/common_variable.dart';
+import 'package:paycron/utils/my_toast.dart';
 
 class AllTransactionController extends GetxController{
 
   var variableController = Get.find<VariableController>();
-  List<ResTransaction> allTransactionList =
-      List<ResTransaction>.empty(growable: true).obs;
+  List<ResTransactionDetail> allTransactionList =
+      List<ResTransactionDetail>.empty(growable: true).obs;
 
-
-  void addAccountDetail() {
-    allTransactionList.add(ResTransaction(
-        sId: '123',
-        custId: "custId",
-        bankId: "bankId",
-        checkNo: 34567,
-        memo: "memo",
-        source: "source",
-        txnNumber: "txnNumber",
-        randomNumber: 4567,
-        payTotal: 1223,
-        isInvoice: true,
-        isInvoicePreapproved: false,
-        payDue: "payDue",
-        isSendInvoice: false,
-        isSusbcription: false,
-        isSchedule: true,
-        scheduleStart: false,
-        subscriptionIsInvoice: false,
-        subscriptionInvoicePreapproved: false,
-        verificationStatus: false,
-        verifyToken: "false",
-        subscriptionType: "subscriptionType",
-        payStatus: "payStatus",
-        payMode: "payMode",
-        cancelReason: false,
-        downloadBymerchant: false,
-        downloadByadmin: false,
-        isDeletedRequest: false,
-        isDeleted: false,
-        createdOn: "2024-10-11T07:36:47.278Z",
-        lastUpdated: "2024-10-11T07:37:53.120Z",
-        iV: 12345));
-
-  }
-
-
-
-  final buttonText = 'Select Date'.obs;
   final startDate = ''.obs;
   final endDate = ''.obs;
 
-  AllTransactionController() {
-    final DateTime now = DateTime.now();
-    final DateTime lastYear = DateTime(now.year - 1);
-    setDateRange(now, lastYear);
-  }
 
   void callMethod() async {
     Map<String, dynamic> sortMap = {
@@ -66,24 +27,25 @@ class AllTransactionController extends GetxController{
     Map<String, dynamic> argumentMap = {
       "": "",
     };
-    // await getAllCustomerData(
-    //   CommonVariable.businessId.value,
-    //   '',
-    //   "$argumentMap",
-    //   startDate.value,
-    //   endDate.value,
-    //   "$sortMap",
-    // );
+    await getAllTransactionData(
+      CommonVariable.businessId.value,
+      '',
+      "$argumentMap",
+      startDate.value,
+      endDate.value,
+      "$sortMap",
+    );
   }
 
-  void setDateRange(DateTime end, DateTime start) {
-    endDate.value = DateFormat.yMMMd().format(end);
-    startDate.value = DateFormat.yMMMd().format(start);
-    buttonText.value = '${startDate.value} - ${endDate.value}';
-  }
+  final buttonText = 'Select Date'.obs;
 
   Future<void> showDatePickerDialog(BuildContext context) async {
     final DateTime now = DateTime.now();
+    final DateTime yesterday = now.subtract(Duration(days: 1));
+    final DateTime last7Days = now.subtract(Duration(days: 7));
+    final DateTime last30Days = now.subtract(Duration(days: 30));
+    final DateTime last6Months = DateTime(now.year, now.month - 6);
+    final DateTime lastYear = DateTime(now.year - 1);
 
     await showModalBottomSheet(
       context: context,
@@ -92,7 +54,7 @@ class AllTransactionController extends GetxController{
       ),
       builder: (context) {
         return Container(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(16),
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -105,12 +67,23 @@ class AllTransactionController extends GetxController{
                     color: Colors.black87,
                   ),
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
+                ListTile(
+                  leading: const Icon(Icons.calendar_month, color: Colors.grey),
+                  title: const Text('Select Date'),
+                  onTap: () {
+                    buttonText.value = 'select Date';
+                    callMethod();
+                    Navigator.pop(context);
+                  },
+                ),
                 ListTile(
                   leading: const Icon(Icons.today, color: Colors.blue),
                   title: const Text('Today'),
                   onTap: () {
-                    setDateRange(now, now);
+                    buttonText.value = '${DateFormat.yMMMd().format(now)} - ${DateFormat.yMMMd().format(now)}';
+                    startDate.value=DateFormat.yMMMd().format(now);
+                    endDate.value=DateFormat.yMMMd().format(now);
                     callMethod();
                     Navigator.pop(context);
                   },
@@ -119,8 +92,9 @@ class AllTransactionController extends GetxController{
                   leading: const Icon(Icons.calendar_today, color: Colors.orange),
                   title: const Text('Yesterday'),
                   onTap: () {
-                    setDateRange(now.subtract(Duration(days: 1)),
-                        now.subtract(Duration(days: 1)));
+                    buttonText.value = '${DateFormat.yMMMd().format(yesterday)} - ${DateFormat.yMMMd().format(now)}'; // Set yesterday's date
+                    startDate.value=DateFormat.yMMMd().format(yesterday);
+                    endDate.value=DateFormat.yMMMd().format(now);
                     callMethod();
                     Navigator.pop(context);
                   },
@@ -129,8 +103,10 @@ class AllTransactionController extends GetxController{
                   leading: const Icon(Icons.date_range, color: Colors.green),
                   title: const Text('Last 7 Days'),
                   onTap: () {
-                    setDateRange(
-                        now, now.subtract(Duration(days: 7))); // Swapped dates
+                    buttonText.value =
+                    '${DateFormat.yMMMd().format(last7Days)} - ${DateFormat.yMMMd().format(now)}'; // Set last 7 days
+                    startDate.value=DateFormat.yMMMd().format(last7Days);
+                    endDate.value=DateFormat.yMMMd().format(now);
                     callMethod();
                     Navigator.pop(context);
                   },
@@ -139,8 +115,10 @@ class AllTransactionController extends GetxController{
                   leading: const Icon(Icons.date_range, color: Colors.purple),
                   title: const Text('Last 30 Days'),
                   onTap: () {
-                    setDateRange(
-                        now, now.subtract(Duration(days: 30))); // Swapped dates
+                    buttonText.value =
+                    '${DateFormat.yMMMd().format(last30Days)} - ${DateFormat.yMMMd().format(now)}'; // Set last 30 days
+                    startDate.value=DateFormat.yMMMd().format(last30Days);
+                    endDate.value=DateFormat.yMMMd().format(now);
                     callMethod();
                     Navigator.pop(context);
                   },
@@ -149,19 +127,22 @@ class AllTransactionController extends GetxController{
                   leading: const Icon(Icons.date_range, color: Colors.deepPurple),
                   title: const Text('Last 6 Months'),
                   onTap: () {
-                    setDateRange(now,
-                        DateTime(now.year, now.month - 6)); // Swapped dates
+                    buttonText.value =
+                    '${DateFormat.yMMMd().format(last6Months)} - ${DateFormat.yMMMd().format(now)}'; // Set last 6 months
+                    startDate.value=DateFormat.yMMMd().format(last6Months);
+                    endDate.value=DateFormat.yMMMd().format(now);
                     callMethod();
                     Navigator.pop(context);
                   },
                 ),
                 ListTile(
-                  leading:
-                  const Icon(Icons.calendar_view_month, color: Colors.indigo),
+                  leading: const Icon(Icons.calendar_view_month, color: Colors.indigo),
                   title: const Text('Last 1 Year'),
                   onTap: () {
-                    final DateTime lastYear = DateTime(now.year - 1);
-                    setDateRange(now, lastYear); // Swapped dates
+                    buttonText.value =
+                    '${DateFormat.yMMMd().format(lastYear)} - ${DateFormat.yMMMd().format(now)}'; // Set last year
+                    startDate.value=DateFormat.yMMMd().format(lastYear);
+                    endDate.value=DateFormat.yMMMd().format(now);
                     callMethod();
                     Navigator.pop(context);
                   },
@@ -170,9 +151,9 @@ class AllTransactionController extends GetxController{
                   leading: const Icon(Icons.calendar_today, color: Colors.red),
                   title: const Text('Custom Range'),
                   onTap: () async {
+                    callMethod();
                     Navigator.pop(context);
                     await _pickCustomDateRange(context);
-                    callMethod();
                   },
                 ),
               ],
@@ -188,36 +169,81 @@ class AllTransactionController extends GetxController{
       context: context,
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
-      builder: (BuildContext context, Widget? child) {
-        return Theme(
-          data: ThemeData.light().copyWith(
-            textTheme: const TextTheme(
-              button: TextStyle(fontSize: 12),
-            ),
-            dialogTheme: DialogTheme(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              contentTextStyle: TextStyle(fontSize: 14),
-            ),
-            colorScheme: const ColorScheme.light(
-              primary: Colors.blue,
-            ),
-          ),
-          child: MediaQuery(
-            data: MediaQuery.of(context).copyWith(
-              textScaleFactor: 0.85,
-            ),
-            child: SingleChildScrollView(
-              child: child ?? SizedBox(),
-            ),
-          ),
-        );
-      },
     );
-
     if (picked != null) {
-      setDateRange(picked.start, picked.end);  // Correct order
+      buttonText.value =
+      '${DateFormat.yMMMd().format(picked.start)} - ${DateFormat.yMMMd().format(picked.end)}';
+      startDate.value=DateFormat.yMMMd().format((picked.start));
+      endDate.value=DateFormat.yMMMd().format((picked.end));
+    }
+  }
+
+  getAllTransactionData(
+      String businessId,
+      String query,
+      String argument,
+      String startDate,
+      String endDate,
+      String sort,
+      ) async {
+    variableController.loading.value = true;
+
+    try {
+      allTransactionList.clear();
+
+      var res = await ApiCall.getApiCallParam(
+          endpoint: MyUrls.allTransactionDetail,
+          id: businessId,
+          token: CommonVariable.token.value,
+          query: query,
+          endDate: endDate,
+          page: 1,
+          size: 21,
+          startDate: startDate,
+          yes: 'yes',
+          urlIdentifier: '0');
+
+      debugPrint("*************************");
+      debugPrint("API Response: $res");
+      debugPrint("*************************");
+
+      if (res != null) {
+        variableController.loading.value = false;
+
+        List<ResTransactionDetail> customerList =
+        JsonUtils.parseCustomerData(res);
+        allTransactionList.addAll(customerList);
+
+        if (allTransactionList.isEmpty) {
+          MyToast.toast("No Transaction found.");
+        }
+      } else {
+        MyToast.toast("Something went wrong. Please try again.");
+        variableController.loading.value = false;
+      }
+    } catch (e) {
+      debugPrint("Error occurred: $e");
+      MyToast.toast("Something went wrong: ${e.toString()}");
+    } finally {
+      variableController.loading.value = false;
+    }
+  }
+}
+
+class JsonUtils {
+  static List<ResTransactionDetail> parseCustomerData(
+      dynamic jsonResponse) {
+    if (jsonResponse is String) {
+      final parsed = jsonDecode(jsonResponse);
+      return (parsed['data'] as List)
+          .map((json) => ResTransactionDetail.fromJson(json))
+          .toList();
+    } else if (jsonResponse is Map<String, dynamic>) {
+      return (jsonResponse['data'] as List)
+          .map((json) => ResTransactionDetail.fromJson(json))
+          .toList();
+    } else {
+      throw Exception('Unexpected data format');
     }
   }
 

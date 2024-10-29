@@ -91,7 +91,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         ),
         child: ListView(
           children: [
-            _buildPersonalDetailCollapsibleSection(
+            _buildProductDetailCollapsibleSection(
               title: "Product Detail",
               isExpanded: isProductDetailsExpanded,
               onToggle: () {
@@ -120,13 +120,14 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     );
   }
 
-  Widget _buildPersonalDetailCollapsibleSection({
+  Widget _buildProductDetailCollapsibleSection({
     required String title,
     required bool isExpanded,
     required VoidCallback onToggle,
     required Widget child,
   }) {
     return Card(
+      elevation: 4,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),

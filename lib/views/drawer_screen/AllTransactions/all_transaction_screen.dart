@@ -5,6 +5,7 @@ import 'package:paycron/controller/drawer_Controller/all_transaction_controller/
 import 'package:paycron/controller/variable_controller.dart';
 import 'package:paycron/model/drawer_model/transaction_model/ResAllTransaction.dart';
 import 'package:paycron/utils/color_constants.dart';
+import 'package:paycron/utils/common_variable.dart';
 import 'package:paycron/views/widgets/NoDataScreen.dart';
 
 class AllTransactionTab extends StatefulWidget {
@@ -15,10 +16,17 @@ class AllTransactionTab extends StatefulWidget {
 }
 
 class _AllTransactionTabState extends State<AllTransactionTab> {
+
   TextEditingController searchController = TextEditingController();
   var allTransactionTabController = Get.find<AllTransactionController>();
   var variableController = Get.find<VariableController>();
-  List<ResTransaction> filteredItems = <ResTransaction>[].obs;
+  List<ResTransactionDetail> filteredItems = <ResTransactionDetail>[].obs;
+  Map<String, dynamic> sortMap = {
+    "": "",
+  };
+  Map<String, dynamic> argumentMap = {
+    "": "",
+  };
 
   @override
   void initState() {
@@ -30,16 +38,15 @@ class _AllTransactionTabState extends State<AllTransactionTab> {
   }
 
   void CallMethod() async{
-    // await allTransactionTabController.getAllCustomerData(
-    //   CommonVariable.businessId.value,
-    //   '',
-    //   "$argumentMap",
-    //   allTabController.startDate.value,
-    //   allTabController.endDate.value,
-    //   "$sortMap",
-    // );
-    allTransactionTabController.allTransactionList.clear();
-    allTransactionTabController.addAccountDetail();
+    await allTransactionTabController.getAllTransactionData(
+      CommonVariable.businessId.value,
+      '',
+      "$argumentMap",
+      allTransactionTabController.startDate.value,
+      allTransactionTabController.endDate.value,
+      "$sortMap",
+    );
+
     filteredItems = allTransactionTabController.allTransactionList;
   }
 
@@ -123,7 +130,6 @@ class _AllTransactionTabState extends State<AllTransactionTab> {
                             ),
                             child: ElevatedButton(
                               onPressed: () {
-                                allTransactionTabController.addAccountDetail();
                                 setState(() {
                                 });
                               },
@@ -185,9 +191,9 @@ class _AllTransactionTabState extends State<AllTransactionTab> {
                               .allTransactionList.isEmpty) {
                             return variableController.loading.value
                                 ? const Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: CircularProgressIndicator(),
-                                  )
+                              padding: EdgeInsets.all(8.0),
+                              child: CircularProgressIndicator(),
+                            )
                                 : NoDataFoundCard(); // Your custom widget
                           } else {
                             return ListView.builder(
@@ -213,8 +219,9 @@ class _AllTransactionTabState extends State<AllTransactionTab> {
     );
   }
 
+
   Widget listTransactionCard(
-      List<ResTransaction> allRecentTransaction, int index, context) {
+      List<ResTransactionDetail> allRecentTransaction, int index, context) {
     final subscription = allRecentTransaction[index];
     final createdDate = subscription.createdOn;
     DateTime dateTime = DateTime.parse(createdDate).toLocal();
@@ -318,7 +325,6 @@ class _AllTransactionTabState extends State<AllTransactionTab> {
                 ],
               ),
               const SizedBox(height: 4),
-
               // Source Text
               Text(
                 "Transaction ID: ${subscription.txnNumber}",
@@ -337,6 +343,5 @@ class _AllTransactionTabState extends State<AllTransactionTab> {
       ),
     );
   }
-
 
 }

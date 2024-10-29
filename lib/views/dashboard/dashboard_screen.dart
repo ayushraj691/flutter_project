@@ -14,22 +14,24 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
-    double horizontalPadding = screenWidth * 0.01; // 1% of screen width for horizontal padding
-    double verticalPadding = screenHeight * 0.02; // 2% of screen height for vertical padding
+    double horizontalPadding = screenWidth * 0.01;
+    double verticalPadding = screenHeight * 0.02;
+
     return Scaffold(
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
             children: [
-             Row(
+              Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                   Padding(
+                  Padding(
                     padding: const EdgeInsets.only(top: 18),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -54,9 +56,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ],
                     ),
                   ),
-                  // Space between text and image
                   const Spacer(),
-                  // Image on the right side
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: CircleAvatar(
@@ -77,14 +77,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           vertical: verticalPadding,
                         ),
                         child: const SegmentedTabControl(
-                          radius: Radius.circular(20),
+                          radius: Radius.circular(20.0),
                           backgroundColor: AppColors.appBackgroundGreyColor,
                           indicatorColor: AppColors.appWhiteColor,
-                          textStyle: TextStyle(fontWeight: FontWeight.w600,fontFamily: 'Sofia Sans'),
+                          textStyle: TextStyle(
+                              fontWeight: FontWeight.w600, fontFamily: 'Sofia Sans'),
                           tabTextColor: AppColors.appGreyColor,
                           selectedTabTextColor: AppColors.appTextColor,
-                          tabPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                          indicatorPadding: EdgeInsets.all(5),
+                          tabPadding: EdgeInsets.symmetric(
+                              vertical: 10.0, horizontal: 20.0),
+                          indicatorPadding: EdgeInsets.all(5.0),
                           tabs: [
                             SegmentTab(
                               label: 'Overall Statistics',
@@ -95,7 +97,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           ],
                         ),
                       ),
-                      // The TabBarView displays the content of each tab
                       Expanded(
                         child: TabBarView(
                           children: [

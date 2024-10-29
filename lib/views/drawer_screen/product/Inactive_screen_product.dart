@@ -7,10 +7,8 @@ import 'package:paycron/model/drawer_model/product_model/ResAllFilterProductData
 import 'package:paycron/utils/color_constants.dart';
 import 'package:paycron/utils/common_variable.dart';
 import 'package:paycron/utils/image_assets.dart';
-import 'package:paycron/views/drawer_screen/product/add_product_screen.dart';
 import 'package:paycron/views/drawer_screen/product/product_detail_view.dart';
 import 'package:paycron/views/widgets/NoDataScreen.dart';
-import 'package:paycron/views/widgets/common_button.dart';
 
 class InactiveTabProduct extends StatefulWidget {
   const InactiveTabProduct({super.key});
@@ -217,19 +215,19 @@ class _InactiveTabProductState extends State<InactiveTabProduct> {
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(bottom: 5.0),
-            child: Center(
-              child: CommonButton(
-                buttonWidth: screenWidth * 0.9,
-                icon: Icons.add,
-                buttonName: "Add Product",
-                onPressed: () {
-                  Get.to(AllProcductScreen());
-                },
-              ),
-            ),
-          ),
+          // Padding(
+          //   padding: const EdgeInsets.only(bottom: 5.0),
+          //   child: Center(
+          //     child: CommonButton(
+          //       buttonWidth: screenWidth * 0.9,
+          //       icon: Icons.add,
+          //       buttonName: "Add Product",
+          //       onPressed: () {
+          //         Get.to(AllProcductScreen());
+          //       },
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );
@@ -289,7 +287,7 @@ Widget listItem(List<ResAllFilterProductData> allProductDataList, int index, con
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              formattedDate,
+                              productName,
                               style: const TextStyle(
                                 fontWeight: FontWeight.w600,
                                 color: AppColors.appBlackColor,
@@ -297,15 +295,15 @@ Widget listItem(List<ResAllFilterProductData> allProductDataList, int index, con
                                 fontFamily: 'Sofia Sans',
                               ),
                             ),
-                            Text(
-                              "Name :$productName",
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w500,
-                                color: AppColors.appGreyColor,
-                                fontSize: 14,
-                                fontFamily: 'Sofia Sans',
-                              ),
-                            ),
+                            // Text(
+                            //   "Name :$productName",
+                            //   style: const TextStyle(
+                            //     fontWeight: FontWeight.w500,
+                            //     color: AppColors.appGreyColor,
+                            //     fontSize: 14,
+                            //     fontFamily: 'Sofia Sans',
+                            //   ),
+                            // ),
                             Text(
                               "ID :$productId",
                               style: const TextStyle(
@@ -332,7 +330,7 @@ Widget listItem(List<ResAllFilterProductData> allProductDataList, int index, con
                               ),
                             ),
                             Text(
-                              '$productValue/month',
+                              formattedDate,
                               style: const TextStyle(
                                 fontWeight: FontWeight.w400,
                                 color: AppColors.appGreyColor,

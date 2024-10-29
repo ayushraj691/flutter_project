@@ -11,7 +11,7 @@ import 'package:paycron/network/api_call/url.dart';
 import 'package:paycron/utils/common_variable.dart';
 import 'package:paycron/utils/my_toast.dart';
 import 'package:paycron/views/app_home_screen/home_screen.dart';
-import 'package:paycron/views/dashboard/bottom_nav_bar_screen.dart';
+import 'package:paycron/views/dashboard/bottom_floating_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 

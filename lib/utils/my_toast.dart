@@ -11,7 +11,7 @@ class MyToast{
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
         timeInSecForIosWeb: 1,
-        backgroundColor: AppColors.appBlueColor,
+        backgroundColor: AppColors.appBlueLightColor,
         textColor: Colors.black,
         fontSize: 16.0
     );

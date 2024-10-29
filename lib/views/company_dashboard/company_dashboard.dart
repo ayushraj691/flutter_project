@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:paycron/controller/dashboard/user_main_dashboard_controller.dart';
 import 'package:paycron/utils/color_constants.dart';
+import 'package:paycron/utils/common_variable.dart';
 import 'package:paycron/utils/image_assets.dart';
 import 'package:paycron/views/app_drawer/app_drawer.dart';
 import 'package:paycron/views/company_dashboard/create_payment_page.dart';
@@ -36,15 +37,15 @@ class _CompanyDashboardState extends State<CompanyDashboard> {
           },
         ),
         titleSpacing: 0, // Removes extra space between arrow and title
-        title: const Text(
-          "Company Details",
-          style: TextStyle(
+        title: Obx(() => Text(
+          CommonVariable.businessName.value,
+          style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
             color: AppColors.appTextColor,
             fontFamily: 'Sofia Sans',
           ),
-        ),
+        ),),
         actions: [
           Padding(
             padding: EdgeInsets.all(4.0),

@@ -1,7 +1,10 @@
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:paycron/controller/dashboard/create_payment_controller.dart';
+import 'package:paycron/model/drawer_model/insertCustomerData/ResCustomerListModel.dart';
 import 'package:paycron/utils/color_constants.dart';
+import 'package:paycron/utils/common_variable.dart';
 import 'package:paycron/views/company_dashboard/add_customer_popup.dart';
 import 'package:paycron/views/drawer_screen/customer/createCustomerForm.dart';
 import 'package:paycron/views/widgets/common_button.dart';
@@ -25,36 +28,32 @@ class _CreatePaymentPageState extends State<CreatePaymentPage> {
     "Business 3",
     "Business 4"
   ];
-  List<String> allProductList = [];
 
-  final List<Map<String, String>> customers = [
-    {"name": "Ron Sander", "email": "example@gmail.com", "phone": "7874934830"},
-    {"name": "John Doe", "email": "johndoe@gmail.com", "phone": "7894561230"},
-    {"name": "Jane Smith", "email": "janesmith@gmail.com", "phone": "7541239870"},
-    {"name": "Michael Brown", "email": "michaelbrown@gmail.com", "phone": "1234567890"},
-    {"name": "Linda Johnson", "email": "lindajohnson@gmail.com", "phone": "0987654321"},
-    {"name": "Chris Evans", "email": "chrisevans@gmail.com", "phone": "5647382910"},
-    {"name": "Emma Watson", "email": "emmawatson@gmail.com", "phone": "9182736450"},
-    {"name": "Robert Pattinson", "email": "robertpattinson@gmail.com", "phone": "1112223333"},
-    {"name": "Scarlett Johansson", "email": "scarlettjohansson@gmail.com", "phone": "4445556666"},
-  ];
 
   TextEditingController searchController = TextEditingController();
-  List<Map<String, String>> filteredCustomers = [];
+  List<ResCustomerList> filteredCustomers =  <ResCustomerList>[].obs;
   bool isDropdownOpen = false;
-  String selectedCustomer = "Select Customer"; // Default text for dropdown
+  String selectedCustomer = "Select Customer";
 
   @override
   void initState() {
     super.initState();
-    filteredCustomers = customers;
+    Future.delayed(const Duration(seconds: 0), () async {
+      callMethods();
+    });
+    filteredCustomers = createPaymentController.customerList;
   }
+
+  void callMethods() async{
+    await createPaymentController.getCustomerList(CommonVariable.businessId.value);
+  }
+
 
   void filterSearchResults(String query) {
     setState(() {
-      filteredCustomers = customers
+      filteredCustomers = createPaymentController.customerList
           .where((customer) =>
-          customer["name"]!.toLowerCase().contains(query.toLowerCase()))
+          customer.info.custName!.toLowerCase().contains(query.toLowerCase()))
           .toList();
     });
   }
@@ -262,11 +261,11 @@ class _CreatePaymentPageState extends State<CreatePaymentPage> {
                                           child: Column(
                                             children: filteredCustomers.map((customer) {
                                               return GestureDetector(
-                                                onTap: () => selectCustomer(customer["name"]!), // Select customer
+                                                onTap: () => selectCustomer(customer.info.custName), // Select customer
                                                 child: CustomerTile(
-                                                  name: customer["name"]!,
-                                                  email: customer["email"]!,
-                                                  phone: customer["phone"]!,
+                                                  name: customer.info.custName,
+                                                  email: customer.info.email,
+                                                  phone: customer.info.mobile,
                                                 ),
                                               );
                                             }).toList(),
@@ -806,7 +805,9 @@ class _CreatePaymentPageState extends State<CreatePaymentPage> {
     );
   }
 
+
 }
+
 
 void CreateCustomerPopup(BuildContext context) {
   showModalBottomSheet(

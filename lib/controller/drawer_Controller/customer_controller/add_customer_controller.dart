@@ -41,10 +41,166 @@ class AddCustomerController extends GetxController{
   TextEditingController stateController = TextEditingController();
   TextEditingController cityController = TextEditingController();
   TextEditingController zipController = TextEditingController();
+
+  bool nameValid = true;
+  bool AccountNameValid = true;
+  bool mobileValid = true;
+  bool routingValid = true;
+  bool AccountNumberValid = true;
+  bool emailValid = true;
+  bool ConfirmAccountNumberValid = true;
+  bool suitAptValid = true;
+  bool streetValid = true;
+  bool countrytValid = true;
+  bool stateValid = true;
+  bool cityValid = true;
+  bool zipcodeValid = true;
+
+  var nameErrorMessage = null;
+  var accountNameErrorMessage = null;
+  var mobileErrorMessage = null;
+  var routingErrorMessage = null;
+  var accountNumberErrorMessage = null;
+  var emailErrorMessage = null;
+  var confirmAccountErrorMessage = null;
+  var suitAptErrorMessage = null;
+  var streetErrorMessage = null;
+  var countryterrorMessage = null;
+  var cityErrorMessage = null;
+  var stateErrorMessage = null;
+  var zipcodeErrorMessage = null;
+
+  final FocusNode nameFocusNode = FocusNode();
+  final FocusNode accountNameFocusNode = FocusNode();
+  final FocusNode mobileFocusNode = FocusNode();
+  final FocusNode routingFocusNode = FocusNode();
+  final FocusNode accountNumberFocusNode = FocusNode();
+  final FocusNode confirmAccountNumberFocusNode = FocusNode();
+  final FocusNode emailFocusNode = FocusNode();
+  final FocusNode suitAptFocusNode = FocusNode();
+  final FocusNode streetFocusNode = FocusNode();
+  final FocusNode countryFocusNode = FocusNode();
+  final FocusNode stateFocusNode = FocusNode();
+  final FocusNode cityFocusNode = FocusNode();
+  final FocusNode zipcodeFocusNode = FocusNode();
+
+
+  bool personValidation(){
+    if(nameController.text.isEmpty){
+      nameValid=false;
+      nameErrorMessage =' Name is required';
+      FocusScope.of(Get.context!).requestFocus(nameFocusNode);
+      return false;
+    }else if(mobileController.text.isEmpty){
+      mobileValid = false;
+      mobileErrorMessage = 'Mobile number is required';
+      FocusScope.of(Get.context!).requestFocus(mobileFocusNode);
+      return false;
+    }else if (mobileController.text.length != 10) {
+      mobileValid = false;
+      mobileErrorMessage = 'Mobile Number must be 10 digits';
+      FocusScope.of(Get.context!).requestFocus(mobileFocusNode);
+      return false;
+    }else if (emailController.text.isEmpty) {
+      emailValid = false;
+      emailErrorMessage = 'Email is required';
+      FocusScope.of(Get.context!).requestFocus(emailFocusNode);
+      return false;
+    }else if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(emailController.text)){
+      emailValid = false;
+      emailErrorMessage = 'Invalid Email';
+      FocusScope.of(Get.context!).requestFocus(emailFocusNode);
+      return false;
+    }
+    else{
+      return true;
+    }
+  }
+
+  bool validation() {
+    if (accountHolderNameController.text.isEmpty) {
+      AccountNameValid = false;
+      accountNameErrorMessage = 'Account Holder Name is required';
+      FocusScope.of(Get.context!).requestFocus(accountNameFocusNode);
+      return false;
+    }else if (routingNumberController.text.isEmpty) {
+      routingValid = false;
+      routingErrorMessage = 'Routing Number cannot be empty';
+      FocusScope.of(Get.context!).requestFocus(routingFocusNode);
+      return false;
+    }else if (routingNumberController.text.length != 9) {
+      routingValid = false;
+      routingErrorMessage = 'Routing Number must be 9 digits';
+      FocusScope.of(Get.context!).requestFocus(routingFocusNode);
+      return false;
+    }else if (!routingValid) {
+      routingValid = false;
+      routingErrorMessage = 'Invalid Routing number';
+      FocusScope.of(Get.context!).requestFocus(routingFocusNode);
+      return false;
+    }else if (accountNumberController.text.isEmpty) {
+      AccountNumberValid = false;
+      accountNumberErrorMessage = 'Account number is required';
+      FocusScope.of(Get.context!).requestFocus(accountNumberFocusNode);
+      return false;
+    }else if (accountNumberController.text.length > 15) {
+      AccountNumberValid = false;
+      accountNumberErrorMessage = 'Account number must be 15 digits or less';
+      FocusScope.of(Get.context!).requestFocus(accountNumberFocusNode);
+      return false;
+    }else if (confirmAccountNumberController.text.isEmpty) {
+      ConfirmAccountNumberValid = false;
+      confirmAccountErrorMessage = 'Confirm Account number is required';
+      FocusScope.of(Get.context!).requestFocus(confirmAccountNumberFocusNode);
+      return false;
+    }else if (confirmAccountNumberController.text != accountNumberController.text.trim()) {
+      ConfirmAccountNumberValid = false;
+      confirmAccountErrorMessage = 'Account Number & Confirm Account Number should be the same';
+      FocusScope.of(Get.context!).requestFocus(confirmAccountNumberFocusNode);
+      return false;
+    } else if (confirmAccountNumberController.text.length > 15) {
+      ConfirmAccountNumberValid = false;
+      confirmAccountErrorMessage = 'Confirm Account number must be 15 digits or less';
+      FocusScope.of(Get.context!).requestFocus(confirmAccountNumberFocusNode);
+      return false;
+    }else if (suitAptController.text.isEmpty) {
+      suitAptValid = false;
+      suitAptErrorMessage = 'Suit/Apt is required';
+      FocusScope.of(Get.context!).requestFocus(suitAptFocusNode);
+      return false;
+    }else if (streetController.text.isEmpty) {
+      streetValid = false;
+      streetErrorMessage = 'Street is required';
+      FocusScope.of(Get.context!).requestFocus(streetFocusNode);
+      return false;
+    }else if (countryController.text.isEmpty) {
+      countrytValid = false;
+      countryterrorMessage = 'Country is required';
+      FocusScope.of(Get.context!).requestFocus(countryFocusNode);
+      return false;
+    }else if (stateController.text.isEmpty) {
+      stateValid = false;
+      stateErrorMessage = 'State is required';
+      FocusScope.of(Get.context!).requestFocus(stateFocusNode);
+      return false;
+    }else if (cityController.text.isEmpty) {
+      cityValid = false;
+      cityErrorMessage = 'City is required';
+      FocusScope.of(Get.context!).requestFocus(cityFocusNode);
+      return false;
+    }else if (zipController.text.isEmpty) {
+      zipcodeValid = false;
+      zipcodeErrorMessage = 'Zip Code is required';
+      FocusScope.of(Get.context!).requestFocus(zipcodeFocusNode);
+      return false;
+    }else{
+      return true;
+    }
+  }
+
   bool isSwitched=false;
   List<Items> accountDetailsList = List<Items>.empty(growable: true).obs;
   var isRoutingNumberValid = false.obs;
-
 
   void addAccountDetail() {
     if (isSwitched) {
@@ -72,11 +228,18 @@ class AddCustomerController extends GetxController{
 
   void removeAccountDetail(int index) {
     if (index >= 0 && index < accountDetailsList.length) {
+      bool isPrimaryDeleted = accountDetailsList[index].primary;
       accountDetailsList.removeAt(index);
+      if (isPrimaryDeleted && accountDetailsList.isNotEmpty) {
+        accountDetailsList[0].primary = true;
+      }
     } else {
       print("Index out of range");
     }
   }
+
+
+
   void clearAllAccount() {
     accountHolderNameController.clear();
     routingNumberController.clear();
@@ -122,7 +285,12 @@ class AddCustomerController extends GetxController{
     if (res != null) {
       ResAddCustomer resAddCustomer = ResAddCustomer.fromJson(res);
       if(resAddCustomer.code==200){
+        variableController.loading.value = false;
         MyToast.toast("customer add successful");
+        accountDetailsList.clear();
+        clearAllCustomer();
+        clearAllAccount();
+        Get.back();
       }
     } else {
       MyToast.toast("Something Went Wrong");
@@ -130,7 +298,7 @@ class AddCustomerController extends GetxController{
     }
   }
 
-  validateRoutingNumber(String routingNumber) async{
+  validateRoutingNumber(String routingNumber) async {
     variableController.loading.value = true;
     ReqCheckRoutingNo reqCheckRoutingNo = ReqCheckRoutingNo(routingNumber: routingNumber);
     debugPrint(json.encode(reqCheckRoutingNo.toJson()));
@@ -142,15 +310,16 @@ class AddCustomerController extends GetxController{
     if (res != null) {
       ResCheckRoutingNo resCheckRoutingNo = ResCheckRoutingNo.fromJson(res);
       if(resCheckRoutingNo.code==200){
-        MyToast.toast(resCheckRoutingNo.message.toString());
         isRoutingNumberValid = true.obs;
         bankName.value = resCheckRoutingNo.customerName??"";
         postalCode.value = resCheckRoutingNo.zip??"";
         bankAddress.value = resCheckRoutingNo.address??"";
         state.value = resCheckRoutingNo.state??"";
         city.value = resCheckRoutingNo.city??"";
+        routingValid=true;
       }else{
-        MyToast.toast(resCheckRoutingNo.message.toString());
+        routingErrorMessage=resCheckRoutingNo.message.toString();
+        routingValid=false;
       }
     } else {
       MyToast.toast("Something Went Wrong");
@@ -189,5 +358,4 @@ class AddCustomerController extends GetxController{
     }
 
   }
-
 }

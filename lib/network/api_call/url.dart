@@ -15,6 +15,8 @@ class MyUrls{
   static String filterProduct="merchant/api/filter-product";
   static String checkRoutingNumber="merchant/api/checkroutingnumber";
   static String addSingleAccount="merchant/api/addcustomersinglebank";
+  static String customerList="merchant/api/customerlist";
+  static String allTransactionDetail="merchant/api/alltransactions";
 
 
 }

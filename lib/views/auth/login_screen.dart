@@ -23,172 +23,164 @@ class _LoginScreenState extends State<LoginScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.appWhiteColor,
-      resizeToAvoidBottomInset: true,  // This will allow the screen to adjust when the keyboard is open
+      resizeToAvoidBottomInset: false, // Prevent default resizing when keyboard opens
       body: SafeArea(
         child: Column(
           children: [
             Expanded(
               child: SingleChildScrollView(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: size.width * 0.05,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      SizedBox(height: size.height * 0.04),
-                      // Welcome Title
-                      const Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text.rich(
+                padding: EdgeInsets.symmetric(horizontal: size.width * 0.05),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(height: size.height * 0.04),
+                    const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text.rich(
+                          TextSpan(
+                            children: [
+                              TextSpan(
+                                text: 'Welcome ',
+                                style: TextStyle(
+                                  fontFamily: 'Sofia Sans',
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.appBlackColor,
+                                ),
+                              ),
+                              TextSpan(
+                                text: 'Back!',
+                                style: TextStyle(
+                                  fontFamily: 'Sofia Sans',
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.appBlueColor,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    const Align(
+                      alignment: Alignment.topLeft,
+                      child: Padding(
+                        padding: EdgeInsets.only(left: 8.0),
+                        child: Text(
+                          'Please enter your details here',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 12,
+                            fontFamily: 'Sofia Sans',
+                            color: AppColors.appGreyColor,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: size.height * 0.04),
+
+                    // Email Input Field
+                    const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text.rich(
+                        TextSpan(
+                          text: 'Email ',
+                          style: TextStyle(
+                            fontFamily: 'Sofia Sans',
+                            fontSize: 12.0,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.black,
+                          ),
+                          children: [
                             TextSpan(
-                              children: [
-                                TextSpan(
-                                  text: 'Welcome ',
-                                  style: TextStyle(
-                                    fontFamily: 'Sofia Sans',
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.appBlackColor,
-                                  ),
-                                ),
-                                TextSpan(
-                                  text: 'Back!',
-                                  style: TextStyle(
-                                    fontFamily: 'Sofia Sans',
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.appBlueColor,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                      const Align(
-                        alignment: Alignment.topLeft,
-                        child: Padding(
-                          padding: EdgeInsets.only(left: 8.0),
-                          child: Text(
-                            'Please enter your details here',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 12,
-                              fontFamily: 'Sofia Sans',
-                              color: AppColors.appGreyColor,
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: size.height * 0.04),
-
-                      // Email Input Field
-                      const Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text.rich(
-                          TextSpan(
-                            text: 'Email ',
-                            style: TextStyle(
-                              fontFamily: 'Sofia Sans',
-                              fontSize: 12.0,
-                              fontWeight: FontWeight.w400,
-                              color: Colors.black,
-                            ),
-                            children: [
-                              TextSpan(
-                                text: '*',
-                                style: TextStyle(
-                                  color: Colors.red,
-                                  fontSize: 12.0,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: size.height * 0.005),
-                      CommonTextField(
-                        hintText: "Enter Email",
-                        controller: authController.emailController.value,
-                        labelText: "Enter Email",
-                      ),
-                      SizedBox(height: size.height * 0.015),
-
-                      // Password Input Field
-                      const Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text.rich(
-                          TextSpan(
-                            text: 'Password ',
-                            style: TextStyle(
-                              fontFamily: 'Sofia Sans',
-                              fontSize: 12.0,
-                              fontWeight: FontWeight.w400,
-                              color: Colors.black,
-                            ),
-                            children: [
-                              TextSpan(
-                                text: '*',
-                                style: TextStyle(
-                                  color: Colors.red,
-                                  fontSize: 12.0,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: size.height * 0.005),
-                      CommonTextField(
-                        hintText: "Enter Password",
-                        controller: authController.userPasswordController.value,
-                        labelText: "Enter Password",
-                        maxLines: 1,
-                        suffixIcon: authController.isObsecureForLogin.value
-                            ? Icons.visibility_off
-                            : Icons.visibility,
-                        obscureText: authController.isObsecureForLogin.value,
-                        suffixIconColor: AppColors.appGreyColor,
-                        onSuffixIconTap: () {
-                          authController.isObsecureForLogin.value =
-                          !authController.isObsecureForLogin.value;
-                          setState(() {});
-                        },
-                        onChanged: (value) {},
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(right: 25.0, top: 20.0),
-                        child: InkWell(
-                          onTap: () {
-                            // Forgot Password Functionality
-                          },
-                          child: const Align(
-                            alignment: Alignment.topRight,
-                            child: Text(
-                              "Forgot password?",
+                              text: '*',
                               style: TextStyle(
-                                fontFamily: 'Sofia Sans',
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                                color: AppColors.appBlueColor,
+                                color: Colors.red,
+                                fontSize: 12.0,
+                                fontWeight: FontWeight.w400,
                               ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: size.height * 0.005),
+                    CommonTextField(
+                      hintText: "Enter Email",
+                      controller: authController.emailController.value,
+                      labelText: "Enter Email",
+                    ),
+                    SizedBox(height: size.height * 0.015),
+
+                    // Password Input Field
+                    const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text.rich(
+                        TextSpan(
+                          text: 'Password ',
+                          style: TextStyle(
+                            fontFamily: 'Sofia Sans',
+                            fontSize: 12.0,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.black,
+                          ),
+                          children: [
+                            TextSpan(
+                              text: '*',
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontSize: 12.0,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: size.height * 0.005),
+                    CommonTextField(
+                      hintText: "Enter Password",
+                      controller: authController.userPasswordController.value,
+                      labelText: "Enter Password",
+                      maxLines: 1,
+                      suffixIcon: authController.isObsecureForLogin.value
+                          ? Icons.visibility_off
+                          : Icons.visibility,
+                      obscureText: authController.isObsecureForLogin.value,
+                      suffixIconColor: AppColors.appGreyColor,
+                      onSuffixIconTap: () {
+                        authController.isObsecureForLogin.value =
+                        !authController.isObsecureForLogin.value;
+                        setState(() {});
+                      },
+                      onChanged: (value) {},
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 25.0, top: 20.0),
+                      child: InkWell(
+                        onTap: () {
+                          // Forgot Password Functionality
+                        },
+                        child: const Align(
+                          alignment: Alignment.topRight,
+                          child: Text(
+                            "Forgot password?",
+                            style: TextStyle(
+                              fontFamily: 'Sofia Sans',
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.appBlueColor,
                             ),
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
-
-            // Spacer to push button to the bottom
-            SizedBox(height: size.height * 0.02),
 
             // Login Button
             Padding(

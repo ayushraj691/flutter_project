@@ -40,7 +40,8 @@ class ApiCall {
            try {
              var errorResponse = json.decode(response.body);
              String errorMessage = errorResponse['message'] ?? 'Bad Request';
-             MyToast.toast(errorMessage);
+             String errorMsg = errorResponse['rn'] ?? 'Bad Request';
+             MyToast.toast(" ${errorMsg}  $errorMessage");
              debugPrint("400 Bad Request: $errorResponse");
              return errorResponse;
            } catch (e) {
@@ -49,7 +50,7 @@ class ApiCall {
              return {"error": "Bad Request, but failed to parse response."};
            }
          } else {
-            final variablecontroller = Get.find<VariableController>();
+           final variablecontroller = Get.find<VariableController>();
            debugPrint("\n\n\n\n"+"${response.statusCode.toString()}"+"\n\n\n\n\n");
             variablecontroller.loading.value = false;
             variablecontroller.apiResponseCode.value =
@@ -59,7 +60,7 @@ class ApiCall {
      } catch (e) {
        final variablecontroller = Get.find<VariableController>();
        variablecontroller.loading.value = false;
-       ///MyToast.myShowToast("something went wrong.");
+       MyToast.toast("something went wrong.");
        debugPrint("\n\n\nFrom catch block\n${MyUrls.BASE_URL}/$url\n$e\n\n\n");
      }
    }
@@ -103,7 +104,7 @@ class ApiCall {
      } catch (e) {
        final variablecontroller = Get.find<VariableController>();
        variablecontroller.loading.value = false;
-       ///MyToast.myShowToast("something went wrong.");
+       ///MyToast.toast("something went wrong.");
        debugPrint("\n\n\nFrom catch block\n${MyUrls.BASE_URL}/$url\n$e\n\n\n");
      }
    }

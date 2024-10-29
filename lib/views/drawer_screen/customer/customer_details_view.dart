@@ -5,8 +5,8 @@ import 'package:intl/intl.dart';
 import 'package:paycron/controller/drawer_Controller/customer_controller/CustomerDetailViewController.dart';
 import 'package:paycron/controller/drawer_Controller/customer_controller/add_customer_controller.dart';
 import 'package:paycron/controller/variable_controller.dart';
-import 'package:paycron/model/drawer_model/ResAllRecentTransaction.dart';
-import 'package:paycron/model/drawer_model/ResSingleCustomerModel.dart';
+import 'package:paycron/model/drawer_model/insertCustomerData/ResSingleCustomerModel.dart';
+import 'package:paycron/model/drawer_model/transaction_model/ResAllRecentTransaction.dart';
 import 'package:paycron/utils/color_constants.dart';
 import 'package:paycron/utils/general_methods.dart';
 import 'package:paycron/views/drawer_screen/customer/add_account_popup.dart';
@@ -150,6 +150,7 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
     required Widget child,
   }) {
     return Card(
+      elevation: 4,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
@@ -696,6 +697,7 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
     final customerDetailController = Get.find<CustomerDetailViewController>();
     double screenWidth = MediaQuery.of(context).size.width;
     return Card(
+      elevation: 4,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
@@ -882,6 +884,7 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
     required Widget child,
   }) {
     return Card(
+      elevation: 4,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:paycron/utils/color_constants.dart';
+import 'package:paycron/utils/common_variable.dart';
 import 'package:paycron/utils/image_assets.dart';
 import 'package:paycron/views/app_drawer/app_drawer.dart';
 import 'package:paycron/views/drawer_screen/AllTransactions/all_transaction_screen.dart';
@@ -30,9 +32,7 @@ class _AllTransactionScreenState extends State<AllTransactionScreen> {
 
   void _scrollListener() {
     setState(() {
-      // Show left arrow if scrolled right; otherwise, hide it
       _showLeftArrow = _scrollController.position.pixels > 0;
-      // Show right arrow if there are more tabs to scroll to the right
       _showRightArrow = _scrollController.position.pixels <
           _scrollController.position.maxScrollExtent;
     });
@@ -41,7 +41,7 @@ class _AllTransactionScreenState extends State<AllTransactionScreen> {
   void _scrollLeft() {
     _scrollController.animateTo(
       _scrollController.position.pixels - 100,
-      duration: Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 300),
       curve: Curves.easeOut,
     );
   }
@@ -49,7 +49,7 @@ class _AllTransactionScreenState extends State<AllTransactionScreen> {
   void _scrollRight() {
     _scrollController.animateTo(
       _scrollController.position.pixels + 100,
-      duration: Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 300),
       curve: Curves.easeOut,
     );
   }
@@ -63,24 +63,24 @@ class _AllTransactionScreenState extends State<AllTransactionScreen> {
         backgroundColor: AppColors.appWhiteColor,
         leading: IconButton(
           color: AppColors.appBlackColor,
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pop(context); // Action for back arrow
+            Navigator.pop(context);
           },
         ),
-        titleSpacing: 0, // Removes extra space between arrow and title
-        title: const Text(
-          "Company Details",
-          style: TextStyle(
+        titleSpacing: 0,
+        title: Obx(() => Text(
+          CommonVariable.businessName.value,
+          style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
             color: AppColors.appTextColor,
             fontFamily: 'Sofia Sans',
           ),
-        ),
+        ),),
         actions: [
           Padding(
-            padding: EdgeInsets.all(4.0),
+            padding: const EdgeInsets.all(4.0),
             child: CircleAvatar(
               radius: screenHeight / 45,
               backgroundImage: AssetImage(ImageAssets.profile),
@@ -98,7 +98,7 @@ class _AllTransactionScreenState extends State<AllTransactionScreen> {
       ),
       endDrawer: AppDrawer(),
       body: Padding(
-        padding: EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
             const Align(
@@ -128,15 +128,14 @@ class _AllTransactionScreenState extends State<AllTransactionScreen> {
                           visible: _showLeftArrow,
                           child: IconButton(
                             icon: const SizedBox(
-                              width: 24, // Small width
-                              height: 24, // Small height
+                              width: 24,
+                              height: 24,
                               child: Icon(Icons.arrow_back_ios,
                                   color: AppColors.appBlueColor, size: 18),
                             ),
                             onPressed: _showLeftArrow ? _scrollLeft : null,
                           ),
                         ),
-                        // TabBar with Scrollable feature
                         Expanded(
                           child: SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
@@ -158,7 +157,6 @@ class _AllTransactionScreenState extends State<AllTransactionScreen> {
                             ),
                           ),
                         ),
-                        // Right Arrow
                         Visibility(
                           visible: _showRightArrow,
                           child: IconButton(

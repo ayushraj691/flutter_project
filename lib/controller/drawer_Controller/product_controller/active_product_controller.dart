@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:paycron/controller/variable_controller.dart';
-import 'package:paycron/model/drawer_model/ResAllFilterCustomerDataModel.dart';
 import 'package:paycron/model/drawer_model/product_model/ResAllFilterProductData.dart';
 import 'package:paycron/network/api_call/api_call.dart';
 import 'package:paycron/network/api_call/url.dart';
@@ -201,7 +200,7 @@ class ActiveProductController extends GetxController {
         allProductDataList.addAll(productList);
 
         if (allProductDataList.isEmpty) {
-          MyToast.toast("No customers found.");
+          MyToast.toast("No product found.");
           variableController.loading.value = false;
         }
       } else {

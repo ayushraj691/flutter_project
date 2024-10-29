@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
+import 'package:paycron/utils/string_constants.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'my_toast.dart';
 
@@ -42,6 +43,142 @@ class GeneralMethods {
           );
         });
   }
+
+
+  static void showPopup(BuildContext context,String text1,String text2,VoidCallback onDelete) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.0),
+          ),
+          child: Stack(
+            clipBehavior: Clip.none,
+            alignment: Alignment.topCenter,
+            children: [
+              // Main dialog content
+              Padding(
+                padding: const EdgeInsets.only(top: 40, left: 20, right: 20, bottom: 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Title
+                    Text(
+                      "You’re about to $text1 items",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontFamily: Constants.Sofiafontfamily,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 10),
+                     Text(
+                      text2,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        fontFamily: Constants.Sofiafontfamily,
+                        color: Colors.grey,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 20),
+                    // Action buttons
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            style: ElevatedButton.styleFrom(
+                              foregroundColor: Colors.black, backgroundColor: Colors.grey[300],
+                              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                            ),
+                            child: Text(
+                              "No, keep it",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontFamily: Constants.Sofiafontfamily,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 10.0,
+                        ),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () {
+                              onDelete();
+                            },
+                            style: ElevatedButton.styleFrom(
+                              foregroundColor: Colors.white,
+                              backgroundColor: Colors.red,
+                              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                            ),
+                            child: Text(
+                              "Yes, delete",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontFamily: Constants.Sofiafontfamily,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              Positioned(
+                top: -10,
+                right: -10,
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: CircleAvatar(
+                    radius: 15,
+                    backgroundColor: Colors.grey[300],
+                    child: Icon(Icons.close, color: Colors.black, size: 18),
+                  ),
+                ),
+              ),
+
+              Positioned(
+                top: -35,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(10), // Adjust this value as needed
+                    topRight: Radius.circular(10), // Adjust this value as needed
+                  ),
+                  child: Container(
+                    color: Colors.white,
+                    height: 60,
+                    width: 60,
+                    child: Icon(Icons.delete, color: Colors.grey, size: 30),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
 
 
   // static Future<void> initConnectivity() async {
@@ -219,4 +356,23 @@ class GeneralMethods {
     return '$maskedPart $lastFourDigits';
   }
 
+}
+
+
+
+class NotchClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    final path = Path();
+    path.moveTo(0, size.height * 0.5);
+    path.quadraticBezierTo(
+        size.width * 0.5, 0, size.width, size.height * 0.5);
+    path.lineTo(size.width, size.height);
+    path.lineTo(0, size.height);
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }

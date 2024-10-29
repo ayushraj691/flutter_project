@@ -4,14 +4,12 @@ import 'package:intl/intl.dart';
 import 'package:paycron/controller/drawer_Controller/customer_controller/active_controller.dart';
 import 'package:paycron/controller/drawer_Controller/customer_controller/add_customer_controller.dart';
 import 'package:paycron/controller/variable_controller.dart';
-import 'package:paycron/model/drawer_model/ResAllFilterCustomerDataModel.dart';
+import 'package:paycron/model/drawer_model/insertCustomerData/ResAllFilterCustomerDataModel.dart';
 import 'package:paycron/utils/color_constants.dart';
 import 'package:paycron/utils/common_variable.dart';
 import 'package:paycron/utils/general_methods.dart';
-import 'package:paycron/views/drawer_screen/customer/createCustomerForm.dart';
 import 'package:paycron/views/drawer_screen/customer/customer_details_view.dart';
 import 'package:paycron/views/widgets/NoDataScreen.dart';
-import 'package:paycron/views/widgets/common_button.dart';
 
 class ActiveTab extends StatefulWidget {
   const ActiveTab({super.key});
@@ -123,34 +121,37 @@ class _ActiveTabState extends State<ActiveTab> {
                       ),
                       Expanded(
                         flex: 1,
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: Container(
-                            width: screenWidth,
-                            height: 39,
-                            decoration: BoxDecoration(
-                              color: AppColors.appBlackColor,
-                              borderRadius: BorderRadius.circular(30),
-                              border: Border.all(
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 8.0),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Container(
+                              width: screenWidth,
+                              height: 39,
+                              decoration: BoxDecoration(
                                 color: AppColors.appBlackColor,
-                                width: 0, // Border thickness
+                                borderRadius: BorderRadius.circular(30),
+                                border: Border.all(
+                                  color: AppColors.appBlackColor,
+                                  width: 0, // Border thickness
+                                ),
                               ),
-                            ),
-                            child: ElevatedButton(
-                              onPressed: () {},
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.transparent,
-                                shadowColor: Colors.transparent,
-                                // padding: const EdgeInsets.symmetric(
-                                //     vertical: 10),
-                              ),
-                              child: const Text(
-                                'Download',
-                                style: TextStyle(
-                                  fontFamily: 'Sofia Sans',
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 16,
-                                  color: AppColors.appWhiteColor, // Text color
+                              child: ElevatedButton(
+                                onPressed: () {},
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.transparent,
+                                  shadowColor: Colors.transparent,
+                                  // padding: const EdgeInsets.symmetric(
+                                  //     vertical: 10),
+                                ),
+                                child: const Text(
+                                  'Download',
+                                  style: TextStyle(
+                                    fontFamily: 'Sofia Sans',
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 16,
+                                    color: AppColors.appWhiteColor, // Text color
+                                  ),
                                 ),
                               ),
                             ),
@@ -220,21 +221,21 @@ class _ActiveTabState extends State<ActiveTab> {
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(bottom: 5.0),
-            child: Center(
-              child: CommonButton(
-                buttonWidth: screenWidth * 0.9,
-                icon: Icons.add,
-                buttonName: "Add Customer",
-                onPressed: () {
-                  Get.to(const AddCustomerForm());
-                  addCustomerController.clearAllAccount();
-                  addCustomerController.clearAllCustomer();
-                },
-              ),
-            ),
-          ),
+          // Padding(
+          //   padding: const EdgeInsets.only(bottom: 5.0),
+          //   child: Center(
+          //     child: CommonButton(
+          //       buttonWidth: screenWidth * 0.9,
+          //       icon: Icons.add,
+          //       buttonName: "Add Customer",
+          //       onPressed: () {
+          //         Get.to(const AddCustomerForm());
+          //         addCustomerController.clearAllAccount();
+          //         addCustomerController.clearAllCustomer();
+          //       },
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );

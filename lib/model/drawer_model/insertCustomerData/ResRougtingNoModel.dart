@@ -48,7 +48,7 @@ class ResCheckRoutingNo {
     customerName = json['customer_name']??"";
     telephone = json['telephone']??"";
     dataViewCode = json['data_view_code']??"";
-    code = json['code']??0;
+    code = (json['code'] is String) ? int.tryParse(json['code']) : json['code'] as int?;
     routingNumber = json['routing_number']??"";
     zip = json['zip']??"";
   }

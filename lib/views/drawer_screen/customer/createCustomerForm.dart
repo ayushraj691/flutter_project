@@ -1,7 +1,10 @@
+import 'dart:async';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:paycron/controller/drawer_Controller/customer_controller/add_customer_controller.dart';
+import 'package:paycron/controller/variable_controller.dart';
 import 'package:paycron/model/drawer_model/insertCustomerData/ReqAddCustomer.dart';
 import 'package:paycron/utils/color_constants.dart';
 import 'package:paycron/utils/image_assets.dart';
@@ -19,49 +22,49 @@ class AddCustomerForm extends StatefulWidget {
 
 class _AddCustomerFormState extends State<AddCustomerForm> {
   var addCustomerController = Get.find<AddCustomerController>();
-  final _formKey = GlobalKey<FormState>();
+  var variableController = Get.find<VariableController>();
   int currentStep = 1;
   bool _isAccountDetail = false;
   bool isPersonalDetailsFilled = false;
   String selectedCountryCode = '+1';
-  bool _apiCalled = false;
-
-  String _lastValidatedRoutingNumber = "";
+  Timer? _debounce;
 
   @override
   void initState() {
     super.initState();
     addCustomerController = Get.find<AddCustomerController>();
-    addCustomerController.routingNumberController.addListener(_routingNumberListener);
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      addCustomerController.routingNumberController
+          .addListener(_routingNumberListener);
+    });
   }
 
-  void _routingNumberListener() {
+  void _routingNumberListener() async{
     final input = addCustomerController.routingNumberController.text;
 
-    // Reset _apiCalled if routing number is cleared
-    if (input.isEmpty) {
-      _apiCalled = false;
-      _lastValidatedRoutingNumber = ""; // Clear the last validated number
-    }
+      if (_debounce?.isActive ?? false) _debounce!.cancel();
+      _debounce = Timer(const Duration(milliseconds: 500), () {
+          _checkRoutingNumber(input);
+          // FocusScope.of(context).unfocus();
+      });
 
-    if (input.length == 9 && !_apiCalled && input != _lastValidatedRoutingNumber) {
-      _apiCalled = true;
-      _lastValidatedRoutingNumber = input;  // Store this validated routing number
-      _checkRoutingNumber(input);
-      FocusScope.of(context).unfocus();
+    if (input.length < 9) {
+      addCustomerController.isRoutingNumberValid = false.obs;
+      setState(() {});
     }
   }
 
   Future<void> _checkRoutingNumber(String routingNumber) async {
     await addCustomerController.validateRoutingNumber(routingNumber.trim());
-    setState(() {
-      // Any UI changes can be triggered here if necessary
-    });
+    setState(() {});
   }
 
   @override
   void dispose() {
-    addCustomerController.routingNumberController.removeListener(_routingNumberListener);
+    addCustomerController.routingNumberController
+        .removeListener(_routingNumberListener);
+    _debounce?.cancel();
     super.dispose();
   }
 
@@ -74,12 +77,12 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
         backgroundColor: AppColors.appWhiteColor,
         leading: IconButton(
           color: AppColors.appBlackColor,
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pop(context); // Action for back arrow
+            Navigator.pop(context);
           },
         ),
-        titleSpacing: 0, // Removes extra space between arrow and title
+        titleSpacing: 0,
         title: const Text(
           "Create Customer",
           style: TextStyle(
@@ -94,31 +97,8 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
         padding: EdgeInsets.all(screenWidth * 0.05), // 5% of the screen width
         // height: screenHeight * 0.8, // 80% of the screen height
         child: Form(
-          key: _formKey,
           child: Column(
             children: [
-              // Center(
-              //   child: Container(
-              //     width: 60,
-              //     padding: EdgeInsets.all(3.0),
-              //     decoration: BoxDecoration(
-              //       color: AppColors.appGreyColor,
-              //       borderRadius: BorderRadius.circular(30.0),
-              //       border: Border.all(color: AppColors.appGreyColor, width: 1.5),
-              //     ),
-              //   ),
-              // ),
-              // SizedBox(height: screenHeight * 0.02), // Responsive space
-              // const Text(
-              //   "Create Customer",
-              //   style: TextStyle(
-              //     fontFamily: 'Sofia Sans',
-              //     fontSize: 16.0,
-              //     fontWeight: FontWeight.w600,
-              //     color: AppColors.appBlackColor,
-              //   ),
-              // ),
-              // SizedBox(height: screenHeight * 0.02),
               Row(
                 children: [
                   Expanded(
@@ -148,10 +128,10 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                               SizedBox(width: screenWidth * 0.02),
                               isPersonalDetailsFilled == true
                                   ? Image.asset(ImageAssets.success)
-                                  : SizedBox.shrink(),
+                                  : const SizedBox.shrink(),
                             ],
                           ),
-                          SizedBox(height: 5),
+                          const SizedBox(height: 5),
                           Divider(
                             thickness: 2,
                             color: currentStep == 1 ||
@@ -167,26 +147,7 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                   Expanded(
                     child: GestureDetector(
                       onTap: () {
-                        if (addCustomerController.nameController.value.text
-                            .trim()
-                            .isEmpty) {
-                          MyToast.toast("Please Enter Name");
-                        } else if (addCustomerController
-                            .mobileController.value.text
-                            .trim()
-                            .isEmpty) {
-                          MyToast.toast("Please Enter Mobile Number");
-                        } else if (addCustomerController
-                            .emailController.value.text
-                            .trim()
-                            .isEmpty) {
-                          MyToast.toast("Please Enter Email ID");
-                        } else if (addCustomerController
-                            .descriptionController.value.text
-                            .trim()
-                            .isEmpty) {
-                          MyToast.toast("Please Enter Description");
-                        } else {
+                        if (addCustomerController.personValidation()) {
                           setState(() {
                             currentStep = 2;
                             isPersonalDetailsFilled = true;
@@ -210,7 +171,7 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                               fontSize: 16,
                             ),
                           ),
-                          SizedBox(height: 5),
+                          const SizedBox(height: 5),
                           Divider(
                             thickness: 2,
                             color: currentStep == 2
@@ -228,115 +189,366 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                 child: SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    // Align fields to the left in the column
                     children: [
                       if (currentStep == 1) ...[
-                        buildField(
-                            context,
-                            'Name',
-                            'Enter Name',
-                            addCustomerController.nameController,
-                            TextInputType.text),
-                        // buildMultilineField(
-                        //     context,
-                        //     'Mobile Number',
-                        //     'Enter Mobile Number',
-                        //     10,
-                        //     addCustomerController.mobileController,
-                        //     TextInputType.number),
-                        RichText(
-                          text: const TextSpan(
-                            text: 'Mobile Number ',
-                            style: TextStyle(
-                              fontFamily: 'Sofia Sans',
-                              fontSize: 12.0,
-                              fontWeight: FontWeight.w400,
-                              color: Colors.black,
-                            ),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 10.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              TextSpan(
-                                text: '*',
-                                style: TextStyle(
-                                  color: Colors.red,
-                                  fontSize: 12.0,
-                                  fontWeight: FontWeight.w400,
+                              RichText(
+                                text: const TextSpan(
+                                  text: 'Name ',
+                                  style: TextStyle(
+                                    fontFamily: 'Sofia Sans',
+                                    fontSize: 12.0,
+                                    fontWeight: FontWeight.w400,
+                                    color: Colors.black,
+                                  ),
+                                  children: [
+                                    TextSpan(
+                                      text: '*',
+                                      style: TextStyle(
+                                        color: Colors.red,
+                                        fontSize: 12.0,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                  ],
                                 ),
+                              ),
+                              const SizedBox(height: 4.0),
+                              CommonTextField(
+                                controller:
+                                    addCustomerController.nameController,
+                                labelText: "Name",
+                                keyboardType: TextInputType.text,
+                                focusNode: addCustomerController.nameFocusNode,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp(r'^[a-zA-Z\s]*$')),
+                                ],
+                                onChanged: (value) {
+                                  String pattern = r'^[a-zA-Z\s]*$';
+                                  RegExp regExp = RegExp(pattern);
+                                  setState(() {
+                                    if (value.isEmpty) {
+                                      addCustomerController.nameValid = false;
+                                    } else if (regExp.hasMatch(value)) {
+                                      addCustomerController.nameValid = true;
+                                    } else {
+                                      addCustomerController.nameValid = false;
+                                    }
+                                  });
+                                },
+                                decoration: InputDecoration(
+                                  labelStyle: const TextStyle(
+                                      color: AppColors.appBlueColor),
+                                  contentPadding: const EdgeInsets.all(18),
+                                  focusedBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: addCustomerController.nameValid
+                                          ? AppColors.appNeutralColor5
+                                          : AppColors.appRedColor,
+                                      // Toggle color based on validity
+                                      width: 2, // Thickness for the underline
+                                    ),
+                                  ),
+                                  enabledBorder: const UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: AppColors.appNeutralColor5,
+                                      // Default color for enabled state
+                                      width: 1,
+                                    ),
+                                  ),
+                                  errorBorder: const UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: AppColors.appRedColor,
+                                      // Error border for invalid input
+                                      width: 2,
+                                    ),
+                                  ),
+                                  errorText: addCustomerController.nameValid
+                                      ? null
+                                      : 'Name is required',
+                                  // Error message when invalid
+                                  hintText: "Enter Name",
+                                  filled: true,
+                                  fillColor: AppColors.appNeutralColor5,
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Name is required';
+                                  }
+                                  return null;
+                                },
                               ),
                             ],
                           ),
                         ),
-                        const SizedBox(height: 4.0),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                color: AppColors.appNeutralColor5,
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: AppColors.appNeutralColor5, width: 0),
-                              ),
-                              padding: const EdgeInsets.symmetric(horizontal: 8),
-                              child: CountryCodePicker(
-                                onChanged: (countryCode) {
-                                  setState(() {
-                                    selectedCountryCode = countryCode.dialCode!;
-                                  });
-                                },
-                                initialSelection: 'US',
-                                showCountryOnly: false,
-                                showOnlyCountryWhenClosed: false,
-                                textStyle: const TextStyle(
+                            RichText(
+                              text: const TextSpan(
+                                text: 'Mobile Number ',
+                                style: TextStyle(
                                   fontFamily: 'Sofia Sans',
-                                  fontSize: 16,
-                                  color: AppColors.appTextColor,
+                                  fontSize: 12.0,
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.black,
                                 ),
-                                padding: const EdgeInsets.all(0),
+                                children: [
+                                  TextSpan(
+                                    text: '*',
+                                    style: TextStyle(
+                                      color: Colors.red,
+                                      fontSize: 12.0,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: TextFormField(
-                                controller: addCustomerController.mobileController,
-                                maxLength: 10, // Limit to 10 digits
-                                keyboardType: TextInputType.number,
-                                style: const TextStyle(
-                                  fontFamily: 'Sofia Sans',
-                                  fontSize: 16,
-                                  color: AppColors.appTextColor,
+                            const SizedBox(height: 4.0),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              // Align everything to the start
+                              children: [
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey.shade200,
+                                        borderRadius: BorderRadius.circular(8),
+                                        border: Border.all(
+                                            color: Colors.grey.shade200,
+                                            width: 0),
+                                      ),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8),
+                                      child: CountryCodePicker(
+                                        onChanged: (countryCode) {
+                                          setState(() {
+                                            selectedCountryCode =
+                                                countryCode.dialCode!;
+                                          });
+                                        },
+                                        initialSelection: 'US',
+                                        showCountryOnly: false,
+                                        showOnlyCountryWhenClosed: false,
+                                        textStyle: const TextStyle(
+                                          fontFamily: 'Sofia Sans',
+                                          fontSize: 16,
+                                          color: Colors.black,
+                                        ),
+                                        padding: const EdgeInsets.all(0),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    // Space between country code and phone number input
+
+                                    // Expanded widget for the phone number input field
+                                    Expanded(
+                                      child: TextFormField(
+                                        controller: addCustomerController
+                                            .mobileController,
+                                        keyboardType: TextInputType.number,
+                                        maxLength: 10,
+                                        focusNode: addCustomerController
+                                            .mobileFocusNode,
+                                        inputFormatters: [
+                                          FilteringTextInputFormatter.digitsOnly
+                                        ],
+                                        validator: (value) {
+                                          if (value == null ||
+                                              value.trim().isEmpty) {
+                                            return 'Mobile number is required';
+                                          } else if (value.trim().length < 10) {
+                                            return 'Mobile number must be 10 digits';
+                                          }
+                                          return null;
+                                        },
+                                        style: const TextStyle(
+                                          fontFamily: 'Sofia Sans',
+                                          fontSize: 16,
+                                          color: Colors.black,
+                                        ),
+                                        decoration: InputDecoration(
+                                          counterText: '',
+                                          hintText: 'Enter Mobile Number',
+                                          hintStyle: const TextStyle(
+                                              color: Colors.grey),
+                                          filled: true,
+                                          fillColor: AppColors.appNeutralColor5,
+                                          contentPadding:
+                                              const EdgeInsets.all(18),
+                                          focusedBorder: UnderlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color: addCustomerController
+                                                      .mobileValid
+                                                  ? AppColors.appNeutralColor5
+                                                  : AppColors.appRedColor,
+                                              // Change color based on validation
+                                              width: 2,
+                                            ),
+                                          ),
+                                          enabledBorder:
+                                              const UnderlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color: AppColors.appNeutralColor5,
+                                              // Default color for enabled but not focused
+                                              width: 1,
+                                            ),
+                                          ),
+                                          errorBorder:
+                                              const UnderlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color: AppColors.appRedColor,
+                                              width: 2,
+                                            ),
+                                          ),
+                                          errorText: addCustomerController
+                                                  .mobileValid
+                                              ? null
+                                              : (addCustomerController
+                                                      .mobileController
+                                                      .text
+                                                      .isEmpty
+                                                  ? 'Mobile number is required'
+                                                  : 'Mobile number must be 10 digits'),
+                                        ),
+                                        onChanged: (value) {
+                                          setState(() {
+                                            addCustomerController
+                                                .mobileValid = value
+                                                    .length ==
+                                                10; // Valid if exactly 10 digits
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                decoration: InputDecoration(
-                                  counterText: '',
-                                  hintText: 'Enter Mobile Number',
-                                  // labelText: 'Mobile Number',
-                                  labelStyle: const TextStyle(color: AppColors.appGreyColor),
-                                  filled: true,
-                                  fillColor: AppColors.appNeutralColor5,
-                                  contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 12),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    borderSide: const BorderSide(color: AppColors.appNeutralColor5, width: 0),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    borderSide: const BorderSide(color: AppColors.appNeutralColor5, width: 0),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    borderSide: const BorderSide(color: AppColors.appNeutralColor5, width: 0),
-                                  ),
+                                const SizedBox(height: 4),
+                                Builder(
+                                  builder: (context) {
+                                    // Access the form field's error message
+                                    final formField =
+                                        context.findAncestorWidgetOfExactType<
+                                            TextFormField>();
+                                    return Text(
+                                      formField?.validator?.call(
+                                              addCustomerController
+                                                  .mobileController.text) ??
+                                          '',
+                                      style: const TextStyle(
+                                          color: Colors.red,
+                                          fontSize: 12), // Error message style
+                                    );
+                                  },
                                 ),
-                              ),
+                              ],
                             ),
                           ],
                         ),
-                        buildField(
-                            context,
-                            'Email Id',
-                            'Enter Email Id',
-                            addCustomerController.emailController,
-                            TextInputType.emailAddress),
-                        // buildField(context, 'Description', 'Enter Description',
-                        //     addCustomerController.descriptionController),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 10.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              RichText(
+                                text: const TextSpan(
+                                  text: 'Email Id ',
+                                  style: TextStyle(
+                                    fontFamily: 'Sofia Sans',
+                                    fontSize: 12.0,
+                                    fontWeight: FontWeight.w400,
+                                    color: Colors.black,
+                                  ),
+                                  children: [
+                                    TextSpan(
+                                      text: '*',
+                                      style: TextStyle(
+                                        color: Colors.red,
+                                        fontSize: 12.0,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 4.0),
+                              CommonTextField(
+                                controller:
+                                    addCustomerController.emailController,
+                                labelText: "Email Id",
+                                keyboardType: TextInputType.emailAddress,
+                                focusNode: addCustomerController.emailFocusNode,
+                                onChanged: (value) {
+                                  String pattern =
+                                      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$';
+                                  RegExp regExp = RegExp(pattern);
+                                  setState(() {
+                                    if (value.isEmpty) {
+                                      addCustomerController.emailValid =
+                                          false; // Empty field
+                                    } else if (regExp.hasMatch(value)) {
+                                      addCustomerController.emailValid = true;
+                                    } else {
+                                      addCustomerController.emailValid =
+                                          false; // Invalid input
+                                    }
+                                  });
+                                },
+                                decoration: InputDecoration(
+                                  labelStyle: const TextStyle(
+                                      color: AppColors.appBlueColor),
+                                  contentPadding: const EdgeInsets.all(18),
+                                  focusedBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: addCustomerController.emailValid
+                                          ? AppColors.appNeutralColor5
+                                          : AppColors.appRedColor,
+                                      // Toggle color based on validity
+                                      width: 2, // Thickness for the underline
+                                    ),
+                                  ),
+                                  enabledBorder: const UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: AppColors.appNeutralColor5,
+                                      // Default color for enabled state
+                                      width: 1,
+                                    ),
+                                  ),
+                                  errorBorder: const UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: AppColors.appRedColor,
+                                      // Error border for invalid input
+                                      width: 2,
+                                    ),
+                                  ),
+                                  errorText: addCustomerController.emailValid
+                                      ? null
+                                      : (addCustomerController
+                                              .emailController.text.isEmpty
+                                          ? 'Email is required'
+                                          : 'Invalid Email'),
+                                  hintText: "Enter email",
+                                  filled: true,
+                                  fillColor: AppColors.appNeutralColor5,
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Email is required';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
                         RichText(
                           text: const TextSpan(
                             text: 'Description',
@@ -346,16 +558,6 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                               fontWeight: FontWeight.w400,
                               color: Colors.black,
                             ),
-                            children: [
-                              TextSpan(
-                                text: '*',
-                                style: TextStyle(
-                                  color: Colors.red,
-                                  fontSize: 12.0,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                            ],
                           ),
                         ),
                         const SizedBox(height: 4.0),
@@ -403,7 +605,7 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                         _isAccountDetail
                             ? Obx(() => ListView.builder(
                                   shrinkWrap: true,
-                                  physics: NeverScrollableScrollPhysics(),
+                                  physics: const NeverScrollableScrollPhysics(),
                                   // Prevent scrolling inside the ListView
                                   itemCount: addCustomerController
                                       .accountDetailsList.length,
@@ -414,15 +616,15 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                                         borderRadius:
                                             BorderRadius.circular(20.0),
                                       ),
-                                      margin:
-                                          EdgeInsets.symmetric(vertical: 8.0),
+                                      margin: const EdgeInsets.symmetric(
+                                          vertical: 8.0),
                                       child: Padding(
                                         padding: const EdgeInsets.all(8.0),
                                         child: buildAccountAddView(
                                             addCustomerController
                                                 .accountDetailsList,
                                             context,
-                                            "Account${index + 1}",
+                                            "Account ${index + 1}",
                                             index),
                                       ),
                                     );
@@ -435,44 +637,21 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                 ),
               ),
               SizedBox(height: screenHeight * 0.02),
-              // Responsive space
               Center(
                 child: currentStep == 1
                     ? SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
                           onPressed: () {
-                            if (addCustomerController.nameController.value.text
-                                .trim()
-                                .isEmpty) {
-                              MyToast.toast("Please Enter Name");
-                            } else if (addCustomerController
-                                .mobileController.value.text
-                                .trim()
-                                .isEmpty) {
-                              MyToast.toast("Please Enter Mobile Number");
-                            } else if (addCustomerController
-                                .emailController.value.text
-                                .trim()
-                                .isEmpty) {
-                              MyToast.toast("Please Enter Email ID");
-                            } else if (addCustomerController
-                                .descriptionController.value.text
-                                .trim()
-                                .isEmpty) {
-                              MyToast.toast("Please Enter Description");
-                            } else {
-                              setState(() {
+                            setState(() {
+                              if (addCustomerController.personValidation()) {
                                 currentStep = 2;
-                                addCustomerController.accountDetailsList
-                                    .clear();
                                 isPersonalDetailsFilled = true;
                                 addCustomerController.accountDetailsList.isEmpty
                                     ? _isAccountDetail = false
                                     : _isAccountDetail = true;
-                                addCustomerController.isSwitched=true;
-                              });
-                            }
+                              }
+                            });
                           },
                           style: ElevatedButton.styleFrom(
                               shape: RoundedRectangleBorder(
@@ -490,37 +669,85 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                       )
                     : Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        // Adjust spacing between buttons
                         children: [
                           Expanded(
                             child: ElevatedButton(
-                              onPressed: () => {
-                                addCustomerController.clearAllAccount(),
-                                _isAccountDetail
-                                    ? addAccountPopup(context)
-                                    : '',
+                              onPressed: () {
+                                if (_isAccountDetail) {
+                                  addAccountPopup(context);
+                                  addCustomerController.clearAllAccount();
+                                } else {
+                                  setState(() {
+                                    if (addCustomerController.validation()) {
+                                      _isAccountDetail = true;
+                                      addCustomerController.addAccountDetail();
+                                      addCustomerController.clearAllAccount();
+                                    }
+                                  });
+                                }
                               },
                               style: ElevatedButton.styleFrom(
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(30)),
-                                  backgroundColor: AppColors.appBlueColor),
-                              child: const Text(
-                                "Add More",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.white,
+                                backgroundColor: _isAccountDetail
+                                    ? Colors.white
+                                    : AppColors.appBlueColor,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                  side: const BorderSide(
+                                      color: AppColors
+                                          .appBlueColor),
                                 ),
+                                elevation: 0, // Removes shadow
                               ),
+                              child: _isAccountDetail
+                                  ? const Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.add, // Plus icon for "Add More"
+                                          color: AppColors.appBlueColor,
+                                        ),
+                                        SizedBox(
+                                            width:
+                                                8), // Space between icon and text
+                                        Text(
+                                          "Add More",
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            color: AppColors
+                                                .appBlueColor, // Blue text color for "Add More"
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                  : const Text(
+                                      "Save",
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors
+                                            .white, // White text color for "Save"
+                                      ),
+                                    ),
                             ),
                           ),
+
                           const SizedBox(
                               width: 20), // Add space between buttons
                           Expanded(
                             child: ElevatedButton(
                               onPressed: () {
-                                addCustomerController.accountDetailsList.clear();
-                                addCustomerController.addAccountDetail();
-                                addCustomerController.insertCustomerData();
+                                setState(() {});
+                                if (!_isAccountDetail) {
+                                  if (addCustomerController.validation()) {
+                                    addCustomerController.accountDetailsList.clear();
+                                    addCustomerController.addAccountDetail();
+                                    addCustomerController.insertCustomerData();
+                                  }
+                                } else {
+                                  // if (addCustomerController.validation()) {
+                                    addCustomerController.insertCustomerData();
+                                  // }
+                                }
                               },
                               style: ElevatedButton.styleFrom(
                                   shape: RoundedRectangleBorder(
@@ -567,9 +794,11 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
             ElevatedButton(
               onPressed: () {
                 setState(() {
-                  _isAccountDetail = true;
-                  addCustomerController.addAccountDetail();
-                  addCustomerController.clearAllAccount();
+                  if (addCustomerController.validation()) {
+                    _isAccountDetail = true;
+                    addCustomerController.addAccountDetail();
+                    addCustomerController.clearAllAccount();
+                  }
                 });
               },
               style: ElevatedButton.styleFrom(
@@ -594,19 +823,195 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
         const SizedBox(
           height: 10,
         ),
-        buildField(
-            context,
-            'Account Holder Name',
-            'Enter Account Holder Name',
-            addCustomerController.accountHolderNameController,
-            TextInputType.text),
-        buildMultilineField(
-            context,
-            'Routing Number',
-            'Enter Routing Number',
-            9,
-            addCustomerController.routingNumberController,
-            TextInputType.number),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 10.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              RichText(
+                text: const TextSpan(
+                  text: 'Account Holder Name ',
+                  style: TextStyle(
+                    fontFamily: 'Sofia Sans',
+                    fontSize: 12.0,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.black,
+                  ),
+                  children: [
+                    TextSpan(
+                      text: '*',
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontSize: 12.0,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 4.0),
+              CommonTextField(
+                controller: addCustomerController.accountHolderNameController,
+                labelText: "Account Holder Name",
+                focusNode: addCustomerController.accountNameFocusNode,
+                keyboardType: TextInputType.text,
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z\s]*$')),
+                ],
+                onChanged: (value) {
+                  String pattern = r'^[a-zA-Z\s]*$';
+                  RegExp regExp = RegExp(pattern);
+                  setState(() {
+                    if (value.isEmpty) {
+                      addCustomerController.AccountNameValid = false;
+                    } else if (regExp.hasMatch(value)) {
+                      addCustomerController.AccountNameValid = true;
+                    } else {
+                      addCustomerController.AccountNameValid = false;
+                    }
+                  });
+                },
+                decoration: InputDecoration(
+                  labelStyle: const TextStyle(color: AppColors.appBlueColor),
+                  contentPadding: const EdgeInsets.all(18),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      color: addCustomerController.AccountNameValid
+                          ? AppColors.appNeutralColor5
+                          : AppColors.appRedColor,
+                      width: 2,
+                    ),
+                  ),
+                  enabledBorder: const UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      color: AppColors.appNeutralColor5,
+                      width: 1,
+                    ),
+                  ),
+                  errorBorder: const UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      color: AppColors.appRedColor,
+                      // Error border for invalid input
+                      width: 2,
+                    ),
+                  ),
+                  errorText: addCustomerController.AccountNameValid
+                      ? null
+                      : 'Account Holder Name is required',
+                  hintText: "Enter Account Holder Name",
+                  filled: true,
+                  fillColor: AppColors.appNeutralColor5,
+                ),
+              ),
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 10.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              RichText(
+                text: const TextSpan(
+                  text: 'Routing Number ',
+                  style: TextStyle(
+                    fontFamily: 'Sofia Sans',
+                    fontSize: 12.0,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.black,
+                  ),
+                  children: [
+                    TextSpan(
+                      text: '*',
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontSize: 12.0,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 4.0),
+              StatefulBuilder(
+                builder: (BuildContext context, StateSetter setState) {
+                  return CommonTextField(
+                    controller: addCustomerController.routingNumberController,
+                    labelText: "Routing Number",
+                    maxLength: 9,
+                    focusNode: addCustomerController.routingFocusNode,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    onSubmitted: (value) {
+                      addCustomerController.routingNumberController
+                          .addListener(_routingNumberListener);
+                    },
+                    onChanged: (value) {
+                      String pattern = r'^\d{9}$';
+                      RegExp regExp = RegExp(pattern);
+                      setState(() {
+                        if (value.isEmpty) {
+                          addCustomerController.routingValid = false;
+                          addCustomerController.routingErrorMessage =
+                              'Routing Number cannot be empty';
+                        } else if (!regExp.hasMatch(value)) {
+                          addCustomerController.routingValid = false;
+                          addCustomerController.routingErrorMessage =
+                              'Routing Number must be 9 digits';
+                        } else {
+                          addCustomerController.routingNumberController
+                              .addListener(_routingNumberListener);
+                        }
+                      });
+                    },
+                    decoration: InputDecoration(
+                      counterText: '',
+                      labelStyle:
+                          const TextStyle(color: AppColors.appBlueColor),
+                      contentPadding: const EdgeInsets.all(18),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                          color: addCustomerController.routingValid
+                              ? AppColors.appNeutralColor5
+                              : AppColors.appRedColor,
+                          width: 2,
+                        ),
+                      ),
+                      enabledBorder: const UnderlineInputBorder(
+                        borderSide: BorderSide(
+                          color: AppColors.appNeutralColor5,
+                          width: 1,
+                        ),
+                      ),
+                      errorBorder: const UnderlineInputBorder(
+                        borderSide: BorderSide(
+                          color: AppColors.appRedColor,
+                          width: 2,
+                        ),
+                      ),
+                      errorText: addCustomerController.routingValid
+                          ? null
+                          : addCustomerController.routingErrorMessage,
+                      hintText: "Enter Routing Number",
+                      filled: true,
+                      fillColor: AppColors.appNeutralColor5,
+                    ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Routing Number is required';
+                      }
+                      if (value.trim().length != 9) {
+                        return 'Routing Number must be 9 digits';
+                      }
+                      return null;
+                    },
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 10.0),
         Visibility(
           visible: addCustomerController.isRoutingNumberValid.value,
           child: Center(
@@ -629,19 +1034,32 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Bank Name Row
-                  Obx(() => _buildDetailRow("Bank Name", addCustomerController.bankName.value)),
+                  Obx(() => _buildDetailRow(
+                      "Bank Name", addCustomerController.bankName.value)),
                   const SizedBox(height: 4),
                   // Holder's Name Row
-                  Obx(() => _buildDetailRow("Address", addCustomerController.bankAddress.value),),
+                  Obx(
+                    () => _buildDetailRow(
+                        "Address", addCustomerController.bankAddress.value),
+                  ),
                   const SizedBox(height: 4),
                   // Postal Code Row
-                  Obx(() => _buildDetailRow("Postal Code", addCustomerController.postalCode.value),),
+                  Obx(
+                    () => _buildDetailRow(
+                        "Postal Code", addCustomerController.postalCode.value),
+                  ),
                   const SizedBox(height: 4),
                   // State Row
-                  Obx(() =>  _buildDetailRow("State", addCustomerController.state.value),),
+                  Obx(
+                    () => _buildDetailRow(
+                        "State", addCustomerController.state.value),
+                  ),
                   const SizedBox(height: 4),
                   // City Row
-                  Obx(() => _buildDetailRow("City", addCustomerController.city.value),),
+                  Obx(
+                    () => _buildDetailRow(
+                        "City", addCustomerController.city.value),
+                  ),
                 ],
               ),
             ),
@@ -649,19 +1067,210 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
         ),
         Visibility(
             visible: addCustomerController.isRoutingNumberValid.value,
-            child: SizedBox(height: 16,)),
-        buildField(
-            context,
-            'Account Number',
-            'Enter Account Number',
-            addCustomerController.accountNumberController,
-            TextInputType.number),
-        buildField(
-            context,
-            'Confirm Account Number',
-            'Enter Confirm Account Number',
-            addCustomerController.confirmAccountNumberController,
-            TextInputType.number),
+            child: const SizedBox(
+              height: 16,
+            )),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 10.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              RichText(
+                text: const TextSpan(
+                  text: 'Account Number ',
+                  style: TextStyle(
+                    fontFamily: 'Sofia Sans',
+                    fontSize: 12.0,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.black,
+                  ),
+                  children: [
+                    TextSpan(
+                      text: '*',
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontSize: 12.0,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 4.0),
+              StatefulBuilder(
+                builder: (BuildContext context, StateSetter setState) {
+                  return CommonTextField(
+                    controller: addCustomerController.accountNumberController,
+                    labelText: "Account Number",
+                    focusNode: addCustomerController.accountNumberFocusNode,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    onChanged: (value) {
+                      setState(() {
+                        if (value.isEmpty) {
+                          addCustomerController.AccountNumberValid = false;
+                          addCustomerController.accountNumberErrorMessage =
+                              'Account number is required';
+                        } else if (value.length > 15) {
+                          addCustomerController.AccountNumberValid = false;
+                          addCustomerController.accountNumberErrorMessage =
+                              'Account number must be 15 digits or less';
+                        } else {
+                          addCustomerController.AccountNumberValid = true;
+                          addCustomerController.accountNumberErrorMessage =
+                              null;
+                        }
+                      });
+                    },
+                    decoration: InputDecoration(
+                      counterText: '',
+                      labelStyle:
+                          const TextStyle(color: AppColors.appBlueColor),
+                      contentPadding: const EdgeInsets.all(18),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                          color: addCustomerController.AccountNumberValid
+                              ? AppColors.appNeutralColor5
+                              : AppColors.appRedColor,
+                          width: 2,
+                        ),
+                      ),
+                      enabledBorder: const UnderlineInputBorder(
+                        borderSide: BorderSide(
+                          color: AppColors.appNeutralColor5,
+                          width: 1,
+                        ),
+                      ),
+                      errorBorder: const UnderlineInputBorder(
+                        borderSide: BorderSide(
+                          color: AppColors.appRedColor,
+                          width: 2,
+                        ),
+                      ),
+                      errorText: addCustomerController.AccountNumberValid
+                          ? null
+                          : addCustomerController.accountNumberErrorMessage,
+                      hintText: "Enter Account Number",
+                      filled: true,
+                      fillColor: AppColors.appNeutralColor5,
+                    ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Account number is required';
+                      }
+                      if (value.trim().length > 15) {
+                        return 'Account number must be 15 digits or less';
+                      }
+                      return null; // Return null if the input is valid
+                    },
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 10.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              RichText(
+                text: const TextSpan(
+                  text: 'Confirm Account Number ',
+                  style: TextStyle(
+                    fontFamily: 'Sofia Sans',
+                    fontSize: 12.0,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.black,
+                  ),
+                  children: [
+                    TextSpan(
+                      text: '*',
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontSize: 12.0,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 4.0),
+              CommonTextField(
+                controller:
+                    addCustomerController.confirmAccountNumberController,
+                labelText: "Confirm Account Number",
+                keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                focusNode: addCustomerController.confirmAccountNumberFocusNode,
+                onChanged: (value) {
+                  setState(() {
+                    if (value.isEmpty) {
+                      addCustomerController.ConfirmAccountNumberValid = false;
+                      addCustomerController.confirmAccountErrorMessage =
+                          'Confirm Account number is required';
+                    } else if (value !=
+                        addCustomerController.accountNumberController.text
+                            .trim()) {
+                      addCustomerController.ConfirmAccountNumberValid = false;
+                      addCustomerController.confirmAccountErrorMessage =
+                          'Account Number & Confirm Account Number should be the same';
+                    } else if (value.length > 15) {
+                      addCustomerController.ConfirmAccountNumberValid = false;
+                      addCustomerController.confirmAccountErrorMessage =
+                          'Confirm Account number must be 15 digits or less';
+                    } else {
+                      addCustomerController.ConfirmAccountNumberValid = true;
+                      addCustomerController.confirmAccountErrorMessage = null;
+                    }
+                  });
+                },
+                decoration: InputDecoration(
+                  counterText: '',
+                  labelStyle: const TextStyle(color: AppColors.appBlueColor),
+                  contentPadding: const EdgeInsets.all(18),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      color: addCustomerController.ConfirmAccountNumberValid
+                          ? AppColors.appNeutralColor5
+                          : AppColors.appRedColor,
+                      width: 2,
+                    ),
+                  ),
+                  enabledBorder: const UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      color: AppColors.appNeutralColor5,
+                      width: 1,
+                    ),
+                  ),
+                  errorBorder: const UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      color: AppColors.appRedColor,
+                      width: 2,
+                    ),
+                  ),
+                  errorText: addCustomerController.ConfirmAccountNumberValid
+                      ? null
+                      : addCustomerController.confirmAccountErrorMessage,
+                  hintText: "Re-enter Account Number",
+                  filled: true,
+                  fillColor: AppColors.appNeutralColor5,
+                ),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Confirm account number is required';
+                  }
+                  if (value.trim() !=
+                      addCustomerController.accountNumberController.text
+                          .trim()) {
+                    return 'Account Number & Confirm Account Number should be the same';
+                  }
+                  return null;
+                },
+              )
+            ],
+          ),
+        ),
         const SizedBox(
           height: 10,
         ),
@@ -681,24 +1290,366 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
         const SizedBox(
           height: 10,
         ),
-        buildField(context, 'Suit/Apt', 'Enter Suit/Apt',
-            addCustomerController.suitAptController, TextInputType.text),
-        buildField(context, 'Street', 'Enter Street',
-            addCustomerController.streetController, TextInputType.text),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 10.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              RichText(
+                text: const TextSpan(
+                  text: 'Suit/Apt ',
+                  style: TextStyle(
+                    fontFamily: 'Sofia Sans',
+                    fontSize: 12.0,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.black,
+                  ),
+                  children: [
+                    TextSpan(
+                      text: '*',
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontSize: 12.0,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 4.0),
+              CommonTextField(
+                controller: addCustomerController.suitAptController,
+                labelText: "Suit/Apt",
+                keyboardType: TextInputType.text,
+                focusNode: addCustomerController.suitAptFocusNode,
+                onChanged: (value) {
+                  setState(() {
+                    if (value.isEmpty) {
+                      addCustomerController.suitAptValid = false;
+                      addCustomerController.suitAptErrorMessage =
+                          'Suit/Apt is required';
+                    } else {
+                      addCustomerController.suitAptValid = true;
+                      addCustomerController.suitAptErrorMessage = null;
+                    }
+                  });
+                },
+                decoration: InputDecoration(
+                  counterText: '',
+                  labelStyle: const TextStyle(color: AppColors.appBlueColor),
+                  contentPadding: const EdgeInsets.all(18),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      color: addCustomerController.suitAptValid
+                          ? AppColors.appNeutralColor5
+                          : AppColors.appRedColor,
+                      width: 2,
+                    ),
+                  ),
+                  enabledBorder: const UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      color: AppColors.appNeutralColor5,
+                      width: 1,
+                    ),
+                  ),
+                  errorBorder: const UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      color: AppColors.appRedColor,
+                      width: 2,
+                    ),
+                  ),
+                  errorText: addCustomerController.suitAptValid
+                      ? null
+                      : addCustomerController.suitAptErrorMessage,
+                  hintText: "Enter Suit/Apt",
+                  filled: true,
+                  fillColor: AppColors.appNeutralColor5,
+                ),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'suit/Apt is required';
+                  }
+                  return null;
+                },
+              )
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 10.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              RichText(
+                text: const TextSpan(
+                  text: 'Street ',
+                  style: TextStyle(
+                    fontFamily: 'Sofia Sans',
+                    fontSize: 12.0,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.black,
+                  ),
+                  children: [
+                    TextSpan(
+                      text: '*',
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontSize: 12.0,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 4.0),
+              CommonTextField(
+                controller: addCustomerController.streetController,
+                labelText: "Street",
+                keyboardType: TextInputType.text,
+                focusNode: addCustomerController.streetFocusNode,
+                onChanged: (value) {
+                  setState(() {
+                    if (value.isEmpty) {
+                      addCustomerController.streetValid = false;
+                      addCustomerController.streetErrorMessage =
+                          'Street is required';
+                    } else {
+                      addCustomerController.streetValid = true;
+                      addCustomerController.streetErrorMessage = null;
+                    }
+                  });
+                },
+                decoration: InputDecoration(
+                  counterText: '',
+                  labelStyle: const TextStyle(color: AppColors.appBlueColor),
+                  contentPadding: const EdgeInsets.all(18),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      color: addCustomerController.streetValid
+                          ? AppColors.appNeutralColor5
+                          : AppColors.appRedColor,
+                      width: 2,
+                    ),
+                  ),
+                  enabledBorder: const UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      color: AppColors.appNeutralColor5,
+                      width: 1,
+                    ),
+                  ),
+                  errorBorder: const UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      color: AppColors.appRedColor,
+                      width: 2,
+                    ),
+                  ),
+                  errorText: addCustomerController.streetValid
+                      ? null
+                      : addCustomerController.streetErrorMessage,
+                  hintText: "Enter Street",
+                  filled: true,
+                  fillColor: AppColors.appNeutralColor5,
+                ),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Street is required';
+                  }
+                  return null;
+                },
+              )
+            ],
+          ),
+        ),
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
-                child: buildField(
-                    context,
-                    'Country',
-                    'Enter Country',
-                    addCustomerController.countryController,
-                    TextInputType.text)),
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 10.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    RichText(
+                      text: const TextSpan(
+                        text: 'Country ',
+                        style: TextStyle(
+                          fontFamily: 'Sofia Sans',
+                          fontSize: 12.0,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.black,
+                        ),
+                        children: [
+                          TextSpan(
+                            text: '*',
+                            style: TextStyle(
+                              color: Colors.red,
+                              fontSize: 12.0,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 4.0),
+                    CommonTextField(
+                      controller: addCustomerController.countryController,
+                      labelText: "Country",
+                      keyboardType: TextInputType.text,
+                      focusNode: addCustomerController.countryFocusNode,
+                      onChanged: (value) {
+                        String pattern = r'^[a-zA-Z\s]*$';
+                        RegExp regExp = RegExp(pattern);
+                        setState(() {
+                          if (value.isEmpty) {
+                            addCustomerController.countrytValid = false;
+                            addCustomerController.countryterrorMessage =
+                                'Country is required';
+                          } else if (regExp.hasMatch(value)) {
+                            addCustomerController.countrytValid = true;
+                            addCustomerController.countryterrorMessage = null;
+                          } else {
+                            addCustomerController.countrytValid = true;
+                            addCustomerController.countryterrorMessage = null;
+                          }
+                        });
+                      },
+                      decoration: InputDecoration(
+                        counterText: '',
+                        labelStyle:
+                            const TextStyle(color: AppColors.appBlueColor),
+                        contentPadding: const EdgeInsets.all(18),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: addCustomerController.countrytValid
+                                ? AppColors.appNeutralColor5
+                                : AppColors.appRedColor,
+                            width: 2,
+                          ),
+                        ),
+                        enabledBorder: const UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: AppColors.appNeutralColor5,
+                            width: 1,
+                          ),
+                        ),
+                        errorBorder: const UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: AppColors.appRedColor,
+                            width: 2,
+                          ),
+                        ),
+                        errorText: addCustomerController.countrytValid
+                            ? null
+                            : addCustomerController.countryterrorMessage,
+                        hintText: "Enter Country",
+                        filled: true,
+                        fillColor: AppColors.appNeutralColor5,
+                      ),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Country is required';
+                        }
+                        return null;
+                      },
+                    )
+                  ],
+                ),
+              ),
+            ),
             SizedBox(width: screenWidth * 0.02),
             Expanded(
-                child: buildField(context, 'State', 'Enter State',
-                    addCustomerController.stateController, TextInputType.text)),
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 10.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    RichText(
+                      text: const TextSpan(
+                        text: 'State ',
+                        style: TextStyle(
+                          fontFamily: 'Sofia Sans',
+                          fontSize: 12.0,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.black,
+                        ),
+                        children: [
+                          TextSpan(
+                            text: '*',
+                            style: TextStyle(
+                              color: Colors.red,
+                              fontSize: 12.0,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 4.0),
+                    CommonTextField(
+                      controller: addCustomerController.stateController,
+                      labelText: "State",
+                      keyboardType: TextInputType.text,
+                      focusNode: addCustomerController.stateFocusNode,
+                      onChanged: (value) {
+                        String pattern = r'^[a-zA-Z\s]*$';
+                        RegExp regExp = RegExp(pattern);
+                        setState(() {
+                          if (value.isEmpty) {
+                            addCustomerController.stateValid = false;
+                            addCustomerController.stateErrorMessage =
+                                'State is required';
+                          } else if (regExp.hasMatch(value)) {
+                            addCustomerController.stateValid = true;
+                            addCustomerController.stateErrorMessage = null;
+                          } else {
+                            addCustomerController.stateValid = true;
+                            addCustomerController.stateErrorMessage = null;
+                          }
+                        });
+                      },
+                      decoration: InputDecoration(
+                        counterText: '',
+                        labelStyle:
+                            const TextStyle(color: AppColors.appBlueColor),
+                        contentPadding: const EdgeInsets.all(18),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: addCustomerController.stateValid
+                                ? AppColors.appNeutralColor5
+                                : AppColors.appRedColor,
+                            width: 2,
+                          ),
+                        ),
+                        enabledBorder: const UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: AppColors.appNeutralColor5,
+                            width: 1,
+                          ),
+                        ),
+                        errorBorder: const UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: AppColors.appRedColor,
+                            width: 2,
+                          ),
+                        ),
+                        errorText: addCustomerController.stateValid
+                            ? null
+                            : addCustomerController.stateErrorMessage,
+                        hintText: "Enter State",
+                        filled: true,
+                        fillColor: AppColors.appNeutralColor5,
+                      ),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'State is required';
+                        }
+                        return null;
+                      },
+                    )
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
         const SizedBox(
@@ -707,13 +1658,189 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
         Row(
           children: [
             Expanded(
-              child: buildField(context, 'City', 'Enter City',
-                  addCustomerController.cityController, TextInputType.text),
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 10.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    RichText(
+                      text: const TextSpan(
+                        text: 'City ',
+                        style: TextStyle(
+                          fontFamily: 'Sofia Sans',
+                          fontSize: 12.0,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.black,
+                        ),
+                        children: [
+                          TextSpan(
+                            text: '*',
+                            style: TextStyle(
+                              color: Colors.red,
+                              fontSize: 12.0,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 4.0),
+                    CommonTextField(
+                      controller: addCustomerController.cityController,
+                      labelText: "City",
+                      focusNode: addCustomerController.cityFocusNode,
+                      keyboardType: TextInputType.text,
+                      onChanged: (value) {
+                        setState(() {
+                          if (value.isEmpty) {
+                            addCustomerController.cityValid = false;
+                            addCustomerController.cityErrorMessage =
+                                'City is required';
+                          } else {
+                            addCustomerController.cityValid = true;
+                            addCustomerController.cityErrorMessage = null;
+                          }
+                        });
+                      },
+                      decoration: InputDecoration(
+                        counterText: '',
+                        labelStyle:
+                            const TextStyle(color: AppColors.appBlueColor),
+                        contentPadding: const EdgeInsets.all(18),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: addCustomerController.cityValid
+                                ? AppColors.appNeutralColor5
+                                : AppColors.appRedColor,
+                            width: 2,
+                          ),
+                        ),
+                        enabledBorder: const UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: AppColors.appNeutralColor5,
+                            width: 1,
+                          ),
+                        ),
+                        errorBorder: const UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: AppColors.appRedColor,
+                            width: 2,
+                          ),
+                        ),
+                        errorText: addCustomerController.cityValid
+                            ? null
+                            : addCustomerController.cityErrorMessage,
+                        hintText: "Enter City",
+                        filled: true,
+                        fillColor: AppColors.appNeutralColor5,
+                      ),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'City is required';
+                        }
+                        return null;
+                      },
+                    )
+                  ],
+                ),
+              ),
             ),
             SizedBox(width: screenWidth * 0.02),
             Expanded(
-              child: buildField(context, 'Zip Code', 'Enter Zip Code',
-                  addCustomerController.zipController, TextInputType.text),
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 10.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    RichText(
+                      text: const TextSpan(
+                        text: 'Zip Code ',
+                        style: TextStyle(
+                          fontFamily: 'Sofia Sans',
+                          fontSize: 12.0,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.black,
+                        ),
+                        children: [
+                          TextSpan(
+                            text: '*',
+                            style: TextStyle(
+                              color: Colors.red,
+                              fontSize: 12.0,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 4.0),
+                    CommonTextField(
+                      controller: addCustomerController.zipController,
+                      labelText: "Zip Code",
+                      focusNode: addCustomerController.zipcodeFocusNode,
+                      keyboardType: TextInputType.number,
+                      maxLength: 6,
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      onChanged: (value) {
+                        String pattern = r'^\d{6}$';
+                        RegExp regExp = RegExp(pattern);
+                        setState(() {
+                          if (value.isEmpty) {
+                            addCustomerController.zipcodeValid = false;
+                            addCustomerController.zipcodeErrorMessage =
+                                'Zip Code is required';
+                          } else if (!regExp.hasMatch(value)) {
+                            addCustomerController.zipcodeValid = false;
+                            addCustomerController.zipcodeErrorMessage =
+                                'Zip Code must be 6 digits';
+                          } else {
+                            addCustomerController.zipcodeValid = true;
+                            addCustomerController.zipcodeErrorMessage = null;
+                          }
+                        });
+                      },
+                      decoration: InputDecoration(
+                        counterText: '',
+                        labelStyle:
+                            const TextStyle(color: AppColors.appBlueColor),
+                        contentPadding: const EdgeInsets.all(18),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: addCustomerController.zipcodeValid
+                                ? AppColors.appNeutralColor5
+                                : AppColors.appRedColor,
+                            width: 2,
+                          ),
+                        ),
+                        enabledBorder: const UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: AppColors.appNeutralColor5,
+                            width: 1,
+                          ),
+                        ),
+                        errorBorder: const UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: AppColors.appRedColor,
+                            width: 2,
+                          ),
+                        ),
+                        errorText: addCustomerController.zipcodeValid
+                            ? null
+                            : addCustomerController.zipcodeErrorMessage,
+                        hintText: "Enter Zip Code",
+                        filled: true,
+                        fillColor: AppColors.appNeutralColor5,
+                      ),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Zip Code is required';
+                        }
+                        return null;
+                      },
+                    )
+                  ],
+                ),
+              ),
             ),
           ],
         ),
@@ -721,7 +1848,7 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Switch(
-              value: addCustomerController.isSwitched=true,
+              value: addCustomerController.isSwitched = true,
               onChanged: (value) {
                 setState(() {
                   addCustomerController.isSwitched =
@@ -744,43 +1871,31 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
             ),
           ],
         ),
-        // CustomSwitchButton(
-        //   onChanged: (value) {
-        //     setState(() {
-        //       addCustomerController.isSwitched =
-        //           value;
-        //     });
-        //   },
-        // ),
       ],
     );
   }
 
   Widget buildAccountAddView(
       List<Items> accountItems, BuildContext context, String title, int index) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
     return Column(
       children: [
         ListTile(
           title: Text(
             title,
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               Material(
                 shape: RoundedRectangleBorder(
-                  borderRadius:
-                      BorderRadius.circular(20), // Make the popup circular
+                  borderRadius: BorderRadius.circular(20),
                 ),
                 color: Colors.transparent,
                 child: PopupMenuButton<String>(
-                  icon: Icon(Icons.more_vert),
+                  icon: const Icon(Icons.more_vert),
                   shape: RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.circular(20), // Circular dialog shape
+                    borderRadius: BorderRadius.circular(20),
                   ),
                   onSelected: (value) {
                     if (value == 'edit') {
@@ -788,13 +1903,18 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                         editAccountPopup(context, index);
                       });
                     } else if (value == 'remove') {
-                      setState(() {
-                        addCustomerController.removeAccountDetail(index);
-                        addCustomerController.clearAllAccount();
-                        addCustomerController.accountDetailsList.isEmpty
-                            ? buildAccountForm(context)
-                            : '';
-                      });
+                      if (index == 0) {
+                        MyToast.toast(
+                            "You need at least one account to proceed.");
+                      }else{
+                        setState(() {
+                          addCustomerController.removeAccountDetail(index);
+                          addCustomerController.clearAllAccount();
+                          addCustomerController.accountDetailsList.isEmpty
+                              ? buildAccountForm(context)
+                              : '';
+                        });
+                      }
                     }
                   },
                   itemBuilder: (BuildContext context) {
@@ -859,11 +1979,10 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                             onChanged: (value) {
                               setState(() {
                                 addCustomerController.isSwitched =
-                                    value; // Update the state on toggle
+                                    value;
                               });
                             },
                             activeColor: AppColors.appBlueColor,
-                            // Color when switch is ON
                             inactiveThumbColor: AppColors
                                 .appGreyColor, // Color of the switch when OFF
                           ),
@@ -901,7 +2020,7 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
       builder: (BuildContext context) {
         return Padding(
           padding: MediaQuery.of(context).viewInsets,
-          child: AddAccountPopup(''),
+          child: const AddAccountPopup(''),
         );
       },
     );
@@ -951,92 +2070,6 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                   fontSize: 14,
                   fontFamily: 'Sofia Sans',
                 )),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget buildField(BuildContext context, String label, String hintText,
-      TextEditingController controller, TextInputType keyboardType) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          RichText(
-            text: TextSpan(
-              text: '$label ',
-              style: const TextStyle(
-                fontFamily: 'Sofia Sans',
-                fontSize: 12.0,
-                fontWeight: FontWeight.w400,
-                color: Colors.black,
-              ),
-              children: const [
-                TextSpan(
-                  text: '*',
-                  style: TextStyle(
-                    color: Colors.red,
-                    fontSize: 12.0,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(height: 4.0),
-          CommonTextField(
-            hintText: hintText,
-            controller: controller,
-            labelText: label,
-            keyboardType: keyboardType,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget buildMultilineField(
-      BuildContext context,
-      String label,
-      String hintText,
-      int maxlength,
-      TextEditingController controller,
-      TextInputType keyboardType) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          RichText(
-            text: TextSpan(
-              text: '$label ',
-              style: const TextStyle(
-                fontFamily: 'Sofia Sans',
-                fontSize: 12.0,
-                fontWeight: FontWeight.w400,
-                color: Colors.black,
-              ),
-              children: const [
-                TextSpan(
-                  text: '*',
-                  style: TextStyle(
-                    color: Colors.red,
-                    fontSize: 12.0,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 4.0),
-          CommonTextField(
-            hintText: hintText,
-            controller: controller,
-            labelText: label,
-            maxLength: maxlength,
-            keyboardType: keyboardType,
           ),
         ],
       ),

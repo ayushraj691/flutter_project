@@ -10,7 +10,6 @@ import 'package:paycron/views/drawer_screen/AllTransactions/all_Transaction_main
 import 'package:paycron/views/drawer_screen/customer/company_customer_main_screen.dart';
 import 'package:paycron/views/drawer_screen/product/Company_product_screen.dart';
 import 'package:paycron/views/funds/add_funds_screen.dart';
-import 'package:paycron/views/funds/transaction_detail.dart';
 import 'package:paycron/views/widgets/NoDataScreen.dart';
 import '../../utils/color_constants.dart';
 
@@ -180,7 +179,7 @@ class _AppDrawerState extends State<AppDrawer> {
                           })
                         },
                         child: const Text(
-                          'Switch Company',
+                          'Switch \nCompany',
                           style: TextStyle(
                             color: AppColors.appBlueColor,
                             fontSize: 14,

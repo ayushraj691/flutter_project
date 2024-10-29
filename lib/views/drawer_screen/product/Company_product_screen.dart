@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:paycron/utils/color_constants.dart';
+import 'package:paycron/utils/common_variable.dart';
 import 'package:paycron/utils/image_assets.dart';
 import 'package:paycron/views/app_drawer/app_drawer.dart';
 import 'package:paycron/views/drawer_screen/product/Inactive_screen_product.dart';
 import 'package:paycron/views/drawer_screen/product/active_screen_product.dart';
+import 'package:paycron/views/drawer_screen/product/add_product_screen.dart';
 import 'package:paycron/views/drawer_screen/product/all_screen_product.dart';
+import 'package:paycron/views/widgets/common_button.dart';
 
 class CompanyDetailProductScreen extends StatefulWidget {
 
@@ -19,29 +23,30 @@ class _CompanyDetailProductScreenState extends State<CompanyDetailProductScreen>
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
-    return  Scaffold(
+
+    return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.appWhiteColor,
         leading: IconButton(
           color: AppColors.appBlackColor,
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pop(context); // Action for back arrow
+            Navigator.pop(context);
           },
         ),
-        titleSpacing: 0, // Removes extra space between arrow and title
-        title: const Text(
-          "Company Details",
-          style: TextStyle(
+        titleSpacing: 0,
+        title: Obx(() => Text(
+          CommonVariable.businessName.value,
+          style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
             color: AppColors.appTextColor,
             fontFamily: 'Sofia Sans',
           ),
-        ),
+        ),),
         actions: [
           Padding(
-            padding: EdgeInsets.all(4.0),
+            padding: const EdgeInsets.all(4.0),
             child: CircleAvatar(
               radius: screenHeight / 45,
               backgroundImage: AssetImage(ImageAssets.profile),
@@ -92,7 +97,7 @@ class _CompanyDetailProductScreenState extends State<CompanyDetailProductScreen>
                         Tab(text: 'Inactive'),
                       ],
                     ),
-                    Expanded( // Expanded widget added to the TabBarView
+                    Expanded(
                       child: TabBarView(
                         children: [
                           AllTabProduct(),
@@ -106,6 +111,22 @@ class _CompanyDetailProductScreenState extends State<CompanyDetailProductScreen>
               ),
             ),
           ],
+        ),
+      ),
+      // Move the "Add Product" button to the bottomNavigationBar
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.only(
+          left: 12,
+          right: 12,
+          bottom: 12, // Avoid overlapping with keyboard
+        ),
+        child: CommonButton(
+          buttonWidth: screenWidth * 0.9,
+          icon: Icons.add,
+          buttonName: "Add Product",
+          onPressed: () {
+            Get.to(const AllProcductScreen());
+          },
         ),
       ),
     );
