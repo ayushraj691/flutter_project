@@ -5,11 +5,12 @@ import 'package:paycron/utils/color_constants.dart';
 import 'package:paycron/utils/common_variable.dart';
 import 'package:paycron/utils/image_assets.dart';
 import 'package:paycron/views/app_drawer/app_drawer.dart';
+import 'package:paycron/views/dashboard/business_profile_screen.dart';
 import 'package:paycron/views/drawer_screen/customer/active_customer.dart';
 import 'package:paycron/views/drawer_screen/customer/all_tab_customer.dart';
 import 'package:paycron/views/drawer_screen/customer/createCustomerForm.dart';
 import 'package:paycron/views/drawer_screen/customer/inActive_customer.dart';
-import 'package:paycron/views/widgets/common_button.dart'; // Assuming you have a common button widget
+import 'package:paycron/views/widgets/common_button.dart';
 
 class DrawerCustomerDetailScreen extends StatefulWidget {
   const DrawerCustomerDetailScreen({super.key});
@@ -27,15 +28,15 @@ class _DrawerCustomerDetailScreenState
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
-
     return Scaffold(
+      backgroundColor: AppColors.appBackgroundColor,
       appBar: AppBar(
-        backgroundColor: AppColors.appWhiteColor,
+        backgroundColor: AppColors.appBackgroundColor,
         leading: IconButton(
           color: AppColors.appBlackColor,
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pop(context); // Action for back arrow
+            Navigator.pop(context);
           },
         ),
         titleSpacing: 0, // Removes extra space between arrow and title
@@ -53,9 +54,14 @@ class _DrawerCustomerDetailScreenState
         actions: [
           Padding(
             padding: const EdgeInsets.all(4.0),
-            child: CircleAvatar(
-              radius: screenHeight / 45,
-              backgroundImage: AssetImage(ImageAssets.profile),
+            child: InkWell(
+              onTap: () => {
+                Get.to(const BusinessProfileScreen())
+              },
+              child: CircleAvatar(
+                radius: screenHeight / 45,
+                backgroundImage: AssetImage(ImageAssets.profile),
+              ),
             ),
           ),
           Builder(
@@ -68,7 +74,7 @@ class _DrawerCustomerDetailScreenState
           ),
         ],
       ),
-      endDrawer: AppDrawer(),
+      endDrawer: const AppDrawer(),
       body: SingleChildScrollView(
         child: Column(
           children: [

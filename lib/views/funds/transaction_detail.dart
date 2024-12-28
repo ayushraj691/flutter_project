@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
+import 'package:paycron/controller/drawer_Controller/all_transaction_controller/itemTransactionDetailController.dart';
+import 'package:paycron/controller/variable_controller.dart';
+import 'package:paycron/model/drawer_model/transaction_model/ResSinglePayment.dart';
 import 'package:paycron/utils/color_constants.dart';
+import 'package:paycron/views/widgets/NoDataScreen.dart';
 
 class TransactionsDetails extends StatefulWidget {
-  const TransactionsDetails({super.key});
+  final String id;
+
+  const TransactionsDetails({super.key,required this.id});
 
   @override
   State<TransactionsDetails> createState() => _TransactionsDetailsState();
@@ -13,155 +21,244 @@ class _TransactionsDetailsState extends State<TransactionsDetails> {
   bool isBusinessDetailsExpanded = true;
   bool isAccountDetailsExpanded = true;
   bool isPurchaseDetailsExpanded = true;
+  var itemTransactionController = Get.find<ItemTransactionDetailsController>();
+  var variableController = Get.find<VariableController>();
   int selectedIndex = 0;
-  List<String> allBusinessList = [
-    "Business 1",
-    "Business 2",
-    "Business 3",
-    "Business 4"
-  ];
+
+  @override
+  void initState() {
+    Future.delayed(const Duration(seconds: 0), () async {
+      callMethod();
+    });
+    super.initState();
+  }
+  void callMethod() async {
+    await itemTransactionController.getSingleData(widget.id);
+  }
 
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppColors.appWhiteColor,
-        leading: IconButton(
-          color: AppColors.appBlackColor,
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context); // Action for back arrow
-          },
-        ),
-        titleSpacing: 0,
-        title: const Text(
-          "Transaction Details",
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: AppColors.appTextColor,
-            fontFamily: 'Sofia Sans',
+    return Obx(() {
+      return Scaffold(
+        backgroundColor: AppColors.appBackgroundColor,
+        appBar: AppBar(
+          backgroundColor: AppColors.appBackgroundColor,
+          leading: IconButton(
+            color: AppColors.appBlackColor,
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+          titleSpacing: 0,
+          title: const Text(
+            "Transaction Details",
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: AppColors.appTextColor,
+              fontFamily: 'Sofia Sans',
+            ),
           ),
         ),
-      ),
-      body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: ListView(
-            children: [
-              TransactionCard('Thanks For The Payment', "456898", "Cancelled"),
-              SizedBox(height: 16.0,),
-              Container(
-                padding: EdgeInsets.symmetric(vertical: screenHeight * 0.03, horizontal: screenWidth * 0.03), // Responsive padding
-                decoration: BoxDecoration(
-                  color: AppColors.appBackgroundGreyColor,
-                  borderRadius: BorderRadius.circular(screenWidth * 0.05), // Responsive border radius
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Row(
-                      children: [
-                        SizedBox(width: screenWidth * 0.02), // Responsive spacing
-                        const Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Date:',
-                              style: TextStyle(fontSize: 14,fontFamily: 'Sofia Sans', fontWeight: FontWeight.w400, color: AppColors.appNeutralColor2),
-                            ),
-                            Text(
-                              '24 Jun 2024',
-                              style: TextStyle(fontSize: 14,fontFamily: 'Sofia Sans', fontWeight: FontWeight.w500,color: AppColors.appNeutralColor2),
-                            ),
-                          ],
-                        ),
-                      ],
+        body: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ListView(
+                children: [
+                  if (itemTransactionController.allSinglePaymentDataList.isEmpty &&
+                      !variableController.loading.value)
+                    NoDataFoundCard() // Show "No Data" widget when the list is empty and not loading
+                  else ...[
+                    transactionCard(),
+                    const SizedBox(height: 16.0),
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        vertical: screenHeight * 0.03,
+                        horizontal: screenWidth * 0.03,
+                      ), // Responsive padding
+                      decoration: BoxDecoration(
+                        color: AppColors.appTabBackgroundColor,
+                        borderRadius: BorderRadius.circular(screenWidth * 0.05),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Row(
+                            children: [
+                              SizedBox(width: screenWidth * 0.02),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    'Date:',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontFamily: 'Sofia Sans',
+                                      fontWeight: FontWeight.w400,
+                                      color: AppColors.appNeutralColor2,
+                                    ),
+                                  ),
+                                  Obx(() => Text(
+                                    itemTransactionController.date.value,
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontFamily: 'Sofia Sans',
+                                      fontWeight: FontWeight.w500,
+                                      color: AppColors.appNeutralColor2,
+                                    ),
+                                  )),
+                                ],
+                              ),
+                            ],
+                          ),
+                          const VerticalDivider(
+                            thickness: 2,
+                            color: AppColors.appBlackColor,
+                          ),
+                          Row(
+                            children: [
+                              SizedBox(width: screenWidth * 0.02),
+                              // Responsive spacing
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    'Transaction ID',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontFamily: 'Sofia Sans',
+                                      fontWeight: FontWeight.w400,
+                                      color: AppColors.appNeutralColor2,
+                                    ),
+                                  ),
+                                  Obx(() => Text(
+                                    itemTransactionController
+                                        .transactionId.value,
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontFamily: 'Sofia Sans',
+                                      fontWeight: FontWeight.w500,
+                                      color: AppColors.appNeutralColor2,
+                                    ),
+                                  )),
+                                ],
+                              ),
+                            ],
+                          ),
+                          const VerticalDivider(
+                            thickness: 2,
+                            color: AppColors.appBlackColor,
+                          ),
+                          Column(
+                            children: [
+                              const Text(
+                                'Amount',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontFamily: 'Sofia Sans',
+                                  fontWeight: FontWeight.w400,
+                                  color: AppColors.appNeutralColor2,
+                                ),
+                              ),
+                              Obx(() => Text(
+                                itemTransactionController.amount.value
+                                    .toString(),
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontFamily: 'Sofia Sans',
+                                  fontWeight: FontWeight.w500,
+                                  color: AppColors.appBlackColor,
+                                ),
+                              )),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                    VerticalDivider(thickness: 2, color: AppColors.appBlackColor),
-                    Row(
-                      children: [
-                        SizedBox(width: screenWidth * 0.02), // Responsive spacing
-                        const Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Transaction ID',
-                              style: TextStyle(fontSize: 14,fontFamily: 'Sofia Sans', fontWeight: FontWeight.w400, color: AppColors.appNeutralColor2),
-                            ),
-                            Text(
-                              'PTN45157761',
-                              style: TextStyle(fontSize: 14,fontFamily: 'Sofia Sans', fontWeight: FontWeight.w500,color: AppColors.appNeutralColor2),
-                            ),
-                          ],
-                        ),
-                      ],
+                    const SizedBox(height: 16.0),
+                    _buildCustomerDetailCollapsibleSection(
+                      title: "Customer Details",
+                      isExpanded: isCustomerDetailsExpanded,
+                      onToggle: () {
+                        setState(() {
+                          isCustomerDetailsExpanded =
+                          !isCustomerDetailsExpanded;
+                        });
+                      },
+                      child: _buildCustomerDetailsCard(),
                     ),
-                    VerticalDivider(thickness: 2, color: AppColors.appBlackColor),
-                    const Column(
-                      children: [
-                        Text(
-                          'Amount',
-                          style: TextStyle(fontSize: 14,fontFamily: 'Sofia Sans', fontWeight: FontWeight.w400,color: AppColors.appNeutralColor2),
+                    const SizedBox(height: 16),
+                    _buildCustomerDetailCollapsibleSection(
+                      title: "Business Details",
+                      isExpanded: isBusinessDetailsExpanded,
+                      onToggle: () {
+                        setState(() {
+                          isBusinessDetailsExpanded =
+                          !isBusinessDetailsExpanded;
+                        });
+                      },
+                      child: _buildBusinessDetailsCard(),
+                    ),
+                    const SizedBox(height: 16),
+                    _buildCustomerDetailCollapsibleSection(
+                      title: "Account Details",
+                      isExpanded: isAccountDetailsExpanded,
+                      onToggle: () {
+                        setState(() {
+                          isAccountDetailsExpanded =
+                          !isAccountDetailsExpanded;
+                        });
+                      },
+                      child: _buildAccountDetailsCard(),
+                    ),
+                    const SizedBox(height: 16),
+                    _buildCustomerDetailCollapsibleSection(
+                      title: "Purchase Details",
+                      isExpanded: isPurchaseDetailsExpanded,
+                      onToggle: () {
+                        setState(() {
+                          isPurchaseDetailsExpanded =
+                          !isPurchaseDetailsExpanded;
+                        });
+                      },
+                      child:
+                        ListView.builder(
+                          shrinkWrap: true, // Ensures the ListView takes minimal height
+                          physics: const NeverScrollableScrollPhysics(), // Prevents nested scrolling
+                          itemCount: itemTransactionController.allProductList.length,
+                          itemBuilder: (context, index) {
+                            return _buildPurchaseDetailsCard(itemTransactionController.allProductList,index,context);
+                          },
                         ),
-                        Text('\$40', style: TextStyle(fontSize: 14,fontFamily: 'Sofia Sans',fontWeight: FontWeight.w500,color: AppColors.appBlackColor)),
-                      ],
                     ),
                   ],
+                ],
+              ),
+            ),
+            // Loader overlay
+            if (variableController.loading.value)
+              Container(
+                color: Colors.black.withOpacity(0.6), // Semi-transparent overlay
+                child: Center(
+                  child: Container(
+                    alignment: Alignment.center,
+                    height: 150,
+                    width: 150,
+                    child: Lottie.asset(
+                        "assets/lottie/half-circles.json"),
+                  ),
                 ),
               ),
-              SizedBox(height: 16.0,),
-              _buildCustomerDetailCollapsibleSection(
-                title: "Customer Details",
-                isExpanded: isCustomerDetailsExpanded,
-                onToggle: () {
-                  setState(() {
-                    isCustomerDetailsExpanded = !isCustomerDetailsExpanded;
-                  });
-                },
-                child: _buildCustomerDetailsCard(),
-              ),
-              SizedBox(height: 16),
-              _buildCustomerDetailCollapsibleSection(
-                title: "Business Details",
-                isExpanded: isBusinessDetailsExpanded,
-                onToggle: () {
-                  setState(() {
-                    isBusinessDetailsExpanded = !isBusinessDetailsExpanded;
-                  });
-                },
-                child: _buildBusinessDetailsCard(),
-              ),
-              SizedBox(height: 16),
-              _buildCustomerDetailCollapsibleSection(
-                title: "Account Details",
-                isExpanded: isAccountDetailsExpanded,
-                onToggle: () {
-                  setState(() {
-                    isAccountDetailsExpanded = !isAccountDetailsExpanded;
-                  });
-                },
-                child: _buildAccountDetailsCard(),
-              ),
-              SizedBox(height: 16),
-              _buildCustomerDetailCollapsibleSection(
-                title: "Purchase Details",
-                isExpanded: isPurchaseDetailsExpanded,
-                onToggle: () {
-                  setState(() {
-                    isPurchaseDetailsExpanded = !isPurchaseDetailsExpanded;
-                  });
-                },
-                child: _buildPurchaseDetailsCard(),
-              )
-            ],
-          ),
-        )
-    );
+          ],
+        ),
+      );
+    });
   }
-
 
   Widget _buildCustomerDetailCollapsibleSection({
     required String title,
@@ -170,6 +267,7 @@ class _TransactionsDetailsState extends State<TransactionsDetails> {
     required Widget child,
   }) {
     return Card(
+      elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
@@ -178,7 +276,7 @@ class _TransactionsDetailsState extends State<TransactionsDetails> {
           ListTile(
             title: Text(
               title,
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
@@ -206,7 +304,7 @@ class _TransactionsDetailsState extends State<TransactionsDetails> {
                 //     ];
                 //   },
                 // ),
-                Icon(isExpanded ? Icons.expand_less : Icons.expand_more),
+                Icon(isExpanded ? Icons.arrow_drop_up : Icons.arrow_drop_down,color: AppColors.appBlackColor),
               ],
             ),
             onTap: onToggle,
@@ -217,16 +315,15 @@ class _TransactionsDetailsState extends State<TransactionsDetails> {
     );
   }
 
-
   Widget _buildCustomerDetailsCard() {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildDetailRow("Customer Name", "David D Davis"),
-          _buildDetailRow("Mobile ID", "10987657890"),
-          _buildDetailRow("Email ID", "DavidDDavis123@gmail.com"),
+          _buildDetailRow("Customer Name", itemTransactionController.customerName),
+          _buildDetailRow("Mobile ID", itemTransactionController.customerMobileNo),
+          _buildDetailRow("Email ID", itemTransactionController.customerEmailId),
           // Add Menu Button Inline
         ],
       ),
@@ -239,10 +336,9 @@ class _TransactionsDetailsState extends State<TransactionsDetails> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildDetailRow("Business Name", "Applify Llc4"),
-          _buildDetailRow("Business Email", "app3@business.com"),
-          _buildDetailRow("Phone Number", "+19876897678"),
-          // Add Menu Button Inline
+          _buildDetailRow("Business Name", itemTransactionController.businessName),
+          _buildDetailRow("Business Email",itemTransactionController.businessEmail),
+          _buildDetailRow("Phone Number", itemTransactionController.businessNumber),
         ],
       ),
     );
@@ -254,29 +350,30 @@ class _TransactionsDetailsState extends State<TransactionsDetails> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildDetailRow("Account Number", "765434567546"),
-          _buildDetailRow("Routing Number", "074000010"),
-          _buildDetailRow("Bank Name", "JPMORGAN CHASE"),
-        ],
-      ),
-    );
-  }
-  Widget _buildPurchaseDetailsCard() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildDetailRow("Product Name", "Product1"),
-          _buildDetailRow("Price", "\$40"),
-          _buildDetailRow("Quantity", "1"),
-          // Add Menu Button Inline
+          _buildDetailRow("Account Number", itemTransactionController.accountNumber),
+          _buildDetailRow("Routing Number", itemTransactionController.routingNumber),
+          _buildDetailRow("Bank Name", itemTransactionController.bankName),
         ],
       ),
     );
   }
 
-  Widget _buildDetailRow(String label, String value) {
+  Widget _buildPurchaseDetailsCard(List<ProDetail> allproductList,
+      int index, context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildPurchaseDetailRow("Product Name", allproductList[index].proName),
+          _buildPurchaseDetailRow("Price", allproductList[index].proPrice),
+          _buildPurchaseDetailRow("Quantity",allproductList[index].proQty),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPurchaseDetailRow(String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
@@ -284,7 +381,7 @@ class _TransactionsDetailsState extends State<TransactionsDetails> {
           Expanded(
             flex: 2,
             child: Text(
-              "$label",
+              label,
               style: const TextStyle(
                 fontWeight: FontWeight.w400,
                 color: AppColors.appNeutralColor2,
@@ -293,21 +390,75 @@ class _TransactionsDetailsState extends State<TransactionsDetails> {
               ),
             ),
           ),
+          const Expanded(
+            flex: 1,
+            child: Text(':',
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.appBlackColor,
+                  fontSize: 14,
+                  fontFamily: 'Sofia Sans',
+                )),
+          ),
           Expanded(
             flex: 2,
-            child: Text(':   ${value}', style: const TextStyle(
-              fontWeight: FontWeight.w500,
-              color: AppColors.appBlackColor,
-              fontSize: 14,
-              fontFamily: 'Sofia Sans',
-            )),
+            child:  Text(value,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.appBlackColor,
+                  fontSize: 14,
+                  fontFamily: 'Sofia Sans',
+                )),
           ),
         ],
       ),
     );
   }
 
-  Widget TransactionCard(String amount, String checkNo, String status) {
+
+  Widget _buildDetailRow(String label, RxString value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 2,
+            child: Text(
+              label,
+              style: const TextStyle(
+                fontWeight: FontWeight.w400,
+                color: AppColors.appNeutralColor2,
+                fontSize: 14,
+                fontFamily: 'Sofia Sans',
+              ),
+            ),
+          ),
+          const Expanded(
+            flex: 1,
+            child: Text(':',
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.appBlackColor,
+                  fontSize: 14,
+                  fontFamily: 'Sofia Sans',
+                )),
+          ),
+          Expanded(
+            flex: 2,
+            child:  Obx(() => Text(value.value,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.appBlackColor,
+                  fontSize: 14,
+                  fontFamily: 'Sofia Sans',
+                ))),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget transactionCard() {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
@@ -325,76 +476,163 @@ class _TransactionsDetailsState extends State<TransactionsDetails> {
                   fontFamily: 'Sofia Sans',
                 ),
               ),
-              Text(':   ${checkNo}', style: const TextStyle(
-                fontWeight: FontWeight.w500,
-                color: AppColors.appBlackColor,
-                fontSize: 14,
-                fontFamily: 'Sofia Sans',
-              )),
-              SizedBox(width: MediaQuery.of(context).size.width * 0.03,),
+              Obx(() =>Text(':   ${itemTransactionController.checkNo.value}',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.appBlackColor,
+                    fontSize: 14,
+                    fontFamily: 'Sofia Sans',
+                  )))
+              ,
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.03,
+              ),
               Align(
                 alignment: Alignment.topLeft,
-                child:
-                // ElevatedButton(
-                //   onPressed: () {
-                //     print("Accepted!");
-                //   },
-                //   style: ElevatedButton.styleFrom(
-                //     foregroundColor:
-                //     allbusinessList[index].isApproved == '0' ? AppColors.appYellowColor :
-                //     allbusinessList[index].isApproved == '1' ? AppColors.appGreenDarkColor :
-                //     allbusinessList[index].isApproved == '2' ? AppColors.appRedColor :
-                //     allbusinessList[index].isApproved == '3' ? AppColors.appBlueColor :
-                //     allbusinessList[index].isApproved == '4' ? AppColors.appGreyColor :
-                //     allbusinessList[index].isApproved == '5' ? AppColors.appYellowColor :
-                //     AppColors.appRedColor,
-                //
-                //     backgroundColor:
-                //     allbusinessList[index].isApproved == '0' ? AppColors.appYellowLightColor :
-                //     allbusinessList[index].isApproved == '1' ? AppColors.appGreenAcceptColor :
-                //     allbusinessList[index].isApproved == '2' ? AppColors.appRedLightColor :
-                //     allbusinessList[index].isApproved == '3' ? AppColors.appBlueLightColor :
-                //     allbusinessList[index].isApproved == '4' ? AppColors.appGreenLightColor :
-                //     allbusinessList[index].isApproved == '5' ? AppColors.appYellowLightColor :
-                //     AppColors.appRedLightColor1,
-                //
-                //     shape: RoundedRectangleBorder(
-                //       borderRadius: BorderRadius.circular(30), // Rounded corners
-                //     ),
-                //   ),
-                //   child: Text(
-                //     allbusinessList[index].isApproved == '0' ? "Pending" :
-                //     allbusinessList[index].isApproved == '1' ? "Approved" :
-                //     allbusinessList[index].isApproved == '2' ? "Decline" :
-                //     allbusinessList[index].isApproved == '3' ? "Review" :
-                //     allbusinessList[index].isApproved == '4' ? "Revision" :
-                //     allbusinessList[index].isApproved == '5' ? "Added" :
-                //     "Discontinue",
-                //     style: TextStyle(
-                //       fontSize: 16,
-                //       fontWeight: FontWeight.bold,
-                //     ),
-                //   ),
-                // ),
+                child: Obx(() =>
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: status == "Added" ? AppColors.appSkyBlueBackground : AppColors.appRedLightColor1,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    status,
-                    style: const TextStyle(color: AppColors.appRedColor, fontSize: 12),
-                  ),
-                ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: itemTransactionController.decorationColor.value,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Obx(() =>
+                      Text( itemTransactionController.isSchedule==true && itemTransactionController.payMode== '0'?'Scheduler'
+                          :(
+                        itemTransactionController.isDeleted == false &&
+                            itemTransactionController.isDeletedRequest == true &&
+                            ![5, 6, 7].contains(itemTransactionController.payStatus)
+                            ? 'Delete request'
+                            : (itemTransactionController.isDeletedRequest == true &&
+                            itemTransactionController.isDeleted == true
+                            ? 'Reimbursement'
+                            : (itemTransactionController.isDeletedRequest == false &&
+                            itemTransactionController.isDeleted == true
+                            ? 'Reimbursement'
+                            : (itemTransactionController.payStatus == '5' &&
+                            itemTransactionController.isDeletedRequest ==
+                                false &&
+                            itemTransactionController.isDeleted == false
+                            ? 'Cancelled'
+                            : (itemTransactionController.payStatus == '6' &&
+                            itemTransactionController.isDeletedRequest ==
+                                false &&
+                            itemTransactionController.isDeleted ==
+                                false &&
+                            itemTransactionController.downloadByMerchant ==
+                                true
+                            ? 'Successful'
+                            : (itemTransactionController.payStatus == '7' &&
+                            itemTransactionController.isDeletedRequest == false &&
+                            itemTransactionController.isDeleted == false &&
+                            itemTransactionController.downloadByMerchant == true
+                            ? 'Unsuccessful'
+                            : (itemTransactionController.isDeleted == false &&
+                            itemTransactionController.isDeletedRequest == false &&
+                            itemTransactionController.downloadByMerchant == true &&
+                            ![5, 6, 7].contains(itemTransactionController.payStatus)
+                            ? 'Downloaded'
+                            : (itemTransactionController.verificationStatus == true &&
+                            itemTransactionController.isDeleted == false &&
+                            itemTransactionController.isDeletedRequest == false &&
+                            itemTransactionController.downloadByMerchant == false &&
+                            itemTransactionController.payStatus != '5'
+                            ? 'Verified'
+                            : (itemTransactionController.payStatus == '0' &&
+                            itemTransactionController.verificationStatus == false &&
+                            itemTransactionController.isDeleted == false &&
+                            itemTransactionController.isDeletedRequest == false &&
+                            itemTransactionController.downloadByMerchant == false ? 'New'
+                            : (itemTransactionController.payStatus == '4' &&
+                            itemTransactionController.verificationStatus == false &&
+                            itemTransactionController.isDeleted == false &&
+                            itemTransactionController.isDeletedRequest == false &&
+                            itemTransactionController.downloadByMerchant == false
+                            ? 'Incomplete'
+                            : (itemTransactionController.payStatus == '3' &&
+                            itemTransactionController.verificationStatus == false &&
+                            itemTransactionController.isDeleted == false &&
+                            itemTransactionController.isDeletedRequest == false &&
+                            itemTransactionController.downloadByMerchant == false
+                            ? 'Complete'
+                            : 'Unknown'))))))))))),
+                        style: TextStyle(
+                            color:  itemTransactionController.isSchedule==true && itemTransactionController.payMode== '0'?AppColors.appYellowColor
+                                :(itemTransactionController.isDeleted == false &&
+                                itemTransactionController.isDeletedRequest == true &&
+                                ![5, 6, 7]
+                                    .contains(itemTransactionController.payStatus)
+                                ? AppColors.appTextColor2
+                                : (itemTransactionController.isDeletedRequest == true &&
+                                itemTransactionController.isDeleted == true
+                                ? AppColors.appPurpleColor
+                                : (itemTransactionController.isDeletedRequest == false &&
+                                itemTransactionController.isDeleted == true
+                                ? AppColors.appPurpleColor
+                                : (itemTransactionController.payStatus == '5' &&
+                                itemTransactionController.isDeletedRequest ==
+                                    false &&
+                                itemTransactionController.isDeleted == false
+                                ? AppColors.appRedColor
+                                : (itemTransactionController.payStatus == '6' &&
+                                itemTransactionController.isDeletedRequest ==
+                                    false &&
+                                itemTransactionController.isDeleted ==
+                                    false &&
+                                itemTransactionController.downloadByMerchant ==
+                                    true
+                                ? AppColors.appGreenColor
+                                : (itemTransactionController.payStatus == '7' &&
+                                itemTransactionController.isDeletedRequest == false &&
+                                itemTransactionController.isDeleted == false &&
+                                itemTransactionController.downloadByMerchant == true
+                                ? AppColors.appRedColor
+                                : (itemTransactionController.isDeleted == false &&
+                                itemTransactionController.isDeletedRequest == false &&
+                                itemTransactionController.downloadByMerchant == true &&
+                                ![5, 6, 7].contains(itemTransactionController.payStatus)
+                                ? AppColors
+                                .appTextBlueColor
+                                : (itemTransactionController.verificationStatus ==
+                                true && itemTransactionController.isDeleted == false &&
+                                itemTransactionController.isDeletedRequest == false &&
+                                itemTransactionController.downloadByMerchant == false &&
+                                itemTransactionController.payStatus != '5'
+                                ? AppColors
+                                .appTextGreenColor
+                                : (itemTransactionController.payStatus == '0' &&
+                                itemTransactionController.verificationStatus == false &&
+                                itemTransactionController.isDeleted == false &&
+                                itemTransactionController.isDeletedRequest == false &&
+                                itemTransactionController.downloadByMerchant == false
+                                ? AppColors.appSkyBlueText
+                                : (itemTransactionController.payStatus == '4' &&
+                                itemTransactionController.verificationStatus == false &&
+                                itemTransactionController.isDeleted == false &&
+                                itemTransactionController.isDeletedRequest == false &&
+                                itemTransactionController.downloadByMerchant == false
+                                ? AppColors.appOrangeTextColor
+                                : (itemTransactionController.payStatus == '3' &&
+                                itemTransactionController.verificationStatus == false &&
+                                itemTransactionController.isDeleted == false &&
+                                itemTransactionController.isDeletedRequest == false &&
+                                itemTransactionController.downloadByMerchant == false
+                                ? AppColors.appGreenTextColor
+                                : AppColors.appTextBlueColor))))))))))),
+                            fontSize: 12),
+                      )),
+                )),
               ),
             ],
           ),
-          SizedBox(height: 4.0,),
+          const SizedBox(
+            height: 4.0,
+          ),
           Row(
             children: [
               const Text(
-                "-Meme                   ",
+                "-Memo                   ",
                 style: TextStyle(
                   fontWeight: FontWeight.w400,
                   color: AppColors.appNeutralColor2,
@@ -402,12 +640,13 @@ class _TransactionsDetailsState extends State<TransactionsDetails> {
                   fontFamily: 'Sofia Sans',
                 ),
               ),
-              Text(':   ${amount}', style: const TextStyle(
-                fontWeight: FontWeight.w500,
-                color: AppColors.appBlackColor,
-                fontSize: 14,
-                fontFamily: 'Sofia Sans',
-              )),
+              Obx(() =>Text(':   ${itemTransactionController.memo}',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.appBlackColor,
+                    fontSize: 14,
+                    fontFamily: 'Sofia Sans',
+                  ))),
             ],
           )
         ],

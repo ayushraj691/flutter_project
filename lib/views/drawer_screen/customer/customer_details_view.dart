@@ -1,7 +1,10 @@
+import 'dart:convert';
+import 'dart:ui';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
 import 'package:paycron/controller/drawer_Controller/customer_controller/CustomerDetailViewController.dart';
 import 'package:paycron/controller/drawer_Controller/customer_controller/add_customer_controller.dart';
 import 'package:paycron/controller/variable_controller.dart';
@@ -10,6 +13,9 @@ import 'package:paycron/model/drawer_model/transaction_model/ResAllRecentTransac
 import 'package:paycron/utils/color_constants.dart';
 import 'package:paycron/utils/general_methods.dart';
 import 'package:paycron/views/drawer_screen/customer/add_account_popup.dart';
+import 'package:paycron/views/drawer_screen/customer/edit_screen/edit_customer_popup.dart';
+import 'package:paycron/views/drawer_screen/customer/edit_screen/edit_update_account.dart';
+import 'package:paycron/views/funds/transaction_detail.dart';
 import 'package:paycron/views/widgets/NoDataScreen.dart';
 
 class CustomerDetailsScreen extends StatefulWidget {
@@ -33,24 +39,21 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
   Map<String, dynamic> sortMap = {
     "": "",
   };
-  Map<String, dynamic> argumentMap = {
-    "": "",
-  };
 
   @override
   void initState() {
     Future.delayed(const Duration(seconds: 0), () async {
-      callMethod();
+      callMethod(customerDetailViewController.filterValue.value);
     });
     super.initState();
   }
 
-  void callMethod() async {
+  void callMethod(String filterValue) async {
     await customerDetailViewController.getSingleData(widget.id);
     await customerDetailViewController.getAllRecentTransactionData(
       widget.id,
       '',
-      "$argumentMap",
+      jsonEncode(customerDetailViewController.getArgumentMap(filterValue)),
       "$sortMap",
     );
     filteredItems = customerDetailViewController.allRecentTransactionList;
@@ -67,80 +70,109 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppColors.appWhiteColor,
-        leading: IconButton(
-          color: AppColors.appBlackColor,
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context); // Action for back arrow
-          },
-        ),
-        titleSpacing: 0, // Removes extra space between arrow and title
-        title: const FittedBox(
-          fit: BoxFit.scaleDown, // Adjust title text to fit within screen width
-          child: Text(
-            "Customer Details",
-            style: TextStyle(
-              fontSize: 16, // Dynamic font size
-              fontWeight: FontWeight.w600,
-              color: AppColors.appTextColor,
-              fontFamily: 'Sofia Sans',
+    return Obx(() {
+      return Scaffold(
+        backgroundColor: AppColors.appBackgroundColor,
+        appBar: AppBar(
+          backgroundColor: AppColors.appBackgroundColor,
+          leading: IconButton(
+            color: AppColors.appBlackColor,
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pop(context); // Action for back arrow
+            },
+          ),
+          titleSpacing: 0, // Removes extra space between arrow and title
+          title: const FittedBox(
+            fit: BoxFit.scaleDown,
+            // Adjust title text to fit within screen width
+            child: Text(
+              "Customer Details",
+              style: TextStyle(
+                fontSize: 16, // Dynamic font size
+                fontWeight: FontWeight.w600,
+                color: AppColors.appTextColor,
+                fontFamily: 'Sofia Sans',
+              ),
             ),
           ),
         ),
-      ),
-      body: RefreshIndicator(
-        onRefresh: _refreshData,
-        child: Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: MediaQuery.of(context).size.width *
-                0.05, // Dynamic horizontal padding
-            vertical: MediaQuery.of(context).size.height *
-                0.02, // Dynamic vertical padding
-          ),
-          child: ListView(
+        body: RefreshIndicator(
+          onRefresh: _refreshData,
+          child: Stack(
             children: [
-              _buildPersonalDetailCollapsibleSection(
-                title: "Personal Details",
-                isExpanded: isPersonalDetailsExpanded,
-                onToggle: () {
-                  setState(() {
-                    isPersonalDetailsExpanded = !isPersonalDetailsExpanded;
-                  });
-                },
-                child: _buildPersonalDetailsCard(),
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: MediaQuery.of(context).size.width *
+                      0.05,
+                  vertical: MediaQuery.of(context).size.height *
+                      0.02,
+                ),
+                child: ListView(
+                  children: [
+                    if (customerDetailViewController
+                            .allSingleDataList.isEmpty &&
+                        !variableController.loading.value)
+                      NoDataFoundCard()
+                    else ...[
+                      _buildPersonalDetailCollapsibleSection(
+                        title: "Personal Details",
+                        isExpanded: isPersonalDetailsExpanded,
+                        onToggle: () {
+                          setState(() {
+                            isPersonalDetailsExpanded =
+                                !isPersonalDetailsExpanded;
+                          });
+                        },
+                        child: _buildPersonalDetailsCard(),
+                      ),
+                      SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.01),
+                      _buildAccountDetailCollapsibleSection(
+                        title: "Account Details",
+                        isExpanded: isAccountDetailsExpanded,
+                        onToggle: () {
+                          setState(() {
+                            isAccountDetailsExpanded =
+                                !isAccountDetailsExpanded;
+                          });
+                        },
+                        child: _buildAccountDetailsSection(),
+                      ),
+                      SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.01),
+                      _buildRecentTransactionsSection(),
+                    ]
+                  ],
+                ),
               ),
-              SizedBox(height: MediaQuery.of(context).size.height * 0.02),
-              _buildAccountDetailCollapsibleSection(
-                title: "Account Details",
-                isExpanded: isAccountDetailsExpanded,
-                onToggle: () {
-                  setState(() {
-                    isAccountDetailsExpanded = !isAccountDetailsExpanded;
-                  });
-                },
-                child: _buildAccountDetailsSection(),
-              ),
-              SizedBox(height: MediaQuery.of(context).size.height * 0.02),
-              _buildRecentTransactionsSection(),
+              // if (variableController.loading.value)
+              //   Container(
+              //     color: Colors.black.withOpacity(0.6),
+              //     child: Center(
+              //       child: Container(
+              //         alignment: Alignment.center,
+              //         height: 150,
+              //         width: 150,
+              //         child: Lottie.asset(
+              //             "assets/lottie/half-circles.json"),
+              //       ),
+              //     ),
+              //   ),
             ],
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   Future<void> _refreshData() async {
-    callMethod();
-    setState(() {
-    });
+    callMethod(customerDetailViewController.filterValue.value);
+    setState(() {});
   }
 
   Widget _buildPersonalDetailCollapsibleSection({
@@ -150,7 +182,7 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
     required Widget child,
   }) {
     return Card(
-      elevation: 4,
+      elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
@@ -168,13 +200,13 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
                   icon: const Icon(Icons.more_vert),
                   shape: RoundedRectangleBorder(
                     borderRadius:
-                    BorderRadius.circular(20), // Circular dialog shape
+                        BorderRadius.circular(20), // Circular dialog shape
                   ),
                   onSelected: (value) {
                     // Handle menu selection
                     if (value == 'edit') {
-                      // Handle edit action
-                    } else if (value == 'delete') {
+                      editCustomerPopup(context,widget.id);
+                    } else if (value == 'remove') {
                       // Handle delete action
                     }
                   },
@@ -192,23 +224,23 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
                           ],
                         ),
                       ),
-                      const PopupMenuItem<String>(
-                        value: 'remove',
-                        child: Row(
-                          children: [
-                            Icon(Icons.delete_outline_outlined,
-                                color: AppColors.appBlackColor),
-                            // Icon for remove
-                            SizedBox(width: 8),
-                            Text('Remove'),
-                          ],
-                        ),
-                      ),
+                      // const PopupMenuItem<String>(
+                      //   value: 'remove',
+                      //   child: Row(
+                      //     children: [
+                      //       Icon(Icons.delete_outline_outlined,
+                      //           color: AppColors.appBlackColor),
+                      //       // Icon for remove
+                      //       SizedBox(width: 8),
+                      //       Text('Remove'),
+                      //     ],
+                      //   ),
+                      // ),
                     ];
                   },
-
                 ),
-                Icon(isExpanded ? Icons.expand_less : Icons.expand_more),
+                Icon(isExpanded ? Icons.arrow_drop_up : Icons.arrow_drop_down,
+                    color: AppColors.appBlackColor),
               ],
             ),
             onTap: onToggle,
@@ -218,7 +250,6 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
       ),
     );
   }
-
 
   Widget _buildPersonalDetailsCard() {
     return Padding(
@@ -367,9 +398,14 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
           Obx(() {
             if (customerDetailViewController.allBankList.isEmpty) {
               return variableController.loading.value
-                  ? const Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: CircularProgressIndicator(),
+                  ? Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
+                        alignment: Alignment.center,
+                        height: 50,
+                        width: 50,
+                        child: Lottie.asset("assets/lottie/half-circles.json"),
+                      ),
                     )
                   : NoDataFoundCard();
             } else {
@@ -391,31 +427,6 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
               );
             }
           }),
-
-          // Obx(
-          //   () => customerDetailViewController.allBankList.isEmpty
-          //       ? const Padding(
-          //           padding: EdgeInsets.all(8.0),
-          //           child: Center(child: CircularProgressIndicator()),
-          //         )
-          //       : ListView.builder(
-          //           shrinkWrap: true,
-          //           itemCount: customerDetailViewController.allBankList.length,
-          //           itemBuilder: (context, index) {
-          //             return accountDetailListItem(
-          //                 customerDetailViewController
-          //                     .allBankList[index].accountName,
-          //                 customerDetailViewController
-          //                     .allBankList[index].accountNumber,
-          //                 customerDetailViewController
-          //                     .allBankList[index].bankName,
-          //                 customerDetailViewController.allBankList,
-          //                 index,
-          //                 context);
-          //           },
-          //           physics: const ScrollPhysics(),
-          //         ),
-          // ),
           const SizedBox(height: 8),
         ],
       ),
@@ -425,11 +436,9 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
   Widget accountDetailListItem(String holderName, String accountNumber,
       String bankName, List<BankId> allBankList, int index, context) {
     bool isSelected = allBankList[index].primary;
-
-    return InkWell(
-      onTap: () {
-        setState(() {});
-      },
+    bool isStatus = allBankList[index].status;
+    return Opacity(
+      opacity: isStatus ? 1.0 : 0.5,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
@@ -470,7 +479,9 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
                                 const SizedBox(height: 4),
                                 // Reduced spacing for a compact look
                                 _buildDetailRow(
-                                    "Account Number", GeneralMethods.maskAccountNumber(accountNumber)),
+                                    "Account Number",
+                                    GeneralMethods.maskAccountNumber(
+                                        accountNumber)),
                                 const SizedBox(height: 4),
                                 _buildDetailRow("Bank Name", bankName),
                               ],
@@ -479,18 +490,21 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
                           PopupMenuButton<String>(
                             icon: const Icon(Icons.more_vert),
                             shape: RoundedRectangleBorder(
-                              borderRadius:
-                              BorderRadius.circular(20), // Circular dialog shape
+                              borderRadius: BorderRadius.circular(
+                                  20), // Circular dialog shape
                             ),
                             onSelected: (value) {
-                              // Handle menu selection
                               if (value == 'edit') {
-                              } else if (value == 'delete') {
-                                // Handle delete action
+                                editUpdateAccountPopup(context,index,widget.id);
+                              } else if (value == 'disable') {
+                                showDisableConfirmationDialog(allBankList[index].sId,allBankList[index].status?'Disable':'Enable');
+                              }else if (value == 'enable') {
+                                showDisableConfirmationDialog(allBankList[index].sId,allBankList[index].status?'Disable':'Enable');
                               }
                             },
                             itemBuilder: (BuildContext context) {
                               return [
+                                if(allBankList[index].status)
                                 const PopupMenuItem<String>(
                                   value: 'edit',
                                   child: Row(
@@ -503,15 +517,16 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
                                     ],
                                   ),
                                 ),
-                                const PopupMenuItem<String>(
-                                  value: 'remove',
+                                if(!allBankList[index].primary)
+                                PopupMenuItem<String>(
+                                  value: allBankList[index].status?'disable':'enable',
                                   child: Row(
                                     children: [
-                                      Icon(Icons.delete_outline_outlined,
+                                      const Icon(Icons.disabled_visible,
                                           color: AppColors.appBlackColor),
                                       // Icon for remove
                                       SizedBox(width: 8),
-                                      Text('Remove'),
+                                      Text(allBankList[index].status?'Disable':'Enable'),
                                     ],
                                   ),
                                 ),
@@ -560,10 +575,9 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
     DateTime dateTime = DateTime.parse(createdDate).toLocal();
     String formattedTime = DateFormat.jm().format(dateTime);
     String formattedDate = DateFormat('dd MMM, yyyy').format(dateTime);
-
     return InkWell(
       onTap: () {
-        setState(() {});
+        Get.to(TransactionsDetails(id:subscription.sId));
       },
       child: Card(
         elevation: 0,
@@ -599,17 +613,192 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 12, vertical: 4),
                         decoration: BoxDecoration(
-                          color: subscription.isDeleted == "Added"
-                              ? AppColors.appSkyBlueBackground
-                              : AppColors.appSkyBlueBackground,
-                          // Adjust as needed
+                          color: subscription.isDeleted == false &&
+                              subscription.isDeletedRequest == true &&
+                              ![5, 6, 7].contains(subscription.payStatus)
+                              ? AppColors.appTextGreyColor
+                              : (subscription.isDeletedRequest == true &&
+                              subscription.isDeleted == true
+                              ? AppColors.appMistyRoseColor
+                              : (subscription.isDeletedRequest == false &&
+                              subscription.isDeleted == true
+                              ? AppColors.appMistyRoseColor
+                              : (subscription.payStatus == '5' &&
+                              subscription.isDeletedRequest ==
+                                  false &&
+                              subscription.isDeleted == false
+                              ? AppColors.appRedLightColor
+                              : (subscription.payStatus == '6' &&
+                              subscription.isDeletedRequest ==
+                                  false &&
+                              subscription.isDeleted ==
+                                  false &&
+                              subscription.downloadBymerchant ==
+                                  true
+                              ? AppColors.appMintGreenColor
+                              : (subscription.payStatus == '7' &&
+                              subscription.isDeletedRequest == false &&
+                              subscription.isDeleted == false &&
+                              subscription.downloadBymerchant == true
+                              ? AppColors.appRedLightColor
+                              : (subscription.isDeleted == false &&
+                              subscription.isDeletedRequest ==
+                                  false &&
+                              subscription.downloadBymerchant ==
+                                  true &&
+                              ![5, 6, 7].contains(subscription.payStatus)
+                              ? AppColors
+                              .appLightBlueColor
+                              : (subscription.verificationStatus == true &&
+                              subscription.isDeleted == false &&
+                              subscription.isDeletedRequest == false &&
+                              subscription.downloadBymerchant == false &&
+                              subscription.payStatus != '5'
+                              ? AppColors
+                              .appGreenLightColor
+                              : (subscription.payStatus == '0' &&
+                              subscription.verificationStatus ==
+                                  false &&
+                              subscription.isDeleted == false &&
+                              subscription.isDeletedRequest == false &&
+                              subscription.downloadBymerchant == false
+                              ? AppColors.appSoftSkyBlueColor
+                              : (subscription.payStatus == '4' &&
+                              subscription.verificationStatus == false &&
+                              subscription.isDeleted == false &&
+                              subscription.isDeletedRequest == false &&
+                              subscription.downloadBymerchant == false
+                              ? AppColors.appLightYellowColor
+                              : (subscription.payStatus == '3' &&
+                              subscription.verificationStatus == false &&
+                              subscription.isDeleted == false &&
+                              subscription.isDeletedRequest == false &&
+                              subscription.downloadBymerchant == false
+                              ? AppColors.appMintGreenColor
+                              : AppColors.appLightBlueColor)))))))))),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: FittedBox(
                           child: Text(
-                            subscription.subscriptionType,
-                            style: const TextStyle(
-                                color: AppColors.appSkyBlueText,
+                            subscription.isDeleted == false &&
+                                subscription.isDeletedRequest == true &&
+                                ![5, 6, 7].contains(subscription.payStatus)
+                                ? 'Delete request'
+                                : (subscription.isDeletedRequest == true &&
+                                subscription.isDeleted == true
+                                ? 'Reimbursement'
+                                : (subscription.isDeletedRequest == false &&
+                                subscription.isDeleted == true
+                                ? 'Reimbursement'
+                                : (subscription.payStatus == '5' &&
+                                subscription.isDeletedRequest ==
+                                    false &&
+                                subscription.isDeleted == false
+                                ? 'Cancelled'
+                                : (subscription.payStatus == '6' &&
+                                subscription.isDeletedRequest ==
+                                    false &&
+                                subscription.isDeleted ==
+                                    false &&
+                                subscription.downloadBymerchant ==
+                                    true
+                                ? 'Successful'
+                                : (subscription.payStatus == '7' &&
+                                subscription.isDeletedRequest == false &&
+                                subscription.isDeleted == false &&
+                                subscription.downloadBymerchant == true
+                                ? 'Unsuccessful'
+                                : (subscription.isDeleted == false &&
+                                subscription.isDeletedRequest == false &&
+                                subscription.downloadBymerchant == true &&
+                                ![5, 6, 7].contains(subscription.payStatus)
+                                ? 'Downloaded'
+                                : (subscription.verificationStatus == true &&
+                                subscription.isDeleted == false &&
+                                subscription.isDeletedRequest == false &&
+                                subscription.downloadBymerchant == false &&
+                                subscription.payStatus != '5'
+                                ? 'Verified'
+                                : (subscription.payStatus == '0' &&
+                                subscription.verificationStatus == false &&
+                                subscription.isDeleted == false &&
+                                subscription.isDeletedRequest == false &&
+                                subscription.downloadBymerchant == false ? 'New'
+                                : (subscription.payStatus == '4' &&
+                                subscription.verificationStatus == false &&
+                                subscription.isDeleted == false &&
+                                subscription.isDeletedRequest == false &&
+                                subscription.downloadBymerchant == false
+                                ? 'Incomplete'
+                                : (subscription.payStatus == '3' &&
+                                subscription.verificationStatus == false &&
+                                subscription.isDeleted == false &&
+                                subscription.isDeletedRequest == false &&
+                                subscription.downloadBymerchant == false
+                                ? 'Complete'
+                                : 'Unknown')))))))))),
+                            style: TextStyle(
+                                color: subscription.isDeleted == false &&
+                                    subscription.isDeletedRequest == true &&
+                                    ![5, 6, 7]
+                                        .contains(subscription.payStatus)
+                                    ? AppColors.appTextColor2
+                                    : (subscription.isDeletedRequest == true &&
+                                    subscription.isDeleted == true
+                                    ? AppColors.appPurpleColor
+                                    : (subscription.isDeletedRequest == false &&
+                                    subscription.isDeleted == true
+                                    ? AppColors.appPurpleColor
+                                    : (subscription.payStatus == '5' &&
+                                    subscription.isDeletedRequest ==
+                                        false &&
+                                    subscription.isDeleted == false
+                                    ? AppColors.appRedColor
+                                    : (subscription.payStatus == '6' &&
+                                    subscription.isDeletedRequest ==
+                                        false &&
+                                    subscription.isDeleted ==
+                                        false &&
+                                    subscription.downloadBymerchant ==
+                                        true
+                                    ? AppColors.appGreenColor
+                                    : (subscription.payStatus == '7' &&
+                                    subscription.isDeletedRequest == false &&
+                                    subscription.isDeleted == false &&
+                                    subscription.downloadBymerchant == true
+                                    ? AppColors.appRedColor
+                                    : (subscription.isDeleted == false &&
+                                    subscription.isDeletedRequest == false &&
+                                    subscription.downloadBymerchant == true &&
+                                    ![5, 6, 7].contains(subscription.payStatus)
+                                    ? AppColors
+                                    .appTextBlueColor
+                                    : (subscription.verificationStatus ==
+                                    true && subscription.isDeleted == false &&
+                                    subscription.isDeletedRequest == false &&
+                                    subscription.downloadBymerchant == false &&
+                                    subscription.payStatus != '5'
+                                    ? AppColors
+                                    .appTextGreenColor
+                                    : (subscription.payStatus == '0' &&
+                                    subscription.verificationStatus == false &&
+                                    subscription.isDeleted == false &&
+                                    subscription.isDeletedRequest == false &&
+                                    subscription.downloadBymerchant == false
+                                    ? AppColors.appSkyBlueText
+                                    : (subscription.payStatus == '4' &&
+                                    subscription.verificationStatus == false &&
+                                    subscription.isDeleted == false &&
+                                    subscription.isDeletedRequest == false &&
+                                    subscription.downloadBymerchant == false
+                                    ? AppColors.appOrangeTextColor
+                                    : (subscription.payStatus == '3' &&
+                                    subscription.verificationStatus == false &&
+                                    subscription.isDeleted == false &&
+                                    subscription.isDeletedRequest == false &&
+                                    subscription.downloadBymerchant == false
+                                    ? AppColors.appGreenTextColor
+                                    : AppColors.appTextBlueColor)))))))))),
                                 fontSize: 12),
                           ),
                         ),
@@ -687,7 +876,89 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
       builder: (BuildContext context) {
         return Padding(
           padding: MediaQuery.of(context).viewInsets,
-          child: AddAccountPopup(widget.id),
+          child: AddAccountPopup(widget.id, onSave: () {
+            setState(() {
+              callMethod(customerDetailViewController.filterValue.value);
+            });
+          }),
+        );
+      },
+    );
+  }
+
+
+  void editCustomerPopup(BuildContext context,String id) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(30.0),
+        ),
+      ),
+      builder: (BuildContext context) {
+        return Padding(
+          padding: MediaQuery.of(context).viewInsets,
+          child: EditCustomerPopup(id,
+              onSave: () {
+                setState(() {
+                  callMethod(customerDetailViewController.filterValue.value);
+                });
+              },),
+        );
+      },
+    );
+  }
+
+  void editUpdateAccountPopup(BuildContext context,int index,String id) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(30.0),
+        ),
+      ),
+      builder: (BuildContext context) {
+        return Padding(
+          padding: MediaQuery.of(context).viewInsets,
+          child: EditUpdateAccountPopup(index,id,
+              onSave: () {
+                setState(() {
+                  callMethod(customerDetailViewController.filterValue.value);
+                });
+              },),
+        );
+      },
+    );
+  }
+
+  void showDisableConfirmationDialog(String bankId,String text) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(text),
+          content: Text("Are you sure you want to $text this account?"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () {
+                  customerDetailViewController.disableAccount(bankId);
+                  callMethod(customerDetailViewController.filterValue.value);
+                  Navigator.of(context).pop();
+              },
+              child: Text(
+                text,
+                style: const TextStyle(color: AppColors.appBlueColor),
+              ),
+            ),
+          ],
         );
       },
     );
@@ -697,12 +968,12 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
     final customerDetailController = Get.find<CustomerDetailViewController>();
     double screenWidth = MediaQuery.of(context).size.width;
     return Card(
-      elevation: 4,
+      elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -772,11 +1043,11 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
                       onChanged: (value) {
                         customerDetailController.filterValue.value =
                             value as String;
-
                         final selectedIndex =
                             customerDetailController.filterItems.indexOf(value);
                         if (selectedIndex != -1) {
                           debugPrint('Selected index: ${selectedIndex + 1}');
+                          callMethod(value);
                         }
                       },
                       buttonStyleData: const ButtonStyleData(
@@ -884,7 +1155,7 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
     required Widget child,
   }) {
     return Card(
-      elevation: 4,
+      elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
@@ -921,7 +1192,8 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
                 const SizedBox(
                   width: 4.0,
                 ),
-                Icon(isExpanded ? Icons.expand_less : Icons.expand_more),
+                Icon(isExpanded ? Icons.arrow_drop_up : Icons.arrow_drop_down,
+                    color: AppColors.appBlackColor),
               ],
             ),
             onTap: onToggle,

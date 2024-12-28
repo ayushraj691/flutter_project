@@ -1,12 +1,12 @@
 buildscript {
-    ext.kotlin_version = "1.8.22" // Specify your Kotlin version here
+    ext.kotlin_version = '1.8.0'  // Ensure this is the version you're using
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:8.0.2" // Match the latest stable Android Gradle Plugin
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version" // Add the Kotlin plugin
+        classpath 'com.android.tools.build:gradle:8.0.0'  // Update to a compatible version
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 
@@ -15,16 +15,33 @@ allprojects {
         google()
         mavenCentral()
     }
+
+    configurations.all {
+        resolutionStrategy {
+            force 'org.jetbrains.kotlin:kotlin-stdlib:1.8.0'  // Ensure all Kotlin stdlib dependencies use 1.8.0
+            force 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.0'  // JDK7 compatibility
+            force 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0'  // JDK8 compatibility
+            exclude group: 'com.crazecoder.openfile', module: 'open_file_android'
+
+        }
+    }
 }
 
 rootProject.buildDir = '../build'
+
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
-}
-subprojects {
-    project.evaluationDependsOn(':app')
+    project.evaluationDependsOn(':app') // Ensure proper dependency evaluation
 }
 
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
+}
+
+configurations.all {
+    resolutionStrategy.eachDependency { details ->
+        if (details.requested.group == "org.jetbrains.kotlin") {
+            details.useVersion "1.8.0"  // Force Kotlin version to 1.8.0 globally
+        }
+    }
 }

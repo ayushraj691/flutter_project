@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
 import 'package:paycron/controller/drawer_Controller/product_controller/all_product_controller.dart';
 import 'package:paycron/controller/variable_controller.dart';
 import 'package:paycron/model/drawer_model/product_model/ResAllFilterProductData.dart';
@@ -32,13 +33,13 @@ class _AllTabProductState extends State<AllTabProduct> {
   @override
   void initState() {
     Future.delayed(const Duration(seconds: 0),(){
-      CallMethod();
+      callMethod();
       searchController.addListener(_filterItems);
     });
     super.initState();
   }
 
-  void CallMethod() async{
+  void callMethod() async{
     await allTabProductController.getAllProductData(
       CommonVariable.businessId.value,
       '',
@@ -65,7 +66,7 @@ class _AllTabProductState extends State<AllTabProduct> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     return Padding(
-      padding: const EdgeInsets.only(top: 10.0),
+      padding: const EdgeInsets.only(top: 10.0,bottom: 30),
       child: Column(
         children: [
           Expanded(
@@ -75,27 +76,26 @@ class _AllTabProductState extends State<AllTabProduct> {
                   Row(
                     children: [
                       Expanded(
-                        flex: 2,
                         child:  Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.appBackgroundGreyColor, // Button color
-                              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(30), // Rounded corners
                               ),
-                              elevation: 4,
+                              elevation: 0,
                               shadowColor: Colors.black45,
                             ),
-                            onPressed: () => allTabProductController.showDatePickerDialog(context),
+                            onPressed: () => allTabProductController.showSelectDurationBottomSheet(context),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Obx(() =>  Text(
                                   allTabProductController.buttonText.value, // Display the selected date on the button
                                   style: const TextStyle(
-                                    fontSize: 14,
+                                    fontSize: 12,
                                     color: AppColors.appBlackColor,
                                     fontWeight: FontWeight.w400,
                                     fontFamily: 'Sofia Sans',
@@ -116,12 +116,15 @@ class _AllTabProductState extends State<AllTabProduct> {
                               borderRadius: BorderRadius.circular(30), // Rounded corners
                               border: Border.all(
                                 color: AppColors.appBlackColor, // Button border color
-                                width: 1.0, // Border thickness
+                                width: 0, // Border thickness
                               ),
                             ),
-                            height: 40,
+                            height: 36,
                             child: ElevatedButton(
-                              onPressed: () {}, // Button press callback
+                              onPressed: () async {
+                                await allTabProductController.downloadCSV();
+
+                              }, // Button press callback
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.transparent, // Transparent to show container color
                                 shadowColor: Colors.transparent, // Remove button shadow
@@ -132,7 +135,7 @@ class _AllTabProductState extends State<AllTabProduct> {
                                 style: TextStyle(
                                   fontFamily: 'Sofia Sans',
                                   fontWeight: FontWeight.w400,
-                                  fontSize: 16,
+                                  fontSize: 14,
                                   color: AppColors.appWhiteColor, // Text color
                                 ),
                               ),
@@ -142,88 +145,89 @@ class _AllTabProductState extends State<AllTabProduct> {
                       ),
                     ],
                   ),
-                  Card(
-                    elevation: 2.0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25.0),
-                    ),
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: TextField(
-                            controller: searchController,
-                            decoration: InputDecoration(
-                              hintText: 'Search by name or email',
-                              filled: true,
-                              fillColor: AppColors.appNeutralColor5,
-                              prefixIcon: const Icon(Icons.search),
-                              contentPadding: const EdgeInsets.all(16),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                  color: AppColors.appNeutralColor5,
-                                  width: 0,
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Card(
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(25.0),
+                      ),
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: TextField(
+                              controller: searchController,
+                              decoration: InputDecoration(
+                                hintText: 'Search by name or email',
+                                filled: true,
+                                fillColor: AppColors.appNeutralColor5,
+                                prefixIcon: const Icon(Icons.search),
+                                contentPadding: const EdgeInsets.all(16),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: const BorderSide(
+                                    color: AppColors.appNeutralColor5,
+                                    width: 0,
+                                  ),
+                                  borderRadius: BorderRadius.circular(30),
                                 ),
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                  color: AppColors.appNeutralColor5,
-                                  width: 0,
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: const BorderSide(
+                                    color: AppColors.appNeutralColor5,
+                                    width: 0,
+                                  ),
+                                  borderRadius: BorderRadius.circular(30),
                                 ),
-                                borderRadius: BorderRadius.circular(30),
                               ),
                             ),
                           ),
-                        ),
-                        Obx(() {
-                          if (allTabProductController.allProductDataList.isEmpty) {
-                            return variableController.loading.value
-                                ? const Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: CircularProgressIndicator(),
-                            )
-                                : NoDataFoundCard(); // Your custom widget
-                          } else {
-                            return ListView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount:
-                              filteredItems.length,
-                              itemBuilder: (context, index) {
-                                return listItem(
-                                    filteredItems,
-                                    index,
-                                    context);
-                              },
-                            );
-                          }
-                        }),
+                          Obx(() {
+                            if (allTabProductController.allProductDataList.isEmpty) {
+                              return variableController.loading.value
+                                  ? Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  height: 50,
+                                  width: 50,
+                                  child: Lottie.asset(
+                                      "assets/lottie/half-circles.json"),
+                                ),
+                              )
+                                  : NoDataFoundCard(); // Your custom widget
+                            } else {
+                              return ListView.builder(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemCount:
+                                filteredItems.length,
+                                itemBuilder: (context, index) {
+                                  return listItem(
+                                      filteredItems,
+                                      index,
+                                      context);
+                                },
+                              );
+                            }
+                          }),
 
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                  SizedBox(height: 10), // Add extra space to avoid button overlap with content
+                  const SizedBox(height: 10), // Add extra space to avoid button overlap with content
                 ],
               ),
             ),
           ),
-          // Padding(
-          //   padding: const EdgeInsets.only(bottom: 5.0),
-          //   child: Center(
-          //     child: CommonButton(
-          //       buttonWidth: screenWidth * 0.9,
-          //       icon: Icons.add,
-          //       buttonName: "Add Product",
-          //       onPressed: () {
-          //         Get.to(AllProcductScreen());
-          //       },
-          //     ),
-          //   ),
-          // ),
         ],
       ),
     );
+  }
+
+  Future<void> _refreshData() async {
+    callMethod();
+    setState(() {});
   }
 }
 
@@ -263,7 +267,8 @@ Widget listItem(List<ResAllFilterProductData> allProductDataList, int index, con
                     children: [
                       CircleAvatar(
                         backgroundColor: Colors.white,
-                        child: Image.network(
+                        child: productImage.isNotEmpty
+                            ? Image.network(
                           '${ImageAssets.imageUrl}/$productImage',
                           fit: BoxFit.cover,
                           errorBuilder: (context, error, stackTrace) {
@@ -273,7 +278,8 @@ Widget listItem(List<ResAllFilterProductData> allProductDataList, int index, con
                             if (loadingProgress == null) return child;
                             return const CircularProgressIndicator();
                           },
-                        ),
+                        )
+                            : Image.asset(ImageAssets.productImage),
                       ),
                       const SizedBox(width: 12),
                       Expanded(

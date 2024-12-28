@@ -8,6 +8,8 @@ import 'package:paycron/network/api_call/api_call.dart';
 import 'package:paycron/network/api_call/url.dart';
 import 'package:paycron/utils/common_variable.dart';
 import 'package:paycron/utils/my_toast.dart';
+import 'package:http/http.dart' as http;
+
 
 
 class CustomerDetailViewController extends GetxController{
@@ -25,7 +27,7 @@ class CustomerDetailViewController extends GetxController{
       <ResAllRecentTransaction>[].obs;
 
   var filterValue = 'All'.obs;
-  var filterItems = <String>['All', 'Downloaded', 'Pending', 'Approved'].obs;
+  var filterItems = <String>['All', 'New', 'Verify', 'Downloaded', 'Cancel', 'Delete', 'Reimbursement'].obs;
 
   var variableController = Get.find<VariableController>();
 
@@ -33,6 +35,96 @@ class CustomerDetailViewController extends GetxController{
       <ResSingleData>[].obs;
 
   TextEditingController searchController = TextEditingController();
+
+
+  Map<String, dynamic> getArgumentMap(String filterValue) {
+    Map<String, dynamic> argumentMap = {};
+
+    if (filterValue == 'All') {
+      argumentMap = {"": ""};
+    } else if (filterValue == 'New') {
+      argumentMap = {
+        "pay_status": "0",
+        "is_deleted_request": false,
+        "is_deleted": false,
+        "verification_status": false,
+        "download_bymerchant": false,
+        "\$or": [
+          {
+            "\$and": [
+              {"pay_mode": "0"},
+              {"is_schedule": false},
+            ]
+          },
+          {
+            "\$and": [
+              {"pay_mode": "1"},
+              {"is_schedule": true},
+            ]
+          },
+        ],
+      };
+    } else if (filterValue == 'Verify') {
+      argumentMap = {
+        "pay_status": {
+          "\$nin": [5],
+        },
+        "is_deleted_request": false,
+        "verification_status": true,
+        "download_bymerchant": false,
+        "is_deleted": false,
+      };
+    } else if (filterValue == 'Downloaded') {
+      argumentMap = {
+        "pay_status": {
+          "\$nin": [5, 6, 7],
+        },
+        "is_deleted_request": false,
+        "is_deleted": false,
+        "download_bymerchant": true,
+      };
+    } else if (filterValue == 'Cancel') {
+      argumentMap = {
+        "pay_status": "5",
+      };
+    } else if (filterValue == 'Delete') {
+      argumentMap = {
+        "is_deleted_request": true,
+        "is_deleted": false,
+        "pay_status": {
+          "\$nin": [5, 6, 7],
+        },
+      };
+    } else if (filterValue == 'Reimbursement') {
+      argumentMap = {
+        "is_deleted_request": {
+          "\$in": [true, false],
+        },
+        "is_deleted": true,
+      };
+    } else {
+      argumentMap = {"": ""};
+    }
+
+    return argumentMap;
+  }
+
+  disableAccount(String bankId) async{
+    variableController.loading.value = true;
+    var res =
+    await ApiCall.postApiCallWithoutBody(MyUrls.changeBankStatus,bankId);
+    debugPrint("*************************");
+    debugPrint("*****$res*******");
+    debugPrint("*************************");
+    if (res != null) {
+      variableController.loading.value = false;
+      MyToast.toast("Account Disable");
+    } else {
+      MyToast.toast("Something Went Wrong");
+      variableController.loading.value = false;
+    }
+  }
+
 
   Future<void> getSingleData(String id) async {
     variableController.loading.value = true;
@@ -66,7 +158,6 @@ class CustomerDetailViewController extends GetxController{
       }
 
     } catch (e) {
-      // Handle any errors during the API call
       debugPrint("Error occurred: $e");
       MyToast.toast("Something Went Wrong: ${e.toString()}");
       variableController.loading.value = false;
@@ -87,6 +178,7 @@ class CustomerDetailViewController extends GetxController{
         endpoint: MyUrls.allTransactionsByCustomerId,
         id: businessId,
         token: CommonVariable.token.value,
+        args: argument,
         query: query,
         endDate: '',
         page: 1,
@@ -120,7 +212,6 @@ class CustomerDetailViewController extends GetxController{
       variableController.loading.value = false;
     }
   }
-
 }
 
  class JsonUtils {
@@ -141,3 +232,4 @@ class CustomerDetailViewController extends GetxController{
      }
    }
  }
+

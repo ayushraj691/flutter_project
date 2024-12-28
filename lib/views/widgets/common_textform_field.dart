@@ -22,6 +22,7 @@ class CommonTextField extends StatelessWidget {
   final String? Function(String?)? validator; // Validator function
   final List<TextInputFormatter>? inputFormatters; // Added inputFormatters
   final InputDecoration? decoration;
+  final bool? enable;
 
 
   const CommonTextField(
@@ -46,6 +47,7 @@ class CommonTextField extends StatelessWidget {
       this.validator, // Validator function
       this.inputFormatters,
       this.decoration,
+      this.enable,
       required})
       : super(key: key);
 
@@ -62,6 +64,7 @@ class CommonTextField extends StatelessWidget {
         onFieldSubmitted: onSubmitted,
         obscureText: obscureText,
         maxLength: maxLength,
+        enabled: enable,
         maxLines: maxLines ?? null, // Allow text field to expand vertically
         minLines: minLines ?? 1, // Initial height with 1 line
         keyboardType: keyboardType,
@@ -92,7 +95,7 @@ class CommonTextField extends StatelessWidget {
                 )
               : null,
           labelStyle: const TextStyle(color: AppColors.appBlueColor),
-          contentPadding: const EdgeInsets.all(18),
+          contentPadding: const EdgeInsets.only(right: 16,left: 16),
           enabledBorder: OutlineInputBorder(
             borderSide: const BorderSide(
               color: AppColors.appNeutralColor5,
@@ -114,7 +117,7 @@ class CommonTextField extends StatelessWidget {
         ),
 
         validator: validator, // Call the validator function here
-        enableInteractiveSelection: false, // Disable copy-paste interaction
+        // enableInteractiveSelection: false, // Disable copy-paste interaction
       ),
     );
   }

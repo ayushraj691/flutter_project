@@ -42,9 +42,6 @@ class AuthController extends GetxController {
     debugPrint("*************************");
     if (res != null) {
       ResLogin resLogin = ResLogin.fromJson(res);
-      debugPrint(resLogin.email.toString());
-        emailController.value.clear();
-        userPasswordController.value.clear();
         SharedPreferences preferences = await SharedPreferences.getInstance();
         preferences.setString("isLogin", "true");
         variableController.loading.value = false;
@@ -60,9 +57,13 @@ class AuthController extends GetxController {
         CommonVariable.getClientDetails();
         if (resLogin.businesscheck==1){
           Get.off(const PaycronFloatingBottomBar());
+          emailController.value.clear();
+          userPasswordController.value.clear();
         }else {
           if (resLogin.role == "merchant") {
             Get.offAll(const HomeScreen());
+            emailController.value.clear();
+            userPasswordController.value.clear();
           }
         }
     } else {

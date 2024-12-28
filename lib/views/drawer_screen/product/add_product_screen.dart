@@ -1,23 +1,33 @@
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:paycron/controller/drawer_Controller/product_controller/addProductController.dart';
 import 'package:paycron/utils/color_constants.dart';
 import 'package:paycron/views/widgets/Dash_border_view.dart';
 import 'package:paycron/views/widgets/common_button.dart';
 import 'package:paycron/views/widgets/common_textform_field.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-class AllProcductScreen extends StatefulWidget {
-  const AllProcductScreen({super.key});
+class AddProcductScreen extends StatefulWidget {
+  const AddProcductScreen({super.key});
 
   @override
-  State<AllProcductScreen> createState() => _AllProcductScreenState();
+  State<AddProcductScreen> createState() => _AddProcductScreenState();
 }
 
-class _AllProcductScreenState extends State<AllProcductScreen> {
-  File? _selectedFile;
+class _AddProcductScreenState extends State<AddProcductScreen> {
+  var productController = Get.find<AddProductController>();
+
+  @override
+  void dispose() {
+    productController.clearAllField();
+    super.dispose();
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -88,9 +98,7 @@ class _AllProcductScreenState extends State<AllProcductScreen> {
                                     text: '*',
                                     style: TextStyle(
                                       color: Colors.red,
-                                      // Set a different color for the asterisk
                                       fontSize: 12.0,
-                                      // Same or different size
                                       fontWeight: FontWeight.w400,
                                     ),
                                   ),
@@ -102,9 +110,63 @@ class _AllProcductScreenState extends State<AllProcductScreen> {
                             height: 4.0,
                           ),
                           CommonTextField(
+                              controller: productController.productNameController.value,
+                              labelText: 'Product Name',
+                            focusNode: productController.productNameFocusNode,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r'^[a-zA-Z\s]*$')),
+                            ],
+                            onChanged: (value) {
+                              String pattern = r'^[a-zA-Z\s]*$';
+                              RegExp regExp = RegExp(pattern);
+                              setState(() {
+                                if (value.isEmpty) {
+                                  productController.productNameValid = false.obs;
+                                } else if (regExp.hasMatch(value)) {
+                                  productController.productNameValid = true.obs;
+                                } else {
+                                  productController.productNameValid = false.obs;
+                                }
+                              });
+                            },
+                            decoration: InputDecoration(
+                              labelStyle: const TextStyle(color: AppColors.appBlueColor),
+                              contentPadding: const EdgeInsets.only(right: 16,left: 16),
+                              focusedBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(
+                                  color:  productController.productNameValid.value
+                                      ? AppColors.appNeutralColor5
+                                      : AppColors.appRedColor,
+                                  width: 1,
+                                ),
+                              ),
+                              enabledBorder: const UnderlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: AppColors.appNeutralColor5,
+                                  width: 1,
+                                ),
+                              ),
+                              errorBorder: const UnderlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: AppColors.appRedColor,
+                                  width: 1,
+                                ),
+                              ),
+                              errorText:  productController.productNameValid.value
+                                  ? null
+                                  : 'Product Name is required',
                               hintText: 'Product Name',
-                              controller: TextEditingController(),
-                              labelText: 'Product Name'),
+                              filled: true,
+                              fillColor: AppColors.appNeutralColor5,
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Name is required';
+                              }
+                              return null;
+                            },
+                          ),
                           const SizedBox(
                             width: 10,
                             height: 12.0,
@@ -144,7 +206,7 @@ class _AllProcductScreenState extends State<AllProcductScreen> {
                           ),
                           CommonTextField(
                             hintText: "Product ID",
-                            controller: TextEditingController(),
+                            controller: productController.productIdController.value,
                             labelText: "Product ID",
                           ),
                           const SizedBox(
@@ -185,9 +247,56 @@ class _AllProcductScreenState extends State<AllProcductScreen> {
                             height: 4.0,
                           ),
                           CommonTextField(
-                            hintText: "Enter price",
-                            controller: TextEditingController(),
-                            labelText: "Enter Price",
+                            controller: productController.productPriceController.value,
+                            focusNode: productController.productPriceFocusNode,
+                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                            onChanged: (value) {
+                              setState(() {
+                                if (value.isEmpty) {
+                                  productController.productPriceValid= false.obs;
+                                }else {
+                                  productController.productPriceValid = true.obs;
+                                }
+                              });
+                            },
+                            decoration: InputDecoration(
+                              labelStyle: const TextStyle(color: AppColors.appBlueColor),
+                              contentPadding: const EdgeInsets.only(right: 16,left: 16),
+                              focusedBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: productController.productPriceValid.value
+                                      ? AppColors.appNeutralColor5
+                                      : AppColors.appRedColor,
+                                  width: 1,
+                                ),
+                              ),
+                              enabledBorder: const UnderlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: AppColors.appNeutralColor5,
+                                  // Default color for enabled state
+                                  width: 1,
+                                ),
+                              ),
+                              errorBorder: const UnderlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: AppColors.appRedColor,
+                                  // Error border for invalid input
+                                  width: 1,
+                                ),
+                              ),
+                              errorText: productController.productPriceValid.value
+                                  ? null
+                                  : 'Price is required',
+                              hintText: "Enter price",
+                              filled: true,
+                              fillColor: AppColors.appNeutralColor5,
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'price is required';
+                              }
+                              return null;
+                            },
                           ),
                           const SizedBox(
                             width: 10,
@@ -227,7 +336,7 @@ class _AllProcductScreenState extends State<AllProcductScreen> {
                             height: 4.0,
                           ),
                           TextFormField(
-                            controller:  TextEditingController(),
+                            controller:  productController.productDescriptionController.value,
                             maxLines: 10,
                             minLines: 5,
                             decoration: InputDecoration(
@@ -286,18 +395,18 @@ class _AllProcductScreenState extends State<AllProcductScreen> {
                                         fontWeight: FontWeight.w400,
                                         color: AppColors.appNeutralColor2,
                                       ),
-                                      children: [
-                                        TextSpan(
-                                          text: '*',
-                                          style: TextStyle(
-                                            color: Colors.red,
-                                            // Set a different color for the asterisk
-                                            fontSize: 12.0,
-                                            // Same or different size
-                                            fontWeight: FontWeight.w400,
-                                          ),
-                                        ),
-                                      ],
+                                      // children: [
+                                      //   TextSpan(
+                                      //     text: '*',
+                                      //     style: TextStyle(
+                                      //       color: Colors.red,
+                                      //       // Set a different color for the asterisk
+                                      //       fontSize: 12.0,
+                                      //       // Same or different size
+                                      //       fontWeight: FontWeight.w400,
+                                      //     ),
+                                      //   ),
+                                      // ],
                                     ),
                                   ),
                                 ),
@@ -376,6 +485,9 @@ class _AllProcductScreenState extends State<AllProcductScreen> {
                         .width * 0.90,
                     buttonName: "Next",
                     onPressed: () {
+                      if (productController.validation(context)) {
+                      productController.insertProductData(context);
+                      }
                     },
                   ),
                   SizedBox(
@@ -410,7 +522,7 @@ class _AllProcductScreenState extends State<AllProcductScreen> {
 
     if (pickedFile != null) {
       setState(() {
-        _selectedFile = File(pickedFile.path);
+        productController.selectedFile = File(pickedFile.path);
       });
     } else {
       try {
@@ -423,7 +535,7 @@ class _AllProcductScreenState extends State<AllProcductScreen> {
           String? path = result.files.single.path;
           if (path != null) {
             setState(() {
-              _selectedFile = File(path);
+              productController.selectedFile = File(path);
             });
             debugPrint('Selected file path: $path');
             _showError('Selected file path: $path');
@@ -444,13 +556,13 @@ class _AllProcductScreenState extends State<AllProcductScreen> {
 
 
   Widget _buildFilePreview() {
-    if (_selectedFile == null) {
+    if (productController.selectedFile == null) {
       return const Text('No file selected');
     } else {
-      final int fileSizeInBytes = _selectedFile!.lengthSync();
+      final int fileSizeInBytes = productController.selectedFile!.lengthSync();
       final String fileSize = '${(fileSizeInBytes / (1024 * 1024)).toStringAsFixed(1)} MB';
       final String formattedDate = DateFormat('dd/MM/yyyy').format(DateTime.now());
-      final String fileName = _selectedFile!.path.split('/').last;
+      final String fileName = productController.selectedFile!.path.split('/').last;
 
       return Container(
         padding: const EdgeInsets.all(8.0),
@@ -461,13 +573,13 @@ class _AllProcductScreenState extends State<AllProcductScreen> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (_selectedFile!.path.endsWith('.png') ||
-                _selectedFile!.path.endsWith('.jpg') ||
-                _selectedFile!.path.endsWith('.jpeg'))
+            if (productController.selectedFile!.path.endsWith('.png') ||
+                productController.selectedFile!.path.endsWith('.jpg') ||
+                productController.selectedFile!.path.endsWith('.jpeg'))
               ClipRRect(
                 borderRadius: BorderRadius.circular(8.0),
                 child: Image.file(
-                  _selectedFile!,
+                  productController.selectedFile!,
                   width: 50,
                   height: 50,
                   fit: BoxFit.cover,
@@ -481,7 +593,7 @@ class _AllProcductScreenState extends State<AllProcductScreen> {
                   },
                 ),
               )
-            else if (_selectedFile!.path.endsWith('.pdf'))
+            else if (productController.selectedFile!.path.endsWith('.pdf'))
               const Icon(Icons.picture_as_pdf, size: 50, color: Colors.red)
             else
               const Icon(Icons.insert_drive_file, size: 50, color: AppColors.appNeutralColor2),
@@ -509,7 +621,7 @@ class _AllProcductScreenState extends State<AllProcductScreen> {
             GestureDetector(
               onTap: () {
                 setState(() {
-                  _selectedFile = null; // Remove the selected file
+                  productController.selectedFile = null; // Remove the selected file
                 });
               },
               child: const Icon(Icons.highlight_remove, color: AppColors.appNeutralColor2),

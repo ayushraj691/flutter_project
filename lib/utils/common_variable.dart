@@ -16,7 +16,10 @@ class CommonVariable {
   static var businessName = "".obs;
   static var Percentage = "".obs;
   static var businessId = "".obs;
-
+  static var planId = "".obs;
+  static var temporaryPlanId = "".obs;
+  static var approvedBalance = 0.0.obs;
+  static var pendingBalance = 0.obs;
 
   static getClientDetails() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();

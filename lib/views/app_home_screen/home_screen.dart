@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:paycron/utils/color_constants.dart';
 import 'package:paycron/utils/common_variable.dart';
-import 'package:paycron/views/dashboard/bottom_floating_bar.dart';
 import 'package:paycron/views/widgets/common_button.dart';
 import '../../utils/image_assets.dart';
 

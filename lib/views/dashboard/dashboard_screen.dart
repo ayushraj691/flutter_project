@@ -1,10 +1,12 @@
 import 'package:animated_segmented_tab_control/animated_segmented_tab_control.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:paycron/utils/color_constants.dart';
 import 'package:paycron/utils/common_variable.dart';
 import 'package:paycron/utils/image_assets.dart';
 import 'package:paycron/views/dashboard/overall_statistic_screen.dart';
 import 'package:paycron/views/dashboard/report_overview_screen.dart';
+import 'package:paycron/views/single_company_dashboard/profile_Screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -23,6 +25,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     double verticalPadding = screenHeight * 0.02;
 
     return Scaffold(
+      backgroundColor: AppColors.appBackgroundColor,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -59,9 +62,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   const Spacer(),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: CircleAvatar(
-                      radius: screenHeight / 40,
-                      backgroundImage: AssetImage(ImageAssets.profile),
+                    child: InkWell(
+                      onTap: () => {
+                        Get.to(const ProfileScreen())
+                      },
+                      child: CircleAvatar(
+                        radius: screenHeight / 40,
+                        backgroundImage: AssetImage(ImageAssets.profile),
+                      ),
                     ),
                   ),
                 ],
@@ -76,18 +84,28 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           horizontal: horizontalPadding,
                           vertical: verticalPadding,
                         ),
-                        child: const SegmentedTabControl(
-                          radius: Radius.circular(20.0),
-                          backgroundColor: AppColors.appBackgroundGreyColor,
-                          indicatorColor: AppColors.appWhiteColor,
-                          textStyle: TextStyle(
-                              fontWeight: FontWeight.w600, fontFamily: 'Sofia Sans'),
+                        child : SegmentedTabControl(
+                          barDecoration: BoxDecoration(
+                            color: AppColors.appTabBackgroundColor,
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
+                          indicatorDecoration: BoxDecoration(
+                            color: AppColors.appWhiteColor,
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
+                          indicatorPadding:  const EdgeInsets.all(6.0),
+                          textStyle: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontFamily: 'Sofia Sans',
+                          ),
                           tabTextColor: AppColors.appGreyColor,
                           selectedTabTextColor: AppColors.appTextColor,
-                          tabPadding: EdgeInsets.symmetric(
-                              vertical: 10.0, horizontal: 20.0),
-                          indicatorPadding: EdgeInsets.all(5.0),
-                          tabs: [
+                          tabPadding: const EdgeInsets.symmetric(
+                            vertical: 10.0,
+                            horizontal: 20.0,
+                          ),
+                          // Define tabs
+                          tabs: const [
                             SegmentTab(
                               label: 'Overall Statistics',
                             ),
@@ -100,7 +118,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       Expanded(
                         child: TabBarView(
                           children: [
-                            OverallStatistics(),
+                            const OverallStatistics(),
                             ReportOverview(),
                           ],
                         ),

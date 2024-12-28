@@ -7,10 +7,11 @@ import 'package:paycron/controller/drawer_Controller/customer_controller/add_cus
 import 'package:paycron/controller/variable_controller.dart';
 import 'package:paycron/model/drawer_model/insertCustomerData/ReqAddCustomer.dart';
 import 'package:paycron/utils/color_constants.dart';
+import 'package:paycron/utils/general_methods.dart';
 import 'package:paycron/utils/image_assets.dart';
 import 'package:paycron/utils/my_toast.dart';
 import 'package:paycron/views/drawer_screen/customer/add_account_popup.dart';
-import 'package:paycron/views/drawer_screen/customer/edit_account_popup.dart';
+import 'package:paycron/views/drawer_screen/customer/edit_screen/edit_account_popup.dart';
 import 'package:paycron/views/widgets/common_textform_field.dart';
 
 class AddCustomerForm extends StatefulWidget {
@@ -26,7 +27,6 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
   int currentStep = 1;
   bool _isAccountDetail = false;
   bool isPersonalDetailsFilled = false;
-  String selectedCountryCode = '+1';
   Timer? _debounce;
 
   @override
@@ -46,7 +46,6 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
       if (_debounce?.isActive ?? false) _debounce!.cancel();
       _debounce = Timer(const Duration(milliseconds: 500), () {
           _checkRoutingNumber(input);
-          // FocusScope.of(context).unfocus();
       });
 
     if (input.length < 9) {
@@ -94,8 +93,7 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
         ),
       ),
       body: Container(
-        padding: EdgeInsets.all(screenWidth * 0.05), // 5% of the screen width
-        // height: screenHeight * 0.8, // 80% of the screen height
+        padding: EdgeInsets.all(screenWidth * 0.05),
         child: Form(
           child: Column(
             children: [
@@ -127,7 +125,11 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                               ),
                               SizedBox(width: screenWidth * 0.02),
                               isPersonalDetailsFilled == true
-                                  ? Image.asset(ImageAssets.success)
+                                  ? Image.asset(
+                                ImageAssets.success,
+                                width: screenWidth * 0.05,
+                                height: screenWidth * 0.05,
+                              )
                                   : const SizedBox.shrink(),
                             ],
                           ),
@@ -147,7 +149,7 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                   Expanded(
                     child: GestureDetector(
                       onTap: () {
-                        if (addCustomerController.personValidation()) {
+                        if (addCustomerController.personValidation(context)) {
                           setState(() {
                             currentStep = 2;
                             isPersonalDetailsFilled = true;
@@ -220,7 +222,7 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                               const SizedBox(height: 4.0),
                               CommonTextField(
                                 controller:
-                                    addCustomerController.nameController,
+                                    addCustomerController.nameController.value,
                                 labelText: "Name",
                                 keyboardType: TextInputType.text,
                                 focusNode: addCustomerController.nameFocusNode,
@@ -233,25 +235,23 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                                   RegExp regExp = RegExp(pattern);
                                   setState(() {
                                     if (value.isEmpty) {
-                                      addCustomerController.nameValid = false;
+                                      addCustomerController.nameValid = false.obs;
                                     } else if (regExp.hasMatch(value)) {
-                                      addCustomerController.nameValid = true;
+                                      addCustomerController.nameValid = true.obs;
                                     } else {
-                                      addCustomerController.nameValid = false;
+                                      addCustomerController.nameValid = false.obs;
                                     }
                                   });
                                 },
                                 decoration: InputDecoration(
-                                  labelStyle: const TextStyle(
-                                      color: AppColors.appBlueColor),
-                                  contentPadding: const EdgeInsets.all(18),
+                                  labelStyle: const TextStyle(color: AppColors.appBlueColor),
+                                  contentPadding: const EdgeInsets.only(right: 16,left: 16),
                                   focusedBorder: UnderlineInputBorder(
                                     borderSide: BorderSide(
-                                      color: addCustomerController.nameValid
+                                      color: addCustomerController.nameValid.value
                                           ? AppColors.appNeutralColor5
                                           : AppColors.appRedColor,
-                                      // Toggle color based on validity
-                                      width: 2, // Thickness for the underline
+                                      width: 1, // Thickness for the underline
                                     ),
                                   ),
                                   enabledBorder: const UnderlineInputBorder(
@@ -265,10 +265,10 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                                     borderSide: BorderSide(
                                       color: AppColors.appRedColor,
                                       // Error border for invalid input
-                                      width: 2,
+                                      width: 1,
                                     ),
                                   ),
-                                  errorText: addCustomerController.nameValid
+                                  errorText: addCustomerController.nameValid.value
                                       ? null
                                       : 'Name is required',
                                   // Error message when invalid
@@ -331,7 +331,7 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                                       child: CountryCodePicker(
                                         onChanged: (countryCode) {
                                           setState(() {
-                                            selectedCountryCode =
+                                            addCustomerController.selectedCountryCode =
                                                 countryCode.dialCode!;
                                           });
                                         },
@@ -353,7 +353,7 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                                     Expanded(
                                       child: TextFormField(
                                         controller: addCustomerController
-                                            .mobileController,
+                                            .mobileController.value,
                                         keyboardType: TextInputType.number,
                                         maxLength: 10,
                                         focusNode: addCustomerController
@@ -382,16 +382,15 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                                               color: Colors.grey),
                                           filled: true,
                                           fillColor: AppColors.appNeutralColor5,
-                                          contentPadding:
-                                              const EdgeInsets.all(18),
+                                          contentPadding: const EdgeInsets.only(right: 16,left: 16),
                                           focusedBorder: UnderlineInputBorder(
                                             borderSide: BorderSide(
                                               color: addCustomerController
-                                                      .mobileValid
+                                                      .mobileValid.value
                                                   ? AppColors.appNeutralColor5
                                                   : AppColors.appRedColor,
                                               // Change color based on validation
-                                              width: 2,
+                                              width: 1,
                                             ),
                                           ),
                                           enabledBorder:
@@ -406,14 +405,14 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                                               const UnderlineInputBorder(
                                             borderSide: BorderSide(
                                               color: AppColors.appRedColor,
-                                              width: 2,
+                                              width: 1,
                                             ),
                                           ),
                                           errorText: addCustomerController
-                                                  .mobileValid
+                                                  .mobileValid.value
                                               ? null
                                               : (addCustomerController
-                                                      .mobileController
+                                                      .mobileController.value
                                                       .text
                                                       .isEmpty
                                                   ? 'Mobile number is required'
@@ -422,7 +421,7 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                                         onChanged: (value) {
                                           setState(() {
                                             addCustomerController
-                                                .mobileValid = value
+                                                .mobileValid.value = value
                                                     .length ==
                                                 10; // Valid if exactly 10 digits
                                           });
@@ -434,14 +433,13 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                                 const SizedBox(height: 4),
                                 Builder(
                                   builder: (context) {
-                                    // Access the form field's error message
                                     final formField =
                                         context.findAncestorWidgetOfExactType<
                                             TextFormField>();
                                     return Text(
                                       formField?.validator?.call(
                                               addCustomerController
-                                                  .mobileController.text) ??
+                                                  .mobileController.value.text) ??
                                           '',
                                       style: const TextStyle(
                                           color: Colors.red,
@@ -482,7 +480,7 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                               const SizedBox(height: 4.0),
                               CommonTextField(
                                 controller:
-                                    addCustomerController.emailController,
+                                    addCustomerController.emailController.value,
                                 labelText: "Email Id",
                                 keyboardType: TextInputType.emailAddress,
                                 focusNode: addCustomerController.emailFocusNode,
@@ -493,26 +491,25 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                                   setState(() {
                                     if (value.isEmpty) {
                                       addCustomerController.emailValid =
-                                          false; // Empty field
+                                          false.obs; // Empty field
                                     } else if (regExp.hasMatch(value)) {
-                                      addCustomerController.emailValid = true;
+                                      addCustomerController.emailValid = true.obs;
                                     } else {
                                       addCustomerController.emailValid =
-                                          false; // Invalid input
+                                          false.obs; // Invalid input
                                     }
                                   });
                                 },
                                 decoration: InputDecoration(
                                   labelStyle: const TextStyle(
                                       color: AppColors.appBlueColor),
-                                  contentPadding: const EdgeInsets.all(18),
+                                  contentPadding: const EdgeInsets.only(right: 16,left: 16),
                                   focusedBorder: UnderlineInputBorder(
                                     borderSide: BorderSide(
-                                      color: addCustomerController.emailValid
+                                      color: addCustomerController.emailValid.value
                                           ? AppColors.appNeutralColor5
                                           : AppColors.appRedColor,
-                                      // Toggle color based on validity
-                                      width: 2, // Thickness for the underline
+                                      width: 1, // Thickness for the underline
                                     ),
                                   ),
                                   enabledBorder: const UnderlineInputBorder(
@@ -525,14 +522,13 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                                   errorBorder: const UnderlineInputBorder(
                                     borderSide: BorderSide(
                                       color: AppColors.appRedColor,
-                                      // Error border for invalid input
-                                      width: 2,
+                                      width: 1,
                                     ),
                                   ),
-                                  errorText: addCustomerController.emailValid
+                                  errorText: addCustomerController.emailValid.value
                                       ? null
                                       : (addCustomerController
-                                              .emailController.text.isEmpty
+                                              .emailController.value.text.isEmpty
                                           ? 'Email is required'
                                           : 'Invalid Email'),
                                   hintText: "Enter email",
@@ -563,7 +559,7 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                         const SizedBox(height: 4.0),
                         TextFormField(
                           controller:
-                              addCustomerController.descriptionController,
+                              addCustomerController.descriptionController.value,
                           maxLines: 10,
                           minLines: 5,
                           keyboardType: TextInputType.text,
@@ -576,7 +572,7 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                               fontFamily: 'Sofia Sans',
                             ),
                             alignLabelWithHint: true,
-                            contentPadding: EdgeInsets.all(16.0),
+                            contentPadding: const EdgeInsets.all(16.0),
                             enabledBorder: OutlineInputBorder(
                               borderSide: const BorderSide(
                                 color: AppColors.appNeutralColor5,
@@ -644,7 +640,7 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                         child: ElevatedButton(
                           onPressed: () {
                             setState(() {
-                              if (addCustomerController.personValidation()) {
+                              if (addCustomerController.personValidation(context)) {
                                 currentStep = 2;
                                 isPersonalDetailsFilled = true;
                                 addCustomerController.accountDetailsList.isEmpty
@@ -678,7 +674,7 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                                   addCustomerController.clearAllAccount();
                                 } else {
                                   setState(() {
-                                    if (addCustomerController.validation()) {
+                                    if (addCustomerController.validation(context)) {
                                       _isAccountDetail = true;
                                       addCustomerController.addAccountDetail();
                                       addCustomerController.clearAllAccount();
@@ -704,12 +700,12 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                                           MainAxisAlignment.center,
                                       children: [
                                         Icon(
-                                          Icons.add, // Plus icon for "Add More"
+                                          Icons.add,
                                           color: AppColors.appBlueColor,
                                         ),
                                         SizedBox(
                                             width:
-                                                8), // Space between icon and text
+                                                8),
                                         Text(
                                           "Add More",
                                           style: TextStyle(
@@ -725,20 +721,21 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                                       style: TextStyle(
                                         fontSize: 16,
                                         color: Colors
-                                            .white, // White text color for "Save"
+                                            .white,
                                       ),
                                     ),
                             ),
                           ),
 
                           const SizedBox(
-                              width: 20), // Add space between buttons
+                              width: 20),
                           Expanded(
                             child: ElevatedButton(
                               onPressed: () {
+                                GeneralMethods.loadingDialog(context);
                                 setState(() {});
                                 if (!_isAccountDetail) {
-                                  if (addCustomerController.validation()) {
+                                  if (addCustomerController.validation(context)) {
                                     addCustomerController.accountDetailsList.clear();
                                     addCustomerController.addAccountDetail();
                                     addCustomerController.insertCustomerData();
@@ -775,7 +772,6 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
 
   Widget buildAccountForm(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -794,7 +790,7 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
             ElevatedButton(
               onPressed: () {
                 setState(() {
-                  if (addCustomerController.validation()) {
+                  if (addCustomerController.validation(context)) {
                     _isAccountDetail = true;
                     addCustomerController.addAccountDetail();
                     addCustomerController.clearAllAccount();
@@ -851,7 +847,7 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
               ),
               const SizedBox(height: 4.0),
               CommonTextField(
-                controller: addCustomerController.accountHolderNameController,
+                controller: addCustomerController.accountHolderNameController.value,
                 labelText: "Account Holder Name",
                 focusNode: addCustomerController.accountNameFocusNode,
                 keyboardType: TextInputType.text,
@@ -863,11 +859,11 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                   RegExp regExp = RegExp(pattern);
                   setState(() {
                     if (value.isEmpty) {
-                      addCustomerController.AccountNameValid = false;
+                      addCustomerController.AccountNameValid = false.obs;
                     } else if (regExp.hasMatch(value)) {
-                      addCustomerController.AccountNameValid = true;
+                      addCustomerController.AccountNameValid = true.obs;
                     } else {
-                      addCustomerController.AccountNameValid = false;
+                      addCustomerController.AccountNameValid = false.obs;
                     }
                   });
                 },
@@ -876,7 +872,7 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                   contentPadding: const EdgeInsets.all(18),
                   focusedBorder: UnderlineInputBorder(
                     borderSide: BorderSide(
-                      color: addCustomerController.AccountNameValid
+                      color: addCustomerController.AccountNameValid.value
                           ? AppColors.appNeutralColor5
                           : AppColors.appRedColor,
                       width: 2,
@@ -895,7 +891,7 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                       width: 2,
                     ),
                   ),
-                  errorText: addCustomerController.AccountNameValid
+                  errorText: addCustomerController.AccountNameValid.value
                       ? null
                       : 'Account Holder Name is required',
                   hintText: "Enter Account Holder Name",
@@ -951,11 +947,11 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                       RegExp regExp = RegExp(pattern);
                       setState(() {
                         if (value.isEmpty) {
-                          addCustomerController.routingValid = false;
+                          addCustomerController.routingValid = false.obs;
                           addCustomerController.routingErrorMessage =
                               'Routing Number cannot be empty';
                         } else if (!regExp.hasMatch(value)) {
-                          addCustomerController.routingValid = false;
+                          addCustomerController.routingValid = false.obs;
                           addCustomerController.routingErrorMessage =
                               'Routing Number must be 9 digits';
                         } else {
@@ -971,7 +967,7 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                       contentPadding: const EdgeInsets.all(18),
                       focusedBorder: UnderlineInputBorder(
                         borderSide: BorderSide(
-                          color: addCustomerController.routingValid
+                          color: addCustomerController.routingValid.value
                               ? AppColors.appNeutralColor5
                               : AppColors.appRedColor,
                           width: 2,
@@ -989,7 +985,7 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                           width: 2,
                         ),
                       ),
-                      errorText: addCustomerController.routingValid
+                      errorText: addCustomerController.routingValid.value
                           ? null
                           : addCustomerController.routingErrorMessage,
                       hintText: "Enter Routing Number",
@@ -1016,7 +1012,7 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
           visible: addCustomerController.isRoutingNumberValid.value,
           child: Center(
             child: Container(
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(10),
@@ -1100,7 +1096,7 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
               StatefulBuilder(
                 builder: (BuildContext context, StateSetter setState) {
                   return CommonTextField(
-                    controller: addCustomerController.accountNumberController,
+                    controller: addCustomerController.accountNumberController.value,
                     labelText: "Account Number",
                     focusNode: addCustomerController.accountNumberFocusNode,
                     keyboardType: TextInputType.number,
@@ -1108,15 +1104,15 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                     onChanged: (value) {
                       setState(() {
                         if (value.isEmpty) {
-                          addCustomerController.AccountNumberValid = false;
+                          addCustomerController.AccountNumberValid = false.obs;
                           addCustomerController.accountNumberErrorMessage =
                               'Account number is required';
                         } else if (value.length > 15) {
-                          addCustomerController.AccountNumberValid = false;
+                          addCustomerController.AccountNumberValid = false.obs;
                           addCustomerController.accountNumberErrorMessage =
                               'Account number must be 15 digits or less';
                         } else {
-                          addCustomerController.AccountNumberValid = true;
+                          addCustomerController.AccountNumberValid = true.obs;
                           addCustomerController.accountNumberErrorMessage =
                               null;
                         }
@@ -1129,7 +1125,7 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                       contentPadding: const EdgeInsets.all(18),
                       focusedBorder: UnderlineInputBorder(
                         borderSide: BorderSide(
-                          color: addCustomerController.AccountNumberValid
+                          color: addCustomerController.AccountNumberValid.value
                               ? AppColors.appNeutralColor5
                               : AppColors.appRedColor,
                           width: 2,
@@ -1147,7 +1143,7 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                           width: 2,
                         ),
                       ),
-                      errorText: addCustomerController.AccountNumberValid
+                      errorText: addCustomerController.AccountNumberValid.value
                           ? null
                           : addCustomerController.accountNumberErrorMessage,
                       hintText: "Enter Account Number",
@@ -1198,7 +1194,7 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
               const SizedBox(height: 4.0),
               CommonTextField(
                 controller:
-                    addCustomerController.confirmAccountNumberController,
+                    addCustomerController.confirmAccountNumberController.value,
                 labelText: "Confirm Account Number",
                 keyboardType: TextInputType.number,
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -1206,21 +1202,21 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                 onChanged: (value) {
                   setState(() {
                     if (value.isEmpty) {
-                      addCustomerController.ConfirmAccountNumberValid = false;
+                      addCustomerController.ConfirmAccountNumberValid = false.obs;
                       addCustomerController.confirmAccountErrorMessage =
                           'Confirm Account number is required';
                     } else if (value !=
-                        addCustomerController.accountNumberController.text
+                        addCustomerController.accountNumberController.value.text
                             .trim()) {
-                      addCustomerController.ConfirmAccountNumberValid = false;
+                      addCustomerController.ConfirmAccountNumberValid = false.obs;
                       addCustomerController.confirmAccountErrorMessage =
                           'Account Number & Confirm Account Number should be the same';
                     } else if (value.length > 15) {
-                      addCustomerController.ConfirmAccountNumberValid = false;
+                      addCustomerController.ConfirmAccountNumberValid = false.obs;
                       addCustomerController.confirmAccountErrorMessage =
                           'Confirm Account number must be 15 digits or less';
                     } else {
-                      addCustomerController.ConfirmAccountNumberValid = true;
+                      addCustomerController.ConfirmAccountNumberValid = true.obs;
                       addCustomerController.confirmAccountErrorMessage = null;
                     }
                   });
@@ -1231,7 +1227,7 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                   contentPadding: const EdgeInsets.all(18),
                   focusedBorder: UnderlineInputBorder(
                     borderSide: BorderSide(
-                      color: addCustomerController.ConfirmAccountNumberValid
+                      color: addCustomerController.ConfirmAccountNumberValid.value
                           ? AppColors.appNeutralColor5
                           : AppColors.appRedColor,
                       width: 2,
@@ -1249,7 +1245,7 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                       width: 2,
                     ),
                   ),
-                  errorText: addCustomerController.ConfirmAccountNumberValid
+                  errorText: addCustomerController.ConfirmAccountNumberValid.value
                       ? null
                       : addCustomerController.confirmAccountErrorMessage,
                   hintText: "Re-enter Account Number",
@@ -1261,7 +1257,7 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                     return 'Confirm account number is required';
                   }
                   if (value.trim() !=
-                      addCustomerController.accountNumberController.text
+                      addCustomerController.accountNumberController.value.text
                           .trim()) {
                     return 'Account Number & Confirm Account Number should be the same';
                   }
@@ -1318,18 +1314,18 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
               ),
               const SizedBox(height: 4.0),
               CommonTextField(
-                controller: addCustomerController.suitAptController,
+                controller: addCustomerController.suitAptController.value,
                 labelText: "Suit/Apt",
                 keyboardType: TextInputType.text,
                 focusNode: addCustomerController.suitAptFocusNode,
                 onChanged: (value) {
                   setState(() {
                     if (value.isEmpty) {
-                      addCustomerController.suitAptValid = false;
+                      addCustomerController.suitAptValid = false.obs;
                       addCustomerController.suitAptErrorMessage =
                           'Suit/Apt is required';
                     } else {
-                      addCustomerController.suitAptValid = true;
+                      addCustomerController.suitAptValid = true.obs;
                       addCustomerController.suitAptErrorMessage = null;
                     }
                   });
@@ -1340,7 +1336,7 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                   contentPadding: const EdgeInsets.all(18),
                   focusedBorder: UnderlineInputBorder(
                     borderSide: BorderSide(
-                      color: addCustomerController.suitAptValid
+                      color: addCustomerController.suitAptValid.value
                           ? AppColors.appNeutralColor5
                           : AppColors.appRedColor,
                       width: 2,
@@ -1358,7 +1354,7 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                       width: 2,
                     ),
                   ),
-                  errorText: addCustomerController.suitAptValid
+                  errorText: addCustomerController.suitAptValid.value
                       ? null
                       : addCustomerController.suitAptErrorMessage,
                   hintText: "Enter Suit/Apt",
@@ -1403,18 +1399,18 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
               ),
               const SizedBox(height: 4.0),
               CommonTextField(
-                controller: addCustomerController.streetController,
+                controller: addCustomerController.streetController.value,
                 labelText: "Street",
                 keyboardType: TextInputType.text,
                 focusNode: addCustomerController.streetFocusNode,
                 onChanged: (value) {
                   setState(() {
                     if (value.isEmpty) {
-                      addCustomerController.streetValid = false;
+                      addCustomerController.streetValid = false.obs;
                       addCustomerController.streetErrorMessage =
                           'Street is required';
                     } else {
-                      addCustomerController.streetValid = true;
+                      addCustomerController.streetValid = true.obs;
                       addCustomerController.streetErrorMessage = null;
                     }
                   });
@@ -1425,7 +1421,7 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                   contentPadding: const EdgeInsets.all(18),
                   focusedBorder: UnderlineInputBorder(
                     borderSide: BorderSide(
-                      color: addCustomerController.streetValid
+                      color: addCustomerController.streetValid.value
                           ? AppColors.appNeutralColor5
                           : AppColors.appRedColor,
                       width: 2,
@@ -1443,7 +1439,7 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                       width: 2,
                     ),
                   ),
-                  errorText: addCustomerController.streetValid
+                  errorText: addCustomerController.streetValid.value
                       ? null
                       : addCustomerController.streetErrorMessage,
                   hintText: "Enter Street",
@@ -1492,7 +1488,7 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                     ),
                     const SizedBox(height: 4.0),
                     CommonTextField(
-                      controller: addCustomerController.countryController,
+                      controller: addCustomerController.countryController.value,
                       labelText: "Country",
                       keyboardType: TextInputType.text,
                       focusNode: addCustomerController.countryFocusNode,
@@ -1501,14 +1497,14 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                         RegExp regExp = RegExp(pattern);
                         setState(() {
                           if (value.isEmpty) {
-                            addCustomerController.countrytValid = false;
+                            addCustomerController.countrytValid = false.obs;
                             addCustomerController.countryterrorMessage =
                                 'Country is required';
                           } else if (regExp.hasMatch(value)) {
-                            addCustomerController.countrytValid = true;
+                            addCustomerController.countrytValid = true.obs;
                             addCustomerController.countryterrorMessage = null;
                           } else {
-                            addCustomerController.countrytValid = true;
+                            addCustomerController.countrytValid = true.obs;
                             addCustomerController.countryterrorMessage = null;
                           }
                         });
@@ -1520,7 +1516,7 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                         contentPadding: const EdgeInsets.all(18),
                         focusedBorder: UnderlineInputBorder(
                           borderSide: BorderSide(
-                            color: addCustomerController.countrytValid
+                            color: addCustomerController.countrytValid.value
                                 ? AppColors.appNeutralColor5
                                 : AppColors.appRedColor,
                             width: 2,
@@ -1538,7 +1534,7 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                             width: 2,
                           ),
                         ),
-                        errorText: addCustomerController.countrytValid
+                        errorText: addCustomerController.countrytValid.value
                             ? null
                             : addCustomerController.countryterrorMessage,
                         hintText: "Enter Country",
@@ -1586,7 +1582,7 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                     ),
                     const SizedBox(height: 4.0),
                     CommonTextField(
-                      controller: addCustomerController.stateController,
+                      controller: addCustomerController.stateController.value,
                       labelText: "State",
                       keyboardType: TextInputType.text,
                       focusNode: addCustomerController.stateFocusNode,
@@ -1595,14 +1591,14 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                         RegExp regExp = RegExp(pattern);
                         setState(() {
                           if (value.isEmpty) {
-                            addCustomerController.stateValid = false;
+                            addCustomerController.stateValid = false.obs;
                             addCustomerController.stateErrorMessage =
                                 'State is required';
                           } else if (regExp.hasMatch(value)) {
-                            addCustomerController.stateValid = true;
+                            addCustomerController.stateValid = true.obs;
                             addCustomerController.stateErrorMessage = null;
                           } else {
-                            addCustomerController.stateValid = true;
+                            addCustomerController.stateValid = true.obs;
                             addCustomerController.stateErrorMessage = null;
                           }
                         });
@@ -1614,7 +1610,7 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                         contentPadding: const EdgeInsets.all(18),
                         focusedBorder: UnderlineInputBorder(
                           borderSide: BorderSide(
-                            color: addCustomerController.stateValid
+                            color: addCustomerController.stateValid.value
                                 ? AppColors.appNeutralColor5
                                 : AppColors.appRedColor,
                             width: 2,
@@ -1632,7 +1628,7 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                             width: 2,
                           ),
                         ),
-                        errorText: addCustomerController.stateValid
+                        errorText: addCustomerController.stateValid.value
                             ? null
                             : addCustomerController.stateErrorMessage,
                         hintText: "Enter State",
@@ -1686,18 +1682,18 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                     ),
                     const SizedBox(height: 4.0),
                     CommonTextField(
-                      controller: addCustomerController.cityController,
+                      controller: addCustomerController.cityController.value,
                       labelText: "City",
                       focusNode: addCustomerController.cityFocusNode,
                       keyboardType: TextInputType.text,
                       onChanged: (value) {
                         setState(() {
                           if (value.isEmpty) {
-                            addCustomerController.cityValid = false;
+                            addCustomerController.cityValid = false.obs;
                             addCustomerController.cityErrorMessage =
                                 'City is required';
                           } else {
-                            addCustomerController.cityValid = true;
+                            addCustomerController.cityValid = true.obs;
                             addCustomerController.cityErrorMessage = null;
                           }
                         });
@@ -1709,7 +1705,7 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                         contentPadding: const EdgeInsets.all(18),
                         focusedBorder: UnderlineInputBorder(
                           borderSide: BorderSide(
-                            color: addCustomerController.cityValid
+                            color: addCustomerController.cityValid.value
                                 ? AppColors.appNeutralColor5
                                 : AppColors.appRedColor,
                             width: 2,
@@ -1727,7 +1723,7 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                             width: 2,
                           ),
                         ),
-                        errorText: addCustomerController.cityValid
+                        errorText: addCustomerController.cityValid.value
                             ? null
                             : addCustomerController.cityErrorMessage,
                         hintText: "Enter City",
@@ -1775,7 +1771,7 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                     ),
                     const SizedBox(height: 4.0),
                     CommonTextField(
-                      controller: addCustomerController.zipController,
+                      controller: addCustomerController.zipController.value,
                       labelText: "Zip Code",
                       focusNode: addCustomerController.zipcodeFocusNode,
                       keyboardType: TextInputType.number,
@@ -1786,15 +1782,15 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                         RegExp regExp = RegExp(pattern);
                         setState(() {
                           if (value.isEmpty) {
-                            addCustomerController.zipcodeValid = false;
+                            addCustomerController.zipcodeValid = false.obs;
                             addCustomerController.zipcodeErrorMessage =
                                 'Zip Code is required';
                           } else if (!regExp.hasMatch(value)) {
-                            addCustomerController.zipcodeValid = false;
+                            addCustomerController.zipcodeValid = false.obs;
                             addCustomerController.zipcodeErrorMessage =
                                 'Zip Code must be 6 digits';
                           } else {
-                            addCustomerController.zipcodeValid = true;
+                            addCustomerController.zipcodeValid = true.obs;
                             addCustomerController.zipcodeErrorMessage = null;
                           }
                         });
@@ -1806,7 +1802,7 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                         contentPadding: const EdgeInsets.all(18),
                         focusedBorder: UnderlineInputBorder(
                           borderSide: BorderSide(
-                            color: addCustomerController.zipcodeValid
+                            color: addCustomerController.zipcodeValid.value
                                 ? AppColors.appNeutralColor5
                                 : AppColors.appRedColor,
                             width: 2,
@@ -1824,7 +1820,7 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                             width: 2,
                           ),
                         ),
-                        errorText: addCustomerController.zipcodeValid
+                        errorText: addCustomerController.zipcodeValid.value
                             ? null
                             : addCustomerController.zipcodeErrorMessage,
                         hintText: "Enter Zip Code",
@@ -1903,7 +1899,7 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
                         editAccountPopup(context, index);
                       });
                     } else if (value == 'remove') {
-                      if (index == 0) {
+                      if (addCustomerController.accountDetailsList.length <= 1) {
                         MyToast.toast(
                             "You need at least one account to proceed.");
                       }else{
@@ -2020,7 +2016,11 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
       builder: (BuildContext context) {
         return Padding(
           padding: MediaQuery.of(context).viewInsets,
-          child: const AddAccountPopup(''),
+          child: AddAccountPopup('', onSave: () {
+            setState(() {
+
+            });
+          }),
         );
       },
     );
@@ -2052,7 +2052,7 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
           Expanded(
             flex: 2,
             child: Text(
-              "$label",
+              label,
               style: const TextStyle(
                 fontWeight: FontWeight.w400,
                 color: AppColors.appNeutralColor2,

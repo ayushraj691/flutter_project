@@ -53,7 +53,6 @@ class ProductDetailViewController extends GetxController{
         variableController.loading.value = false;
       }
     } catch (e) {
-      // Handle any errors during the API call
       debugPrint("Error occurred: $e");
       MyToast.toast("Something Went Wrong: ${e.toString()}");
       variableController.loading.value = false;

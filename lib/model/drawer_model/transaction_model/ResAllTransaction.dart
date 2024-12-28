@@ -9,7 +9,7 @@ class ResTransactionDetail {
   late String source;
   late String txnNumber;
   late int randomNumber;
-  late int payTotal;
+  late var payTotal;
   late bool isInvoice;
   late bool isInvoicePreapproved;
   late String payDue;
@@ -86,7 +86,7 @@ class ResTransactionDetail {
     source = json['source'] ?? "";
     txnNumber = json['txn_number'] ?? "";
     randomNumber = json['random_number'] ?? 0;
-    payTotal = json['pay_total'] ?? 0;
+    payTotal = json['pay_total'];
     isInvoice = json['is_invoice'] ?? false;
     isInvoicePreapproved = json['is_invoice_preapproved'] ?? false;
     payDue = json['pay_due'] ?? "";

@@ -5,29 +5,39 @@ import 'package:paycron/controller/variable_controller.dart';
 import 'package:paycron/model/all_bussiness_model/ResAllBussinessModel.dart';
 import 'package:paycron/utils/common_variable.dart';
 import 'package:paycron/utils/image_assets.dart';
-import 'package:paycron/views/company_dashboard/company_dashboard.dart';
+import 'package:paycron/utils/my_toast.dart';
+import 'package:paycron/utils/string_constants.dart';
 import 'package:paycron/views/drawer_screen/AllTransactions/all_Transaction_main_screen.dart';
+import 'package:paycron/views/drawer_screen/billing/billing_information.dart';
+import 'package:paycron/views/drawer_screen/billing/customer_billing.dart';
 import 'package:paycron/views/drawer_screen/customer/company_customer_main_screen.dart';
+import 'package:paycron/views/drawer_screen/invoice/invoice_main_screen.dart';
 import 'package:paycron/views/drawer_screen/product/Company_product_screen.dart';
+import 'package:paycron/views/drawer_screen/subscriptions/subscriptions_main_screen.dart';
+import 'package:paycron/views/drawer_screen/virtualTerminal/virtualTerminal_main_screen.dart';
 import 'package:paycron/views/funds/add_funds_screen.dart';
+import 'package:paycron/views/funds/funds_main_screen.dart';
+import 'package:paycron/views/single_company_dashboard/company_dashboard.dart';
+import 'package:paycron/views/single_company_dashboard/profile_Screen.dart';
 import 'package:paycron/views/widgets/NoDataScreen.dart';
 import '../../utils/color_constants.dart';
 
 class AppDrawer extends StatefulWidget {
-  AppDrawer({super.key});
+  const AppDrawer({super.key});
 
   @override
   State<AppDrawer> createState() => _AppDrawerState();
 }
 
 class _AppDrawerState extends State<AppDrawer> {
-  int selectedIndex = -1; // Store the index of the selected item
-  int expandedIndex = -1; // Store the index of the expanded item
+  int selectedIndex = -1;
+  int expandedIndex = -1;
   TextEditingController searchController = TextEditingController();
   var allbusinessController = Get.find<AllBussinessController>();
   var variableController = Get.find<VariableController>();
   List<ResAllBussiness> filteredItems = [];
   bool showSwitchCompanyView = false;
+
 
   @override
   void initState() {
@@ -56,7 +66,6 @@ class _AppDrawerState extends State<AppDrawer> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
 
     return Drawer(
       shape: const RoundedRectangleBorder(
@@ -90,7 +99,6 @@ class _AppDrawerState extends State<AppDrawer> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // Circular Progress Bar with Image in the center
                   Stack(
                     alignment: Alignment.center,
                     children: [
@@ -105,9 +113,15 @@ class _AppDrawerState extends State<AppDrawer> {
                               AppColors.appGreenDarkColor),
                         ),
                       ),
-                      CircleAvatar(
-                        radius: MediaQuery.of(context).size.height / 30,
-                        backgroundImage: AssetImage(ImageAssets.profile),
+                      InkWell(
+                        onTap: () => {
+                          Get.to(const ProfileScreen()),
+                          Scaffold.of(context).closeEndDrawer()
+                      },
+                        child: CircleAvatar(
+                          radius: MediaQuery.of(context).size.height / 30,
+                          backgroundImage: AssetImage(ImageAssets.profile),
+                        ),
                       ),
                     ],
                   ),
@@ -125,9 +139,7 @@ class _AppDrawerState extends State<AppDrawer> {
                       )),
                 ],
               ),
-
               const SizedBox(width: 10),
-
               // Account Information
               Flexible(
                 child: Column(
@@ -150,16 +162,14 @@ class _AppDrawerState extends State<AppDrawer> {
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                           overflow: TextOverflow
-                              .ellipsis, // Text will truncate if too long
+                              .ellipsis,
                         ),
                       ),
                     )
                   ],
                 ),
               ),
-
-              const SizedBox(width: 10),
-              // Switch Company Section
+              const SizedBox(width: 16),
               Flexible(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -167,9 +177,10 @@ class _AppDrawerState extends State<AppDrawer> {
                     Image.asset(
                       ImageAssets.refresh,
                       color: AppColors.appBlueColor,
+                      width: MediaQuery.of(context).size.width * 0.05,
+                      height: MediaQuery.of(context).size.height * 0.05,
                     ),
-                    // Icon(Icons.cameraswitch, color: AppColors.appBlueColor),
-                    SizedBox(width: 5),
+                    const SizedBox(width: 5),
                     Expanded(
                       child: InkWell(
                         onTap: () => {
@@ -178,38 +189,41 @@ class _AppDrawerState extends State<AppDrawer> {
                             true; // Show the switch company view
                           })
                         },
-                        child: const Text(
-                          'Switch \nCompany',
-                          style: TextStyle(
-                            color: AppColors.appBlueColor,
-                            fontSize: 14,
-                            fontWeight: FontWeight.normal,
-                            overflow: TextOverflow
-                                .ellipsis, // Text will truncate if too long
-                          ),
-                        ),
+                          child: LayoutBuilder(
+                            builder: (context, constraints) {
+                              return const Text(
+                                'Switch \nCompany',
+                                style: TextStyle(
+                                  color: AppColors.appBlueColor,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.normal,
+                                  overflow: TextOverflow.ellipsis, // Text will truncate if too long
+                                ),
+                                softWrap: true, // Allows the text to wrap if it's too long
+                              );
+                            },
+                          )
                       ),
                     ),
                   ],
                 ),
               ),
-
               const SizedBox(width: 10),
             ],
           ),
         ),
         const SizedBox(width: 10,),
         _createDrawerItem(
-            icon: Icons.dashboard_rounded,
+            image: Image.asset(ImageAssets.dashboardIcon),
             text: 'Dashboard',
             index: 0,
             onTap: () {
-              Get.to(CompanyDashboard());
+              Get.off(const CompanyDashboard());
               Scaffold.of(context).closeEndDrawer();
               setState(() => selectedIndex = 0);
             }),
         _createDrawerItem(
-            icon: Icons.people_outline,
+            image: Image.asset(ImageAssets.twoPerson),
             text: 'Customers',
             index: 1,
             onTap: () {
@@ -218,7 +232,7 @@ class _AppDrawerState extends State<AppDrawer> {
               setState(() => selectedIndex = 1);
             }),
         _createDrawerItem(
-            icon: Icons.wallet_giftcard_rounded,
+            image: Image.asset(ImageAssets.productIcon),
             text: 'Products',
             index: 2,
             onTap: () {
@@ -227,84 +241,110 @@ class _AppDrawerState extends State<AppDrawer> {
               Scaffold.of(context).closeEndDrawer();
             }),
         _createExpansionDrawerItem(
-          icon: Icons.wallet_membership_outlined,
+          image: Image.asset(ImageAssets.transactionIcon),
           text: 'All Transactions',
           index: 3,
           children: [
-            _createDrawerItem(
-                icon: Icons.account_balance_wallet_outlined,
-                text: 'Transactions',
-                index: 4,
-                onTap: () {
-                  setState(() => selectedIndex = 4);
-                  Get.to(const AllTransactionScreen());
-                  Scaffold.of(context).closeEndDrawer();
-                }),
-            _createDrawerItem(
-                icon: Icons.terminal_outlined,
-                text: 'Virtual Terminal',
-                index: 5,
-                onTap: () {
-                  setState(() => selectedIndex = 5);
-                  Scaffold.of(context).closeEndDrawer();
-                }),
-            _createDrawerItem(
-                icon: Icons.subscriptions_rounded,
-                text: 'Subscriptions',
-                index: 6,
-                onTap: () {
-                  setState(() => selectedIndex = 6);
-                  Scaffold.of(context).closeEndDrawer();
-                }),
-            _createDrawerItem(
-                icon: Icons.inventory,
-                text: 'Invoice',
-                index: 7,
-                onTap: () {
-                  setState(() => selectedIndex = 7);
-                  Scaffold.of(context).closeEndDrawer();
-                }),
+            Padding(
+              padding: const EdgeInsets.only(left: 24.0),
+              child: _createExpandedDrawerItem(
+                  image: Image.asset(ImageAssets.blueCircle),
+                  text: 'Transactions',
+                  index: 4,
+                  onTap: () {
+                    setState(() => selectedIndex = 4);
+                    Get.to(const AllTransactionScreen());
+                    Scaffold.of(context).closeEndDrawer();
+                  }),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 24.0),
+              child: _createExpandedDrawerItem(
+                  image: Image.asset(ImageAssets.blueCircle),
+                  text: 'Virtual Terminal',
+                  index: 5,
+                  onTap: () {
+                    setState(() => selectedIndex = 5);
+                    Get.to(const VirtualTerminalScreen());
+                    Scaffold.of(context).closeEndDrawer();
+                  }),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 24.0),
+              child: _createExpandedDrawerItem(
+                  image: Image.asset(ImageAssets.blueCircle),
+                  text: 'Subscriptions',
+                  index: 6,
+                  onTap: () {
+                    setState(() => selectedIndex = 6);
+                    Get.to(const SubscriptionsScreen());
+                    Scaffold.of(context).closeEndDrawer();
+                  }),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 24.0),
+              child: _createExpandedDrawerItem(
+                  image: Image.asset(ImageAssets.blueCircle),
+                  text: 'Invoice',
+                  index: 7,
+                  onTap: () {
+                    setState(() => selectedIndex = 7);
+                    Get.to(const InvoiceScreen());
+                    Scaffold.of(context).closeEndDrawer();
+                  }),
+            ),
           ],
         ),
+        _createDrawerItem(
+            image: Image.asset(ImageAssets.customerBillingIcon),
+            text: 'Customer Billing',
+            index: 8,
+            onTap: () {
+              setState(() => selectedIndex = 8);
+              Get.to(const CustomerBilling());
+              Scaffold.of(context).closeEndDrawer();
+            }),
         _createExpansionDrawerItem(
-          icon: Icons.report,
-          text: 'Report',
-          index: 8,
-          children: [
-            _createDrawerItem(
-                icon: Icons.account_balance_wallet_outlined,
-                text: 'Transactions',
-                index: 9,
-                onTap: () {
-                  setState(() => selectedIndex = 9);
-                  Scaffold.of(context).closeEndDrawer();
-                }),
-          ],
-        ),
-        _createDrawerItem(
-            icon: Icons.library_books,
+            image: Image.asset(ImageAssets.fundsIcon),
             text: 'Funds',
-            index: 10,
-            onTap: () {
-              setState(() => selectedIndex = 10);
-              Scaffold.of(context).closeEndDrawer();
-            }),
-        _createDrawerItem(
-            icon: Icons.developer_mode,
-            text: 'Developers',
-            index: 11,
-            onTap: () {
-              setState(() => selectedIndex = 11);
-              Scaffold.of(context).closeEndDrawer();
-            }),
-        _createDrawerItem(
-            icon: Icons.settings,
-            text: 'Settings',
-            index: 12,
-            onTap: () {
-              setState(() => selectedIndex = 12);
-              Scaffold.of(context).closeEndDrawer();
-            }),
+            index: 9,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 24.0),
+                child: _createExpandedDrawerItem(
+                    image: Image.asset(ImageAssets.blueCircle),
+                    text: 'Funds',
+                    index: 10,
+                    onTap: () {
+                    setState(() => selectedIndex = 10);
+                    Get.to(const FundsMainScreen());
+                    Scaffold.of(context).closeEndDrawer();
+                    }),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 24.0),
+                child:  _createExpandedDrawerItem(
+                    image: Image.asset(ImageAssets.blueCircle),
+                    text: 'Billing Information',
+                    index: 11,
+                    onTap: () {
+                      setState(() => selectedIndex = 11);
+                      Get.to(const BillingInformation());
+                      Scaffold.of(context).closeEndDrawer();
+                    }),
+              ),
+            ],
+        ),
+
+        // _createDrawerItem(
+        //     icon: Icons.settings,
+        //     text: 'Settings',
+        //     index: 11,
+        //     onTap: () {
+        //       setState(() => selectedIndex = 11);
+        //       Get.to(const RangeDatePickerScreen());
+        //       Scaffold.of(context).closeEndDrawer();
+        //     }),
       ],
     );
   }
@@ -364,26 +404,40 @@ class _AppDrawerState extends State<AppDrawer> {
   }
 
   Widget _createExpansionDrawerItem({
-    required IconData icon,
+    required Image image,
     required String text,
     required List<Widget> children,
     required int index,
   }) {
     return ExpansionTile(
-      leading: Icon(icon, color: selectedIndex == index ? AppColors.appBlueColor : AppColors.appBlackColor),
+      leading: Container(
+        decoration: BoxDecoration(
+          color: selectedIndex == index ? AppColors.appBlueColor :  AppColors.appTabBackgroundColor,
+          shape: BoxShape.circle,
+        ),
+        padding: const EdgeInsets.all(8.0),
+        child: Image(
+          image: image.image, // Use the image property of the Image widget
+          color: selectedIndex == index ? Colors.white : AppColors.appBlackColor, // Apply color dynamically if the image supports it
+          height: 24.0, // Set height for consistency
+          width: 24.0, // Set width for consistency
+        ),
+      ),
       title: Text(
         text,
         style: TextStyle(
           color: selectedIndex == index ? AppColors.appBlueColor : AppColors.appBlackColor,
-          fontWeight: selectedIndex == index ? FontWeight.bold : FontWeight.normal,
+          fontWeight: selectedIndex == index ? FontWeight.bold : FontWeight.bold,
+          fontFamily: Constants.Sofiafontfamily,
+          height: 2
         ),
       ),
       children: children,
     );
   }
 
-  Widget _createDrawerItem({
-    required IconData icon,
+  Widget _createExpandedDrawerItem({
+    required Image image, // Accept an Image instead of IconData
     required String text,
     required int index,
     required GestureTapCallback onTap,
@@ -391,25 +445,64 @@ class _AppDrawerState extends State<AppDrawer> {
     return ListTile(
       leading: Container(
         decoration: BoxDecoration(
-          color: selectedIndex == index ? AppColors.appBlueColor : Colors.transparent,
+          color: selectedIndex == index ? AppColors.appBlueColor : AppColors.appBlueColor,
+          shape: BoxShape.circle,
+        ),
+        padding: const EdgeInsets.all(6.0),
+        child: Image(
+          image: image.image, // Use the Image widget's image property
+          color: selectedIndex == index ? Colors.white : AppColors.appLightBlueColor,
+          height: 8.0, // Adjust the size as needed
+          width: 8.0,
+        ),
+      ),
+      title: Text(
+        text,
+        style: TextStyle(
+            color: selectedIndex == index ? AppColors.appBlueColor : AppColors.appBlackColor,
+            fontWeight: selectedIndex == index ? FontWeight.bold : FontWeight.bold,
+            fontFamily: Constants.Sofiafontfamily,
+            height: 2
+        ),
+      ),
+      onTap: () => onTap(),
+    );
+  }
+
+
+  Widget _createDrawerItem({
+    required Image image, // Accept an Image instead of IconData
+    required String text,
+    required int index,
+    required GestureTapCallback onTap,
+  }) {
+    return ListTile(
+      leading: Container(
+        decoration: BoxDecoration(
+          color: selectedIndex == index ? AppColors.appBlueColor : AppColors.appTabBackgroundColor,
           shape: BoxShape.circle,
         ),
         padding: const EdgeInsets.all(8.0),
-        child: Icon(
-          icon,
+        child: Image(
+          image: image.image, // Use the Image widget's image property
           color: selectedIndex == index ? Colors.white : AppColors.appBlackColor,
+          height: 24.0, // Adjust the size as needed
+          width: 24.0,
         ),
       ),
       title: Text(
         text,
         style: TextStyle(
           color: selectedIndex == index ? AppColors.appBlueColor : AppColors.appBlackColor,
-          fontWeight: selectedIndex == index ? FontWeight.bold : FontWeight.normal,
+          fontWeight: selectedIndex == index ? FontWeight.bold : FontWeight.bold,
+            fontFamily: Constants.Sofiafontfamily,
+            height: 2
         ),
       ),
       onTap: () => onTap(),
     );
   }
+
 
   Widget _searchBar({required double screenWidth}) {
     return Padding(
@@ -440,44 +533,45 @@ class _AppDrawerState extends State<AppDrawer> {
     if (allbusinessList[index].businessDetail.businessDetailstatus == '1') {
       percent += 25;
     }
-
     if (allbusinessList[index].support.supportStatus == '1') {
       percent += 25;
     }
-
     if (allbusinessList[index].bankDetails.bankDetailstatus == '1') {
       percent += 25;
     }
-
     if (allbusinessList[index].businessDetail.plan != null &&
         allbusinessList[index].businessDetail.plan!.isNotEmpty) {
       percent += 25;
     }
-    String statusMessage = "${percent}";
+    String statusMessage = "Profile: $percent% done";
     return InkWell(
         onTap: () async {
-          CommonVariable.businessName.value=allbusinessList[index].businessDetail.businessName??"";
+      if(allbusinessList[index].isApproved == '1' ){
+        CommonVariable.businessName.value=allbusinessList[index].businessDetail.businessName??"";
           CommonVariable.Percentage.value=percent.toString()??"";
           CommonVariable.businessId.value=allbusinessList[index].sId??"";
+          allbusinessController.getFunds(CommonVariable.businessId.value);
           setState(() {
             Get.to(const CompanyDashboard());
             Scaffold.of(context).closeEndDrawer();
           });
+      }else{
+        MyToast.toast('Business not approved');
+      }
         },
         child: Padding(
           padding: const EdgeInsets.only(left: 16, right: 16),
-          child: Column(
+          child:  Column(
             children: [
               Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,  // Align items to the start
+                crossAxisAlignment: CrossAxisAlignment.center, // Align vertically centered
                 children: [
                   CircleAvatar(
-                    radius: screenHeight / 35,
-                    backgroundColor: allbusinessController
-                        .hexToColor(allbusinessList[index].colorCode),
+                    radius: screenHeight / 30,
+                    backgroundColor: allbusinessController.hexToColor(allbusinessList[index].colorCode),
                     child: Text(
-                      allbusinessList[index].prefix,
+                      allbusinessList[index].prefix.toUpperCase(),
                       style: const TextStyle(
                         fontSize: 20,
                         color: Colors.white,
@@ -491,91 +585,63 @@ class _AppDrawerState extends State<AppDrawer> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          allbusinessList[index].businessDetail.businessName ??
-                              "",
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w500,
+                          allbusinessList[index].businessDetail.businessName ?? "",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
                             fontSize: 16.0,
-                            fontFamily: 'Sofia Sans',
+                            fontFamily: Constants.Sofiafontfamily,
                           ),
                         ),
                         const SizedBox(height: 6.0),
                         Text(
-                         "profile: $statusMessage% done", // Assuming statusMessage is available
-                          style: const TextStyle(
+                          statusMessage,  // Assuming statusMessage is available
+                          style: TextStyle(
                             fontWeight: FontWeight.w400,
                             fontSize: 12.0,
-                            fontFamily: 'Sofia Sans',
+                            fontFamily: Constants.Sofiafontfamily,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  SizedBox(width: 10.0),
-                  ElevatedButton(
-                    onPressed: () {
-                    },
-                    style: ElevatedButton.styleFrom(
-                      elevation: 0,
-                      foregroundColor: allbusinessList[index].isApproved == '0'
-                          ? AppColors.appYellowColor
-                          : allbusinessList[index].isApproved == '1'
-                              ? AppColors.appGreenDarkColor
-                              : allbusinessList[index].isApproved == '2'
-                                  ? AppColors.appRedColor
-                                  : allbusinessList[index].isApproved == '3'
-                                      ? AppColors.appBlueColor
-                                      : allbusinessList[index].isApproved == '4'
-                                          ? AppColors.appGreyColor
-                                          : allbusinessList[index].isApproved ==
-                                                  '5'
-                                              ? AppColors.appYellowColor
-                                              : AppColors.appRedColor,
-                      backgroundColor: allbusinessList[index].isApproved == '0'
-                          ? AppColors.appYellowLightColor
-                          : allbusinessList[index].isApproved == '1'
-                              ? AppColors.appGreenAcceptColor
-                              : allbusinessList[index].isApproved == '2'
-                                  ? AppColors.appRedLightColor
-                                  : allbusinessList[index].isApproved == '3'
-                                      ? AppColors.appBlueLightColor
-                                      : allbusinessList[index].isApproved == '4'
-                                          ? AppColors.appGreenLightColor
-                                          : allbusinessList[index].isApproved ==
-                                                  '5'
-                                              ? AppColors.appYellowLightColor
-                                              : AppColors.appRedLightColor1,
-                      shape: RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.circular(30),
-
-                      ),
+                  const SizedBox(width: 10.0),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: allbusinessList[index].isApproved == '0' ? AppColors.appLightYellowColor :
+                      allbusinessList[index].isApproved == '1' ? AppColors.appGreenAcceptColor :
+                      allbusinessList[index].isApproved == '2' ? AppColors.appRedLightColor :
+                      allbusinessList[index].isApproved == '3' ? AppColors.appBlueLightColor :
+                      allbusinessList[index].isApproved == '4' ? AppColors.appGreenLightColor :
+                      allbusinessList[index].isApproved == '5' ? AppColors.appSoftSkyBlueColor :
+                      AppColors.appRedLightColor1,
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Text(
-                      allbusinessList[index].isApproved == '0'
-                          ? "Pending"
-                          : allbusinessList[index].isApproved == '1'
-                              ? "Approved"
-                              : allbusinessList[index].isApproved == '2'
-                                  ? "Decline"
-                                  : allbusinessList[index].isApproved == '3'
-                                      ? "Review"
-                                      : allbusinessList[index].isApproved == '4'
-                                          ? "Revision"
-                                          : allbusinessList[index].isApproved ==
-                                                  '5'
-                                              ? "Added"
-                                              : "Discontinue",
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
+                    child: FittedBox(
+                      child: Text(
+                        allbusinessList[index].isApproved == '0' ? "Pending" :
+                        allbusinessList[index].isApproved == '1' ? "Approved" :
+                        allbusinessList[index].isApproved == '2' ? "Decline" :
+                        allbusinessList[index].isApproved == '3' ? "Review" :
+                        allbusinessList[index].isApproved == '4' ? "Revision" :
+                        allbusinessList[index].isApproved == '5' ? "Added" :
+                        "Discontinue",
+                        style: TextStyle(
+                            color: allbusinessList[index].isApproved == '0' ? AppColors.appOrangeTextColor :
+                            allbusinessList[index].isApproved == '1' ? AppColors.appGreenDarkColor :
+                            allbusinessList[index].isApproved == '2' ? AppColors.appRedColor :
+                            allbusinessList[index].isApproved == '3' ? AppColors.appBlueColor :
+                            allbusinessList[index].isApproved == '4' ? AppColors.appGreyColor :
+                            allbusinessList[index].isApproved == '5' ? AppColors.appSkyBlueText :
+                            AppColors.appRedColor,
+                            fontSize: 12),
+                      ),                        ),
                   )
                 ],
               ),
               const Padding(
-                padding: EdgeInsets.only(left: 60, right: 15),
+                padding: EdgeInsets.only(left: 65, ),
                 child: Divider(color: AppColors.appGreyColor),
               ),
             ],
@@ -588,7 +654,7 @@ class PrepaidBalanceWidget extends StatelessWidget {
   final double screenWidth;
   final double screenHeight;
 
-  PrepaidBalanceWidget({required this.screenWidth, required this.screenHeight});
+  const PrepaidBalanceWidget({super.key, required this.screenWidth, required this.screenHeight});
 
   @override
   Widget build(BuildContext context) {
@@ -617,28 +683,42 @@ class PrepaidBalanceWidget extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Image.asset(ImageAssets.walletIcon),
+                    Image.asset(
+                      ImageAssets.walletIcon,
+                      height: MediaQuery.of(context).size.height * 0.05, // 5% of screen height
+                      width: MediaQuery.of(context).size.width * 0.1,  // 10% of screen width
+                      fit: BoxFit.contain, // Ensures the image fits within the defined space
+                    ),
                     SizedBox(width: screenWidth * 0.02), // Responsive spacing
-                    const Column(
+                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           'Prepaid Balance',
                           style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
                               color: AppColors.appTextColor),
                         ),
-                        Text(
-                          '\$50.00',
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
-                        ),
+                        SizedBox(
+                          width: 100.0,
+                          child: Text(
+                            "\$${CommonVariable.approvedBalance.value}",
+                            style: TextStyle(
+                              color: AppColors.appBlackColor,
+                              fontWeight: FontWeight.w400,
+                              fontSize: 16.0,
+                              fontFamily: Constants.Sofiafontfamily,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        )
                       ],
                     ),
                   ],
                 ),
-                VerticalDivider(
+                const VerticalDivider(
                     thickness: 2, color: AppColors.appBackgroundGreyColor),
                 InkWell(
                   onTap: () {

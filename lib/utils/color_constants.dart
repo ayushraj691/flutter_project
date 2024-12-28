@@ -54,6 +54,54 @@ class AppColors {
 
  static const Color appBottomNavColor = Color.fromRGBO(233, 246, 255, 1);
 
+ static const Color appProfileColor = Color.fromRGBO(233, 246, 255, 1);
+
+ static const Color appBackgroundColor = Color.fromRGBO(247, 247, 247, 1);
+
+ static const Color appTabBackgroundColor = Color.fromRGBO(237, 239, 241, 1);
+
+ static const Color appMistyRoseColor = Color.fromRGBO(237, 233, 254, 1);
+
+ static const Color appMintGreenColor = Color.fromRGBO(209, 250, 229, 1);
+
+ static const Color appLightBlueColor = Color.fromRGBO(214, 246, 255, 1);
+
+ static const Color appSoftSkyBlueColor = Color.fromRGBO(239, 246, 255, 1);
+
+ static const Color appPurpleColor = Color.fromRGBO(139, 92, 246, 1);
+
+ static const Color appTextBlueColor = Color.fromRGBO(6, 165, 255, 1);
+
+ static const Color appTextGreenColor = Color.fromRGBO(132, 204, 22, 1);
+
+ static const Color appTextGreyColor = Color.fromRGBO(244, 244, 244, 1);
+
+ static const Color appLightYellowColor = Color.fromRGBO(255, 237, 213, 1);
+
+ static const Color appOrangeTextColor = Color.fromRGBO(249, 115, 22, 1);
+
+ static const Color appGreenTextColor = Color.fromRGBO(16, 185, 129, 1);
+
+ static const Color appOrangeLightColor = Color.fromRGBO(255, 247, 209, 1);
+
+ static const Color appIntroIndicatorColor = Color.fromRGBO(217, 217, 217, 1);
+
+ static const Color appParrotGreenColor = Color.fromRGBO(224, 239, 232, 1);
+
+ static const Color appCreamColor = Color.fromRGBO(244, 237, 209, 1);
+
+ static const Color appLightPurpleColor = Color.fromRGBO(225, 234, 253, 1);
+
+
+
+
+
+
+
+
+
+
+
 
 
 

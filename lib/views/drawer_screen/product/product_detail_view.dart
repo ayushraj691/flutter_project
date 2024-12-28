@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
 import 'package:paycron/controller/drawer_Controller/product_controller/ProductDetailViewController.dart';
 import 'package:paycron/controller/variable_controller.dart';
 import 'package:paycron/utils/color_constants.dart';
 import 'package:paycron/utils/image_assets.dart';
 import 'package:paycron/views/drawer_screen/product/update_product_screen.dart';
+import 'package:paycron/views/widgets/NoDataScreen.dart';
 
 class ProductDetailsScreen extends StatefulWidget {
   final String id;
@@ -27,7 +29,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   void initState() {
     Future.delayed(const Duration(seconds: 0), () async {
       callMethod();
-      _fetchImageUrl();
     });
     super.initState();
   }
@@ -36,88 +37,101 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     await productDetailViewController.getSingleProductData(widget.id);
   }
 
-  Future<void> _fetchImageUrl() async {
-
-    await Future.delayed(Duration(seconds: 1));
-
-    String url;
-
-    if (productDetailViewController.productImage.value.isNotEmpty && productDetailViewController.productImage.value != null){
-      url = '${ImageAssets.imageUrl}/${productDetailViewController.productImage.value}';
-    }else{
-      url='';
-    }
-
-    setState(() {
-      imageUrl = url;
-    });
-  }
-
-
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppColors.appWhiteColor,
-        leading: IconButton(
-          color: AppColors.appBlackColor,
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        titleSpacing: 0,
-        title: const FittedBox(
-          fit: BoxFit.scaleDown,
-          child: Text(
-            "Product Detail",
-            style: TextStyle(
-              fontSize: 16, // Dynamic font size
-              fontWeight: FontWeight.w600,
-              color: AppColors.appTextColor,
-              fontFamily: 'Sofia Sans',
+    return Obx(() {
+      return Scaffold(
+        backgroundColor: AppColors.appBackgroundColor,
+        appBar: AppBar(
+          backgroundColor: AppColors.appBackgroundColor,
+          leading: IconButton(
+            color: AppColors.appBlackColor,
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+          titleSpacing: 0,
+          title: const FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              "Product Detail",
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: AppColors.appTextColor,
+                fontFamily: 'Sofia Sans',
+              ),
             ),
           ),
         ),
-      ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: MediaQuery.of(context).size.width *
-              0.05, // Dynamic horizontal padding
-          vertical: MediaQuery.of(context).size.height *
-              0.02, // Dynamic vertical padding
+        body: RefreshIndicator(
+          onRefresh: _refreshData,
+          child: Stack(
+            children: [
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: MediaQuery.of(context).size.width *
+                      0.05, // Dynamic horizontal padding
+                  vertical: MediaQuery.of(context).size.height *
+                      0.02, // Dynamic vertical padding
+                ),
+                child: ListView(
+                  children: [ if (productDetailViewController.allSingleProductDataList.isEmpty &&
+                      !variableController.loading.value)
+                    NoDataFoundCard() // Show "No Data" widget when the list is empty and not loading
+                  else ...[
+                    _buildProductDetailCollapsibleSection(
+                      title: "Product Detail",
+                      isExpanded: isProductDetailsExpanded,
+                      onToggle: () {
+                        setState(() {
+                          isProductDetailsExpanded = !isProductDetailsExpanded;
+                        });
+                      },
+                      child: _buildProductDetailsCard(),
+                    ),
+                    // SizedBox(height: MediaQuery.of(context).size.height * 0.02),
+                    // _buildAccountDetailCollapsibleSection(
+                    //   title: "Account Details",
+                    //   isExpanded: isAccountDetailsExpanded,
+                    //   onToggle: () {
+                    //     setState(() {
+                    //       isAccountDetailsExpanded = !isAccountDetailsExpanded;
+                    //     });
+                    //   },
+                    //   child: _buildAccountDetailsSection(),
+                    // ),
+                    // SizedBox(height: MediaQuery.of(context).size.height * 0.02),
+                    // _buildRecentTransactionsSection(),
+                    ]
+                  ],
+                ),
+              ),
+              if (variableController.loading.value)
+                Container(
+                  color: Colors.black.withOpacity(0.6), // Semi-transparent overlay
+                  child: Center(
+                    child: Container(
+                      alignment: Alignment.center,
+                      height: 150,
+                      width: 150,
+                      child: Lottie.asset(
+                          "assets/lottie/half-circles.json"),
+                    ),
+                  ),
+                ),
+            ],
+          ),
         ),
-        child: ListView(
-          children: [
-            _buildProductDetailCollapsibleSection(
-              title: "Product Detail",
-              isExpanded: isProductDetailsExpanded,
-              onToggle: () {
-                setState(() {
-                  isProductDetailsExpanded = !isProductDetailsExpanded;
-                });
-              },
-              child: _buildProductDetailsCard(),
-            ),
-            // SizedBox(height: MediaQuery.of(context).size.height * 0.02),
-            // _buildAccountDetailCollapsibleSection(
-            //   title: "Account Details",
-            //   isExpanded: isAccountDetailsExpanded,
-            //   onToggle: () {
-            //     setState(() {
-            //       isAccountDetailsExpanded = !isAccountDetailsExpanded;
-            //     });
-            //   },
-            //   child: _buildAccountDetailsSection(),
-            // ),
-            // SizedBox(height: MediaQuery.of(context).size.height * 0.02),
-            // _buildRecentTransactionsSection(),
-          ],
-        ),
-      ),
-    );
+      );
+    });
+  }
+  Future<void> _refreshData() async {
+    callMethod();
+    setState(() {});
   }
 
   Widget _buildProductDetailCollapsibleSection({
@@ -127,7 +141,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     required Widget child,
   }) {
     return Card(
-      elevation: 4,
+      elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
@@ -191,7 +205,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     },
                   ),
                 ),
-                Icon(isExpanded ? Icons.expand_less : Icons.expand_more),
+                Icon(isExpanded ? Icons.arrow_drop_up : Icons.arrow_drop_down,color: AppColors.appBlackColor),
               ],
             ),
             onTap: onToggle,
@@ -371,9 +385,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   }
 
   Widget _buildFilePreview() {
-    if (imageUrl == null) {
-      return const Text('No file selected');
-    } else {
       final int fileSizeInBytes = _selectedFileSize ?? 0;
       String createdOnValue = productDetailViewController.createdOn.value;
 
@@ -404,35 +415,24 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Image Preview from URL
             ClipRRect(
               borderRadius: BorderRadius.circular(8.0),
-              child:( imageUrl!.isNotEmpty && imageUrl != null)
-                  ? CircleAvatar(
-                      backgroundColor: Colors.white,
-                      child: Image.network(
-                        width: 50,
-                        height: 50,
-                        imageUrl!,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Image.asset(
-                              width: 50,
-                              height: 50,
-                              ImageAssets.productImage);
-                        },
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return const CircularProgressIndicator();
-                        },
-                      ),
-                    )
-                  : Image.asset(
-                      ImageAssets.productImage,
-                      width: 50,
-                      height: 50,
-                      fit: BoxFit.cover,
-                    ),
+              child:
+              CircleAvatar(
+                backgroundColor: Colors.white,
+                child: productDetailViewController.productImage.isNotEmpty
+                    ? Image.network(
+                  '${ImageAssets.imageUrl}/${productDetailViewController.productImage}',
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Image.asset(ImageAssets.productImage);
+                  },
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return const CircularProgressIndicator();
+                  },
+                ): Image.asset(ImageAssets.productImage),
+              )
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -477,6 +477,5 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           ],
         ),
       );
-    }
   }
 }

@@ -1,14 +1,15 @@
-// ignore_for_file: prefer_const_constructors, avoid_print, use_build_context_synchronously, unnecessary_null_comparison, sized_box_for_whitespace, non_constant_identifier_names, unused_import
 
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_offline/flutter_offline.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
+import 'package:open_file/open_file.dart';
+import 'package:paycron/utils/color_constants.dart';
 import 'package:paycron/utils/string_constants.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'my_toast.dart';
@@ -29,7 +30,7 @@ class GeneralMethods {
   }
   }
 
-  static Future<dynamic> loadingDialog2(BuildContext context) {
+  static Future<dynamic> loadingDialog(BuildContext context) {
     return showDialog(
         barrierDismissible: false,
         context: context,
@@ -39,140 +40,190 @@ class GeneralMethods {
             height: 25,
             width: 25,
             child: Lottie.asset(
-                "assets/lottie/updating.json"),
+                "assets/lottie/half-circles.json"),
           );
         });
   }
 
+  static void showNotification(String filePath) async {
+    final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
 
-  static void showPopup(BuildContext context,String text1,String text2,VoidCallback onDelete) {
+    // Initialize Notifications
+    const AndroidInitializationSettings initializationSettingsAndroid =
+    AndroidInitializationSettings('@mipmap/ic_launcher');
+    const InitializationSettings initializationSettings =
+    InitializationSettings(android: initializationSettingsAndroid);
+
+    await flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+      onDidReceiveNotificationResponse: (NotificationResponse response) async {
+        if (response.payload != null && response.payload!.isNotEmpty) {
+          OpenFile.open(response.payload); // Open the file
+        }
+      },
+    );
+
+    // Show Notification
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+    AndroidNotificationDetails(
+      'channel_id',
+      'File Download',
+      channelDescription: 'Shows notifications for file downloads',
+      importance: Importance.max,
+      priority: Priority.high,
+      showWhen: true,
+    );
+
+    const NotificationDetails platformChannelSpecifics =
+    NotificationDetails(android: androidPlatformChannelSpecifics);
+
+    await flutterLocalNotificationsPlugin.show(
+      0, // Notification ID
+      'Download Complete',
+      'Tap to view the file',
+      platformChannelSpecifics,
+      payload: filePath, // Attach file path as payload
+    );
+  }
+
+
+
+  static void showPopup(BuildContext context, String text1, String text2, VoidCallback onDelete, Color color, String buttonText) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
+        double screenWidth = MediaQuery.of(context).size.width;
         return Dialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20.0),
           ),
-          child: Stack(
-            clipBehavior: Clip.none,
-            alignment: Alignment.topCenter,
-            children: [
-              // Main dialog content
-              Padding(
-                padding: const EdgeInsets.only(top: 40, left: 20, right: 20, bottom: 20),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Title
-                    Text(
-                      "You’re about to $text1 items",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontFamily: Constants.Sofiafontfamily,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black,
+          child: SizedBox(
+            width: screenWidth * 0.8, // Set the width to 80% of screen width
+            child: Stack(
+              clipBehavior: Clip.none,
+              alignment: Alignment.topCenter,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 40, left: 20, right: 20, bottom: 20),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Title
+                      Text(
+                        "You’re about to $text1 items",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontFamily: Constants.Sofiafontfamily,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 10),
-                     Text(
-                      text2,
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                        fontFamily: Constants.Sofiafontfamily,
-                        color: Colors.grey,
+                      const SizedBox(height: 10),
+                      Text(
+                        text2,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          fontFamily: Constants.Sofiafontfamily,
+                          color: Colors.grey,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(height: 20),
-                    // Action buttons
-                    Row(
-                      children: [
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            style: ElevatedButton.styleFrom(
-                              foregroundColor: Colors.black, backgroundColor: Colors.grey[300],
-                              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
+                      SizedBox(height: 20),
+                      // Action buttons
+                      Row(
+                        children: [
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                foregroundColor: Colors.black,
+                                backgroundColor: AppColors.appWhiteColor,
+                                padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                  side: BorderSide(color: Colors.black, width: 1),
+                                ),
                               ),
-                            ),
-                            child: Text(
-                              "No, keep it",
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontFamily: Constants.Sofiafontfamily,
-                                fontSize: 14,
+                              child: Text(
+                                "No, keep it",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontFamily: Constants.Sofiafontfamily,
+                                  fontSize: 14,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        SizedBox(
-                          width: 10.0,
-                        ),
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () {
-                              onDelete();
-                            },
-                            style: ElevatedButton.styleFrom(
-                              foregroundColor: Colors.white,
-                              backgroundColor: Colors.red,
-                              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
+                          SizedBox(width: 10.0),
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: () {
+                                onDelete();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                foregroundColor: Colors.white,
+                                backgroundColor: color,
+                                padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
                               ),
-                            ),
-                            child: Text(
-                              "Yes, delete",
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontFamily: Constants.Sofiafontfamily,
-                                fontSize: 14,
+                              child: Text(
+                                "Yes, $buttonText",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontFamily: Constants.Sofiafontfamily,
+                                  fontSize: 14,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                Positioned(
+                  top: -10,
+                  right: -10,
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: CircleAvatar(
+                      radius: 15,
+                      backgroundColor: Colors.grey[300],
+                      child: Icon(Icons.close, color: Colors.black, size: 18),
                     ),
-                  ],
-                ),
-              ),
-              Positioned(
-                top: -10,
-                right: -10,
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: CircleAvatar(
-                    radius: 15,
-                    backgroundColor: Colors.grey[300],
-                    child: Icon(Icons.close, color: Colors.black, size: 18),
                   ),
                 ),
-              ),
-
-              Positioned(
-                top: -35,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(10), // Adjust this value as needed
-                    topRight: Radius.circular(10), // Adjust this value as needed
-                  ),
+                Positioned(
+                  top: -35,
                   child: Container(
-                    color: Colors.white,
-                    height: 60,
-                    width: 60,
-                    child: Icon(Icons.delete, color: Colors.grey, size: 30),
+                    padding: EdgeInsets.all(8), // Padding around the inner light gray box
+                    decoration: BoxDecoration(
+                      color: Colors.white, // Outer border color
+                      borderRadius: BorderRadius.circular(12), // Rounded corners for outer border
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10), // Rounded corners for inner box
+                      child: Container(
+                        color: AppColors.appNeutralColor5, // Light gray color for the inner box
+                        height: 60,
+                        width: 60,
+                        alignment: Alignment.center, // Center the icon within the box
+                        child: Icon(buttonText=='verify'?Icons.verified:Icons.delete, color: Colors.grey[600], size: 30), // Slightly darker gray for icon
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },
@@ -356,6 +407,14 @@ class GeneralMethods {
     return '$maskedPart $lastFourDigits';
   }
 
+
+  static String addTwoDays(String dateInput) {
+    DateFormat inputFormat = DateFormat("dd MMM, yyyy");
+    DateFormat outputFormat = DateFormat("dd MMM, yyyy");
+    DateTime parsedDate = inputFormat.parse(dateInput);
+    DateTime updatedDate = parsedDate.add(Duration(days: 2));
+    return outputFormat.format(updatedDate);
+  }
 }
 
 

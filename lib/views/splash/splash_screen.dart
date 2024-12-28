@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:paycron/utils/image_assets.dart';
 import 'package:paycron/views/app_home_screen/home_screen.dart';
+import 'package:paycron/views/auth/app_intro_screen.dart';
 import 'package:paycron/views/auth/login_screen.dart';
 import 'package:paycron/views/dashboard/bottom_floating_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -28,9 +29,9 @@ class _SplashScreenState extends State<SplashScreen> {
   callMyMethod() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     CommonVariable.getClientDetails();
-    Timer( Duration(seconds: 2), () =>
+    Timer( const Duration(seconds: 2), () =>
     (preferences.getString("isLogin") == null)
-        ? Get.off(LoginScreen())
+        ? Get.off(const AppIntroScreen())
         :CommonVariable.businessCheck.value==1
         ?Get.off(const PaycronFloatingBottomBar()):Get.off(const HomeScreen()));
 

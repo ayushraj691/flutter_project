@@ -159,7 +159,7 @@ class _ReportOverviewState extends State<ReportOverview> {
             ),
           ),
           Card(
-            elevation: 4.0,
+            elevation: 0,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(18.0),
             ),
@@ -217,7 +217,7 @@ class _ReportOverviewState extends State<ReportOverview> {
             ),
           ),
           Card(
-            elevation: 4.0,
+            elevation: 0,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(18.0),
             ),
@@ -256,9 +256,8 @@ class _ReportOverviewState extends State<ReportOverview> {
               ),
             ),
           ),
-      
           Card(
-            elevation: 4.0,
+            elevation: 0,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(18.0),
             ),

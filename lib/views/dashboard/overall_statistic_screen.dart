@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +7,8 @@ import 'package:paycron/utils/color_constants.dart';
 import 'package:paycron/views/dashboard/indicator.dart';
 
 class OverallStatistics extends StatefulWidget {
+  const OverallStatistics({super.key});
+
   @override
   State<OverallStatistics> createState() => _OverallStatisticsState();
 
@@ -106,10 +107,8 @@ class _OverallStatisticsState extends State<OverallStatistics> {
               ],
             ),
           ),
-
-          // Prepaid Balance Card with Pie Chart
           Card(
-            elevation: 4.0,
+            elevation: 0,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(18.0),
             ),
@@ -158,12 +157,12 @@ class _OverallStatisticsState extends State<OverallStatistics> {
                         ),
                       ),
                       SizedBox(width: screenWidth * 0.03), // Further reduce the width of the SizedBox
-                      Flexible(
+                      const Flexible(
                         flex: 1, // Ensures the Column takes up the remaining space
                         child: Column(
                           mainAxisSize: MainAxisSize.max,
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: const [
+                          children: [
                             IndicatorWidget(
                               title: 'Sale',
                               icon: Icons.square,
@@ -188,10 +187,8 @@ class _OverallStatisticsState extends State<OverallStatistics> {
               ),
             ),
           ),
-
-          // All Transactions Card with Bar Chart
           Card(
-            elevation: 4.0,
+            elevation: 0,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(18.0),
             ),

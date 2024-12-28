@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
+import 'package:get/get.dart';
 import 'package:paycron/utils/color_constants.dart';
 import 'package:paycron/utils/common_variable.dart';
 import 'package:paycron/utils/image_assets.dart';
 import 'package:paycron/views/app_drawer/app_drawer.dart';
+import 'package:paycron/views/dashboard/business_profile_screen.dart';
 import 'package:paycron/views/drawer_screen/AllTransactions/all_transaction_screen.dart';
 import 'package:paycron/views/drawer_screen/AllTransactions/cancelled_transaction_screen.dart';
 import 'package:paycron/views/drawer_screen/AllTransactions/deleted_transaction_screen.dart';
@@ -59,8 +60,9 @@ class _AllTransactionScreenState extends State<AllTransactionScreen> {
     double screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
+      backgroundColor: AppColors.appBackgroundColor,
       appBar: AppBar(
-        backgroundColor: AppColors.appWhiteColor,
+        backgroundColor: AppColors.appBackgroundColor,
         leading: IconButton(
           color: AppColors.appBlackColor,
           icon: const Icon(Icons.arrow_back),
@@ -81,9 +83,14 @@ class _AllTransactionScreenState extends State<AllTransactionScreen> {
         actions: [
           Padding(
             padding: const EdgeInsets.all(4.0),
-            child: CircleAvatar(
-              radius: screenHeight / 45,
-              backgroundImage: AssetImage(ImageAssets.profile),
+            child: InkWell(
+              onTap: () => {
+                Get.to(const BusinessProfileScreen())
+              },
+              child: CircleAvatar(
+                radius: screenHeight / 45,
+                backgroundImage: AssetImage(ImageAssets.profile),
+              ),
             ),
           ),
           Builder(
@@ -193,7 +200,6 @@ class _AllTransactionScreenState extends State<AllTransactionScreen> {
       ),
     );
   }
-
   @override
   void dispose() {
     _scrollController.dispose();

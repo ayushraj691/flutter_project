@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:paycron/controller/auth/authController.dart';
 import 'package:paycron/utils/color_constants.dart';
 import 'package:paycron/utils/my_toast.dart';
-import 'package:paycron/views/auth/signup_screen.dart';
+import 'package:paycron/views/auth/forgot_password.dart';
 import 'package:paycron/views/widgets/common_button.dart';
 import 'package:paycron/views/widgets/common_textform_field.dart';
 
@@ -23,7 +23,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.appWhiteColor,
-      resizeToAvoidBottomInset: false, // Prevent default resizing when keyboard opens
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Column(
           children: [
@@ -113,8 +113,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       labelText: "Enter Email",
                     ),
                     SizedBox(height: size.height * 0.015),
-
-                    // Password Input Field
                     const Align(
                       alignment: Alignment.centerLeft,
                       child: Text.rich(
@@ -161,7 +159,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       padding: const EdgeInsets.only(right: 25.0, top: 20.0),
                       child: InkWell(
                         onTap: () {
-                          // Forgot Password Functionality
+                          Get.to(const ForgotPasswordScreen());
                         },
                         child: const Align(
                           alignment: Alignment.topRight,
@@ -181,8 +179,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
             ),
-
-            // Login Button
             Padding(
               padding: EdgeInsets.symmetric(horizontal: size.width * 0.05),
               child: Column(
@@ -215,7 +211,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       InkWell(
                         onTap: () {
-                          Get.to(SignupScreen());
+                          // Get.to(SignupScreen());
                         },
                         child: const Text(
                           "Sign Up",

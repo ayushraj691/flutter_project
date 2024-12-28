@@ -8,7 +8,9 @@ import 'package:paycron/views/widgets/common_textform_field.dart';
 
 class AddAccountPopup extends StatefulWidget {
   final String id;
-  const AddAccountPopup( this.id, {super.key});
+  final VoidCallback onSave;
+
+  const AddAccountPopup( this.id, {super.key, required this.onSave});
 
   @override
   State<AddAccountPopup> createState() => _AddAccountPopupState();
@@ -60,7 +62,6 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
-
     return Container(
       padding: EdgeInsets.all(screenWidth * 0.05),
       height: screenHeight * 0.8,
@@ -110,7 +111,7 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
             SizedBox(height: screenHeight * 0.01),
             Expanded(
               child: SingleChildScrollView(
-                child: Container(
+                child: SizedBox(
                   width: screenWidth * 0.9,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -143,7 +144,7 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                             ),
                             const SizedBox(height: 4.0),
                             CommonTextField(
-                              controller: addCustomerController.accountHolderNameController,
+                              controller: addCustomerController.accountHolderNameController.value,
                               labelText: "Account Holder Name",
                               focusNode: addCustomerController.accountNameFocusNode,
                               keyboardType: TextInputType.text,
@@ -155,11 +156,11 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                                 RegExp regExp = RegExp(pattern);
                                 setState(() {
                                   if (value.isEmpty) {
-                                    addCustomerController.AccountNameValid = false;
+                                    addCustomerController.AccountNameValid = false.obs;
                                   } else if (regExp.hasMatch(value)) {
-                                    addCustomerController.AccountNameValid = true;
+                                    addCustomerController.AccountNameValid = true.obs;
                                   } else {
-                                    addCustomerController.AccountNameValid = false;
+                                    addCustomerController.AccountNameValid = false.obs;
                                   }
                                 });
                               },
@@ -168,7 +169,7 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                                 contentPadding: const EdgeInsets.all(18),
                                 focusedBorder: UnderlineInputBorder(
                                   borderSide: BorderSide(
-                                    color: addCustomerController.AccountNameValid
+                                    color: addCustomerController.AccountNameValid.value
                                         ? AppColors.appNeutralColor5
                                         : AppColors.appRedColor,
                                     width: 2,
@@ -187,7 +188,7 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                                     width: 2,
                                   ),
                                 ),
-                                errorText: addCustomerController.AccountNameValid
+                                errorText: addCustomerController.AccountNameValid.value
                                     ? null
                                     : 'Account Holder Name is required',
                                 hintText: "Enter Account Holder Name",
@@ -243,11 +244,11 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                                     RegExp regExp = RegExp(pattern);
                                     setState(() {
                                       if (value.isEmpty) {
-                                        addCustomerController.routingValid = false;
+                                        addCustomerController.routingValid = false.obs;
                                         addCustomerController.routingErrorMessage =
                                         'Routing Number cannot be empty';
                                       } else if (!regExp.hasMatch(value)) {
-                                        addCustomerController.routingValid = false;
+                                        addCustomerController.routingValid = false.obs;
                                         addCustomerController.routingErrorMessage =
                                         'Routing Number must be 9 digits';
                                       } else {
@@ -263,7 +264,7 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                                     contentPadding: const EdgeInsets.all(18),
                                     focusedBorder: UnderlineInputBorder(
                                       borderSide: BorderSide(
-                                        color: addCustomerController.routingValid
+                                        color: addCustomerController.routingValid.value
                                             ? AppColors.appNeutralColor5
                                             : AppColors.appRedColor,
                                         width: 2,
@@ -281,7 +282,7 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                                         width: 2,
                                       ),
                                     ),
-                                    errorText: addCustomerController.routingValid
+                                    errorText: addCustomerController.routingValid.value
                                         ? null
                                         : addCustomerController.routingErrorMessage,
                                     hintText: "Enter Routing Number",
@@ -308,7 +309,7 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                         visible: addCustomerController.isRoutingNumberValid.value,
                         child: Center(
                           child: Container(
-                            padding: EdgeInsets.all(16),
+                            padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(10),
@@ -392,7 +393,7 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                             StatefulBuilder(
                               builder: (BuildContext context, StateSetter setState) {
                                 return CommonTextField(
-                                  controller: addCustomerController.accountNumberController,
+                                  controller: addCustomerController.accountNumberController.value,
                                   labelText: "Account Number",
                                   focusNode: addCustomerController.accountNumberFocusNode,
                                   keyboardType: TextInputType.number,
@@ -400,15 +401,15 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                                   onChanged: (value) {
                                     setState(() {
                                       if (value.isEmpty) {
-                                        addCustomerController.AccountNumberValid = false;
+                                        addCustomerController.AccountNumberValid = false.obs;
                                         addCustomerController.accountNumberErrorMessage =
                                         'Account number is required';
                                       } else if (value.length > 15) {
-                                        addCustomerController.AccountNumberValid = false;
+                                        addCustomerController.AccountNumberValid = false.obs;
                                         addCustomerController.accountNumberErrorMessage =
                                         'Account number must be 15 digits or less';
                                       } else {
-                                        addCustomerController.AccountNumberValid = true;
+                                        addCustomerController.AccountNumberValid = true.obs;
                                         addCustomerController.accountNumberErrorMessage =
                                         null;
                                       }
@@ -421,7 +422,7 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                                     contentPadding: const EdgeInsets.all(18),
                                     focusedBorder: UnderlineInputBorder(
                                       borderSide: BorderSide(
-                                        color: addCustomerController.AccountNumberValid
+                                        color: addCustomerController.AccountNumberValid.value
                                             ? AppColors.appNeutralColor5
                                             : AppColors.appRedColor,
                                         width: 2,
@@ -439,7 +440,7 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                                         width: 2,
                                       ),
                                     ),
-                                    errorText: addCustomerController.AccountNumberValid
+                                    errorText: addCustomerController.AccountNumberValid.value
                                         ? null
                                         : addCustomerController.accountNumberErrorMessage,
                                     hintText: "Enter Account Number",
@@ -490,7 +491,7 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                             const SizedBox(height: 4.0),
                             CommonTextField(
                               controller:
-                              addCustomerController.confirmAccountNumberController,
+                              addCustomerController.confirmAccountNumberController.value,
                               labelText: "Confirm Account Number",
                               keyboardType: TextInputType.number,
                               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -498,21 +499,21 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                               onChanged: (value) {
                                 setState(() {
                                   if (value.isEmpty) {
-                                    addCustomerController.ConfirmAccountNumberValid = false;
+                                    addCustomerController.ConfirmAccountNumberValid = false.obs;
                                     addCustomerController.confirmAccountErrorMessage =
                                     'Confirm Account number is required';
                                   } else if (value !=
-                                      addCustomerController.accountNumberController.text
+                                      addCustomerController.accountNumberController.value.text
                                           .trim()) {
-                                    addCustomerController.ConfirmAccountNumberValid = false;
+                                    addCustomerController.ConfirmAccountNumberValid = false.obs;
                                     addCustomerController.confirmAccountErrorMessage =
                                     'Account Number & Confirm Account Number should be the same';
                                   } else if (value.length > 15) {
-                                    addCustomerController.ConfirmAccountNumberValid = false;
+                                    addCustomerController.ConfirmAccountNumberValid = false.obs;
                                     addCustomerController.confirmAccountErrorMessage =
                                     'Confirm Account number must be 15 digits or less';
                                   } else {
-                                    addCustomerController.ConfirmAccountNumberValid = true;
+                                    addCustomerController.ConfirmAccountNumberValid = true.obs;
                                     addCustomerController.confirmAccountErrorMessage = null;
                                   }
                                 });
@@ -523,7 +524,7 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                                 contentPadding: const EdgeInsets.all(18),
                                 focusedBorder: UnderlineInputBorder(
                                   borderSide: BorderSide(
-                                    color: addCustomerController.ConfirmAccountNumberValid
+                                    color: addCustomerController.ConfirmAccountNumberValid.value
                                         ? AppColors.appNeutralColor5
                                         : AppColors.appRedColor,
                                     width: 2,
@@ -541,7 +542,7 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                                     width: 2,
                                   ),
                                 ),
-                                errorText: addCustomerController.ConfirmAccountNumberValid
+                                errorText: addCustomerController.ConfirmAccountNumberValid.value
                                     ? null
                                     : addCustomerController.confirmAccountErrorMessage,
                                 hintText: "Re-enter Account Number",
@@ -553,7 +554,7 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                                   return 'Confirm account number is required';
                                 }
                                 if (value.trim() !=
-                                    addCustomerController.accountNumberController.text
+                                    addCustomerController.accountNumberController.value.text
                                         .trim()) {
                                   return 'Account Number & Confirm Account Number should be the same';
                                 }
@@ -610,18 +611,18 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                             ),
                             const SizedBox(height: 4.0),
                             CommonTextField(
-                              controller: addCustomerController.suitAptController,
+                              controller: addCustomerController.suitAptController.value,
                               labelText: "Suit/Apt",
                               keyboardType: TextInputType.text,
                               focusNode: addCustomerController.suitAptFocusNode,
                               onChanged: (value) {
                                 setState(() {
                                   if (value.isEmpty) {
-                                    addCustomerController.suitAptValid = false;
+                                    addCustomerController.suitAptValid = false.obs;
                                     addCustomerController.suitAptErrorMessage =
                                     'Suit/Apt is required';
                                   } else {
-                                    addCustomerController.suitAptValid = true;
+                                    addCustomerController.suitAptValid = true.obs;
                                     addCustomerController.suitAptErrorMessage = null;
                                   }
                                 });
@@ -632,7 +633,7 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                                 contentPadding: const EdgeInsets.all(18),
                                 focusedBorder: UnderlineInputBorder(
                                   borderSide: BorderSide(
-                                    color: addCustomerController.suitAptValid
+                                    color: addCustomerController.suitAptValid.value
                                         ? AppColors.appNeutralColor5
                                         : AppColors.appRedColor,
                                     width: 2,
@@ -650,7 +651,7 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                                     width: 2,
                                   ),
                                 ),
-                                errorText: addCustomerController.suitAptValid
+                                errorText: addCustomerController.suitAptValid.value
                                     ? null
                                     : addCustomerController.suitAptErrorMessage,
                                 hintText: "Enter Suit/Apt",
@@ -695,18 +696,18 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                             ),
                             const SizedBox(height: 4.0),
                             CommonTextField(
-                              controller: addCustomerController.streetController,
+                              controller: addCustomerController.streetController.value,
                               labelText: "Street",
                               keyboardType: TextInputType.text,
                               focusNode: addCustomerController.streetFocusNode,
                               onChanged: (value) {
                                 setState(() {
                                   if (value.isEmpty) {
-                                    addCustomerController.streetValid = false;
+                                    addCustomerController.streetValid = false.obs;
                                     addCustomerController.streetErrorMessage =
                                     'Street is required';
                                   } else {
-                                    addCustomerController.streetValid = true;
+                                    addCustomerController.streetValid = true.obs;
                                     addCustomerController.streetErrorMessage = null;
                                   }
                                 });
@@ -717,7 +718,7 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                                 contentPadding: const EdgeInsets.all(18),
                                 focusedBorder: UnderlineInputBorder(
                                   borderSide: BorderSide(
-                                    color: addCustomerController.streetValid
+                                    color: addCustomerController.streetValid.value
                                         ? AppColors.appNeutralColor5
                                         : AppColors.appRedColor,
                                     width: 2,
@@ -735,7 +736,7 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                                     width: 2,
                                   ),
                                 ),
-                                errorText: addCustomerController.streetValid
+                                errorText: addCustomerController.streetValid.value
                                     ? null
                                     : addCustomerController.streetErrorMessage,
                                 hintText: "Enter Street",
@@ -784,7 +785,7 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                                   ),
                                   const SizedBox(height: 4.0),
                                   CommonTextField(
-                                    controller: addCustomerController.countryController,
+                                    controller: addCustomerController.countryController.value,
                                     labelText: "Country",
                                     keyboardType: TextInputType.text,
                                     focusNode: addCustomerController.countryFocusNode,
@@ -793,14 +794,14 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                                       RegExp regExp = RegExp(pattern);
                                       setState(() {
                                         if (value.isEmpty) {
-                                          addCustomerController.countrytValid = false;
+                                          addCustomerController.countrytValid = false.obs;
                                           addCustomerController.countryterrorMessage =
                                           'Country is required';
                                         } else if (regExp.hasMatch(value)) {
-                                          addCustomerController.countrytValid = true;
+                                          addCustomerController.countrytValid = true.obs;
                                           addCustomerController.countryterrorMessage = null;
                                         } else {
-                                          addCustomerController.countrytValid = true;
+                                          addCustomerController.countrytValid = true.obs;
                                           addCustomerController.countryterrorMessage = null;
                                         }
                                       });
@@ -812,7 +813,7 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                                       contentPadding: const EdgeInsets.all(18),
                                       focusedBorder: UnderlineInputBorder(
                                         borderSide: BorderSide(
-                                          color: addCustomerController.countrytValid
+                                          color: addCustomerController.countrytValid.value
                                               ? AppColors.appNeutralColor5
                                               : AppColors.appRedColor,
                                           width: 2,
@@ -830,7 +831,7 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                                           width: 2,
                                         ),
                                       ),
-                                      errorText: addCustomerController.countrytValid
+                                      errorText: addCustomerController.countrytValid.value
                                           ? null
                                           : addCustomerController.countryterrorMessage,
                                       hintText: "Enter Country",
@@ -878,7 +879,7 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                                   ),
                                   const SizedBox(height: 4.0),
                                   CommonTextField(
-                                    controller: addCustomerController.stateController,
+                                    controller: addCustomerController.stateController.value,
                                     labelText: "State",
                                     keyboardType: TextInputType.text,
                                     focusNode: addCustomerController.stateFocusNode,
@@ -887,14 +888,14 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                                       RegExp regExp = RegExp(pattern);
                                       setState(() {
                                         if (value.isEmpty) {
-                                          addCustomerController.stateValid = false;
+                                          addCustomerController.stateValid = false.obs;
                                           addCustomerController.stateErrorMessage =
                                           'State is required';
                                         } else if (regExp.hasMatch(value)) {
-                                          addCustomerController.stateValid = true;
+                                          addCustomerController.stateValid = true.obs;
                                           addCustomerController.stateErrorMessage = null;
                                         } else {
-                                          addCustomerController.stateValid = true;
+                                          addCustomerController.stateValid = true.obs;
                                           addCustomerController.stateErrorMessage = null;
                                         }
                                       });
@@ -906,7 +907,7 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                                       contentPadding: const EdgeInsets.all(18),
                                       focusedBorder: UnderlineInputBorder(
                                         borderSide: BorderSide(
-                                          color: addCustomerController.stateValid
+                                          color: addCustomerController.stateValid.value
                                               ? AppColors.appNeutralColor5
                                               : AppColors.appRedColor,
                                           width: 2,
@@ -924,7 +925,7 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                                           width: 2,
                                         ),
                                       ),
-                                      errorText: addCustomerController.stateValid
+                                      errorText: addCustomerController.stateValid.value
                                           ? null
                                           : addCustomerController.stateErrorMessage,
                                       hintText: "Enter State",
@@ -978,18 +979,18 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                                   ),
                                   const SizedBox(height: 4.0),
                                   CommonTextField(
-                                    controller: addCustomerController.cityController,
+                                    controller: addCustomerController.cityController.value,
                                     labelText: "City",
                                     focusNode: addCustomerController.cityFocusNode,
                                     keyboardType: TextInputType.text,
                                     onChanged: (value) {
                                       setState(() {
                                         if (value.isEmpty) {
-                                          addCustomerController.cityValid = false;
+                                          addCustomerController.cityValid = false.obs;
                                           addCustomerController.cityErrorMessage =
                                           'City is required';
                                         } else {
-                                          addCustomerController.cityValid = true;
+                                          addCustomerController.cityValid = true.obs;
                                           addCustomerController.cityErrorMessage = null;
                                         }
                                       });
@@ -1001,7 +1002,7 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                                       contentPadding: const EdgeInsets.all(18),
                                       focusedBorder: UnderlineInputBorder(
                                         borderSide: BorderSide(
-                                          color: addCustomerController.cityValid
+                                          color: addCustomerController.cityValid.value
                                               ? AppColors.appNeutralColor5
                                               : AppColors.appRedColor,
                                           width: 2,
@@ -1019,7 +1020,7 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                                           width: 2,
                                         ),
                                       ),
-                                      errorText: addCustomerController.cityValid
+                                      errorText: addCustomerController.cityValid.value
                                           ? null
                                           : addCustomerController.cityErrorMessage,
                                       hintText: "Enter City",
@@ -1067,7 +1068,7 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                                   ),
                                   const SizedBox(height: 4.0),
                                   CommonTextField(
-                                    controller: addCustomerController.zipController,
+                                    controller: addCustomerController.zipController.value,
                                     labelText: "Zip Code",
                                     focusNode: addCustomerController.zipcodeFocusNode,
                                     keyboardType: TextInputType.number,
@@ -1078,15 +1079,15 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                                       RegExp regExp = RegExp(pattern);
                                       setState(() {
                                         if (value.isEmpty) {
-                                          addCustomerController.zipcodeValid = false;
+                                          addCustomerController.zipcodeValid = false.obs;
                                           addCustomerController.zipcodeErrorMessage =
                                           'Zip Code is required';
                                         } else if (!regExp.hasMatch(value)) {
-                                          addCustomerController.zipcodeValid = false;
+                                          addCustomerController.zipcodeValid = false.obs;
                                           addCustomerController.zipcodeErrorMessage =
                                           'Zip Code must be 6 digits';
                                         } else {
-                                          addCustomerController.zipcodeValid = true;
+                                          addCustomerController.zipcodeValid = true.obs;
                                           addCustomerController.zipcodeErrorMessage = null;
                                         }
                                       });
@@ -1098,7 +1099,7 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                                       contentPadding: const EdgeInsets.all(18),
                                       focusedBorder: UnderlineInputBorder(
                                         borderSide: BorderSide(
-                                          color: addCustomerController.zipcodeValid
+                                          color: addCustomerController.zipcodeValid.value
                                               ? AppColors.appNeutralColor5
                                               : AppColors.appRedColor,
                                           width: 2,
@@ -1116,7 +1117,7 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                                           width: 2,
                                         ),
                                       ),
-                                      errorText: addCustomerController.zipcodeValid
+                                      errorText: addCustomerController.zipcodeValid.value
                                           ? null
                                           : addCustomerController.zipcodeErrorMessage,
                                       hintText: "Enter Zip Code",
@@ -1165,15 +1166,20 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                           width: double.infinity,
                           child: ElevatedButton(
                             onPressed: () {
-                              if(widget.id.isEmpty){
-                                if (addCustomerController.validation()){
-                                addCustomerController.addAccountDetail();
-                                addCustomerController.clearAllAccount();
-                                Navigator.pop(context);
+                              if (widget.id.isEmpty) {
+                                if (addCustomerController.validation(context)) {
+                                  addCustomerController.addAccountDetail();
+                                  addCustomerController.clearAllAccount();
+                                  widget.onSave();
+                                  Navigator.pop(context);
                                 }
-                              }else{
-                                addCustomerController.addSingleAccount(widget.id);
-                                Navigator.pop(context);
+                              } else {
+                                if (addCustomerController.validation(context)) {
+                                  addCustomerController
+                                      .addSingleAccount(widget.id);
+                                  widget.onSave();
+                                  Navigator.pop(context);
+                                }
                               }
                             },
                             style: ElevatedButton.styleFrom(
@@ -1210,7 +1216,7 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
           Expanded(
             flex: 2,
             child: Text(
-              "$label",
+              label,
               style: const TextStyle(
                 fontWeight: FontWeight.w400,
                 color: AppColors.appNeutralColor2,
@@ -1352,8 +1358,8 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                 return '$label must be 6 digits';
               }
               if (label == 'Confirm Account Number' &&
-                  addCustomerController.accountNumberController.text.trim() !=
-                      addCustomerController.confirmAccountNumberController.text.trim()) {
+                  addCustomerController.accountNumberController.value.text.trim() !=
+                      addCustomerController.confirmAccountNumberController.value.text.trim()) {
                 return 'Account Number & Confirm Account Number Should Be Same';
               }
               if (maxlength >= 15 && value != null && value.trim().length > 15) {
