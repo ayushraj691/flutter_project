@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +6,8 @@ import 'package:paycron/controller/dashboard/report_overview_controller.dart';
 import 'package:paycron/utils/color_constants.dart';
 
 class ReportOverview extends StatefulWidget {
-   ReportOverview({super.key});
+  ReportOverview({super.key});
+
   @override
   State<ReportOverview> createState() => _ReportOverviewState();
   final Color lightBlue = AppColors.appBlueLightColor;
@@ -18,6 +17,7 @@ class ReportOverview extends StatefulWidget {
 class _ReportOverviewState extends State<ReportOverview> {
   int _touchedIndex = -1;
   final reportController = Get.find<ReportOverviewController>();
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -72,33 +72,29 @@ class _ReportOverviewState extends State<ReportOverview> {
                       ),
                       items: reportController.filterItems
                           .map((item) => DropdownMenuItem<String>(
-                        value: item,
-                        child: Padding(
-                          padding:
-                          const EdgeInsets.only(left: 10),
-                          child: Text(
-                            item,
-                            style: const TextStyle(
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
-                      ))
+                                value: item,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left: 10),
+                                  child: Text(
+                                    item,
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ),
+                              ))
                           .toList(),
                       value: reportController.filterValue.value,
                       onChanged: (value) {
                         setState(() {
-                          reportController.filterValue.value =
-                          value as String;
+                          reportController.filterValue.value = value as String;
                         });
-      
+
                         // Get the index of the selected item
-                        final selectedIndex = reportController
-                            .filterItems
-                            .indexOf(reportController
-                            .filterValue.value);
+                        final selectedIndex = reportController.filterItems
+                            .indexOf(reportController.filterValue.value);
                         if (selectedIndex != -1) {
-                          print('Selected index: ${selectedIndex + 1}');
+                          debugPrint('Selected index: ${selectedIndex + 1}');
                         }
                       },
                       buttonStyleData: const ButtonStyleData(
@@ -193,11 +189,13 @@ class _ReportOverviewState extends State<ReportOverview> {
                               startDegreeOffset: -50,
                               sections: _buildPieChartCurves(),
                               pieTouchData: PieTouchData(
-                                touchCallback: (FlTouchEvent event, pieTouchResponse) {
+                                touchCallback:
+                                    (FlTouchEvent event, pieTouchResponse) {
                                   setState(() {
                                     if (!event.isInterestedForInteractions ||
                                         pieTouchResponse == null ||
-                                        pieTouchResponse.touchedSection == null) {
+                                        pieTouchResponse.touchedSection ==
+                                            null) {
                                       _touchedIndex = -1;
                                       return;
                                     }
@@ -242,7 +240,8 @@ class _ReportOverviewState extends State<ReportOverview> {
                       Flexible(
                         flex: 2,
                         child: Padding(
-                          padding: const EdgeInsets.only(left: 8.0,right: 8.0,top: 8.0),
+                          padding: const EdgeInsets.only(
+                              left: 8.0, right: 8.0, top: 8.0),
                           child: SizedBox(
                             width: screenWidth, // Full width of its parent
                             height: 250, // Set a specific height
@@ -288,8 +287,10 @@ class _ReportOverviewState extends State<ReportOverview> {
                               padding: const EdgeInsets.only(top: 16),
                               child: LayoutBuilder(
                                 builder: (context, constraints) {
-                                  final barsSpace = 4.0 * constraints.maxWidth / 400;
-                                  final barsWidth = 8.0 * constraints.maxWidth / 400;
+                                  final barsSpace =
+                                      4.0 * constraints.maxWidth / 400;
+                                  final barsWidth =
+                                      8.0 * constraints.maxWidth / 400;
                                   return BarChart(
                                     BarChartData(
                                       alignment: BarChartAlignment.center,
@@ -309,9 +310,11 @@ class _ReportOverviewState extends State<ReportOverview> {
                                           sideTitles: SideTitles(
                                             showTitles: true,
                                             reservedSize: 40,
-                                            getTitlesWidget: (double value, TitleMeta meta) {
+                                            getTitlesWidget:
+                                                (double value, TitleMeta meta) {
                                               // Custom Y-axis labels with dollar sign
-                                              final text = '${value.toInt()}\$'; // Add $ sign here
+                                              final text =
+                                                  '${value.toInt()}\$'; // Add $ sign here
                                               return SideTitleWidget(
                                                 axisSide: meta.axisSide,
                                                 child: Text(
@@ -327,17 +330,22 @@ class _ReportOverviewState extends State<ReportOverview> {
                                           ),
                                         ),
                                         topTitles: const AxisTitles(
-                                          sideTitles: SideTitles(showTitles: false),
+                                          sideTitles:
+                                              SideTitles(showTitles: false),
                                         ),
                                         rightTitles: const AxisTitles(
-                                          sideTitles: SideTitles(showTitles: false),
+                                          sideTitles:
+                                              SideTitles(showTitles: false),
                                         ),
                                       ),
                                       gridData: FlGridData(
                                         show: true,
-                                        checkToShowHorizontalLine: (value) => value % 10 == 0,
-                                        getDrawingHorizontalLine: (value) => FlLine(
-                                          color: AppColors.appGreyColor.withOpacity(0.1),
+                                        checkToShowHorizontalLine: (value) =>
+                                            value % 10 == 0,
+                                        getDrawingHorizontalLine: (value) =>
+                                            FlLine(
+                                          color: AppColors.appGreyColor
+                                              .withOpacity(0.1),
                                           strokeWidth: 1,
                                         ),
                                         drawVerticalLine: false,
@@ -352,11 +360,11 @@ class _ReportOverviewState extends State<ReportOverview> {
                                 },
                               ),
                             ),
-                          )
-                          ,
+                          ),
                         ),
                       ),
-                      SizedBox(width: screenWidth * 0.1), // Reduce spacing between chart and indicators
+                      SizedBox(width: screenWidth * 0.1),
+                      // Reduce spacing between chart and indicators
                     ],
                   ),
                 ],
@@ -367,6 +375,7 @@ class _ReportOverviewState extends State<ReportOverview> {
       ),
     );
   }
+
   LineChartData sampleData1() {
     return LineChartData(
       lineTouchData: LineTouchData(
@@ -376,72 +385,68 @@ class _ReportOverviewState extends State<ReportOverview> {
           tooltipRoundedRadius: 8,
           tooltipBorder: BorderSide(color: Colors.transparent),
         ),
-        touchCallback: (FlTouchEvent event, LineTouchResponse? touchResponse) {},
+        touchCallback:
+            (FlTouchEvent event, LineTouchResponse? touchResponse) {},
         handleBuiltInTouches: true,
       ),
       gridData: FlGridData(
         show: false,
       ),
       titlesData: FlTitlesData(
-        bottomTitles: AxisTitles(
-          sideTitles: SideTitles(
-            showTitles: true,
-            reservedSize: 50,
-            getTitlesWidget: (value, meta) {
-              final style = TextStyle(
-                fontFamily: 'Sofia Sans',
-                color: Color(0xff72719b),
-                fontWeight: FontWeight.w400,
-                fontSize: 16,
-              );
-              Widget text;
-              switch (value.toInt()) {
-                case 2:
-                  text = Text('jan', style: style);
-                  break;
-                case 4:
-                  text = Text('feb', style: style);
-                  break;
-                case 6:
-                  text = Text('mar', style: style);
-                  break;
-                case 8:
-                  text = Text('apr', style: style);
-                  break;
-                case 10:
-                  text = Text('may', style: style);
-                  break;
-                case 12:
-                  text = Text('jun', style: style);
-                  break;
-                default:
-                  text = Text('', style: style);
-                  break;
-              }
-              return SideTitleWidget(
-                axisSide: meta.axisSide,
-                space: 10,
-                child: text,
-              );
-            },
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 50,
+              getTitlesWidget: (value, meta) {
+                final style = TextStyle(
+                  fontFamily: 'Sofia Sans',
+                  color: Color(0xff72719b),
+                  fontWeight: FontWeight.w400,
+                  fontSize: 16,
+                );
+                Widget text;
+                switch (value.toInt()) {
+                  case 2:
+                    text = Text('jan', style: style);
+                    break;
+                  case 4:
+                    text = Text('feb', style: style);
+                    break;
+                  case 6:
+                    text = Text('mar', style: style);
+                    break;
+                  case 8:
+                    text = Text('apr', style: style);
+                    break;
+                  case 10:
+                    text = Text('may', style: style);
+                    break;
+                  case 12:
+                    text = Text('jun', style: style);
+                    break;
+                  default:
+                    text = Text('', style: style);
+                    break;
+                }
+                return SideTitleWidget(
+                  axisSide: meta.axisSide,
+                  space: 10,
+                  child: text,
+                );
+              },
+            ),
           ),
-        ),
-        leftTitles: AxisTitles(
-          sideTitles: SideTitles(
-            showTitles: true,
-            reservedSize: 28,
-            getTitlesWidget: (value, meta) {
-              return Text(value.toString());
-            },
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 28,
+              getTitlesWidget: (value, meta) {
+                return Text(value.toString());
+              },
+            ),
           ),
-        ),
-        rightTitles: AxisTitles(
-          sideTitles: SideTitles(showTitles: false)
-        ),
-          topTitles: AxisTitles(
-          sideTitles: SideTitles(showTitles: false)
-      )
-      ),
+          rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false))),
       borderData: FlBorderData(
         show: true,
         border: const Border(
@@ -914,5 +919,4 @@ class _ReportOverviewState extends State<ReportOverview> {
       child: Text(text, style: style),
     );
   }
-
 }

@@ -9,26 +9,33 @@ import 'package:paycron/utils/common_variable.dart';
 import 'package:paycron/utils/my_toast.dart';
 import 'package:paycron/views/widgets/date_picker_page.dart';
 
-class CustomerBillingController extends GetxController{
-
+class CustomerBillingController extends GetxController {
   var variableController = Get.find<VariableController>();
 
   final buttonText = 'Select Date'.obs;
   final startDate = ''.obs;
   final endDate = ''.obs;
-  var totalCustomer=0.0.obs;
-  var totalTransaction=0.0.obs;
-  var cancelledCheck=0.0.obs;
+  var totalCustomer = 0.0.obs;
+  var totalTransaction = 0.0.obs;
+  var cancelledCheck = 0.0.obs;
   var processingVolume = 0.0.obs;
   final selectedIndex = 1.obs;
 
   void callMethod() async {
     await getAllCustomerBilling(
-      CommonVariable.businessId.value,
-      '',
-      startDate.value,
-      endDate.value
-    );
+        CommonVariable.businessId.value, '', startDate.value, endDate.value);
+  }
+
+  CustomerBillingController() {
+    final DateTime now = DateTime.now();
+    final DateTime last7Days = DateTime.now().subtract(const Duration(days: 7));
+    setDateRange(now, last7Days);
+  }
+  void setDateRange(DateTime end, DateTime start) {
+    endDate.value =  DateFormat.yMMMd().format(end);
+    startDate.value =  DateFormat.yMMMd().format(start);
+    buttonText.value =
+    '${DateFormat('dd MMM, yy').format(start)} - ${DateFormat('dd MMM, yy').format(end)}';
   }
 
   void showSelectDurationBottomSheet(BuildContext context) {
@@ -51,7 +58,6 @@ class CustomerBillingController extends GetxController{
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Top drag handle
             Center(
               child: Container(
                 width: 40,
@@ -63,7 +69,6 @@ class CustomerBillingController extends GetxController{
               ),
             ),
             const SizedBox(height: 16),
-            // Title
             const Text(
               "Select duration",
               style: TextStyle(
@@ -72,45 +77,53 @@ class CustomerBillingController extends GetxController{
               ),
             ),
             const SizedBox(height: 16),
-            // Zigzag Button Layout
             Column(
               children: [
-                // First Row
                 Row(
                   children: [
-                    _buildOptionButton("Today", 1,context),
-                    const SizedBox(width: 8),
-                    _buildOptionButton("Yesterday", 2,context),
+                    Expanded(
+                      child: _buildOptionButton("Today", 1, context),
+                    ),
+                    const SizedBox(width: 8), // Spacing between buttons
+                    Expanded(
+                      child: _buildOptionButton("Yesterday", 2, context),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8), // Vertical spacing between rows
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildOptionButton("Last 7 days", 3, context),
+                    ),
+                    const SizedBox(width: 8), // Spacing between buttons
+                    Expanded(
+                      child: _buildOptionButton("Last 30 days", 4, context),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 8),
-
-                // Second Row
                 Row(
                   children: [
-                    const Spacer(flex: 1),
-                    _buildOptionButton("Last 7 days", 3,context),
+                    Expanded(
+                      child: _buildOptionButton("Last Month", 5, context),
+                    ),
                     const SizedBox(width: 8),
-                    _buildOptionButton("Last 30 days", 4,context),
+                    Expanded(
+                      child: _buildOptionButton("Last 2 months", 6, context),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 8),
-                // Third Row
                 Row(
                   children: [
-                    _buildOptionButton("Last Month", 5,context),
+                    Expanded(
+                      child: _buildOptionButton("Last 6 months", 7, context),
+                    ),
                     const SizedBox(width: 8),
-                    _buildOptionButton("Last 2 months", 6,context),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                // Fourth Row
-                Row(
-                  children: [
-                    const Spacer(flex: 1),
-                    _buildOptionButton("Last 6 months", 7,context),
-                    const SizedBox(width: 8),
-                    _buildOptionButton("Last 1 year", 8,context),
+                    Expanded(
+                      child: _buildOptionButton("Last 1 year", 8, context),
+                    ),
                   ],
                 ),
               ],
@@ -119,13 +132,16 @@ class CustomerBillingController extends GetxController{
             ElevatedButton.icon(
               onPressed: () {
                 Navigator.pop(context);
-                Get.to(RangeDatePickerScreen(onSubmit: (DateTime? pickStartDate, DateTime? pickEndDate) {
-                  buttonText.value = '${DateFormat.yMMMd().format(pickStartDate!)} - ${DateFormat.yMMMd().format(pickEndDate!)}';
-                  startDate.value = DateFormat.yMMMd().format(pickStartDate);
-                  endDate.value = DateFormat.yMMMd().format(pickEndDate);
-                  callMethod();
-                  Navigator.pop(context);
-                },));
+                Get.to(RangeDatePickerScreen(
+                  onSubmit: (DateTime? pickStartDate, DateTime? pickEndDate) {
+                    buttonText.value =
+                        '${DateFormat('dd MMM, yy').format(pickStartDate!)} - ${DateFormat('dd MMM, yy').format(pickEndDate!)}';
+                    startDate.value = DateFormat.yMMMd().format(pickStartDate);
+                    endDate.value = DateFormat.yMMMd().format(pickEndDate);
+                    callMethod();
+                    Navigator.pop(context);
+                  },
+                ));
               },
               icon: const Icon(Icons.calendar_today),
               label: const Text("Custom range"),
@@ -148,13 +164,13 @@ class CustomerBillingController extends GetxController{
     );
   }
 
-  Widget _buildOptionButton(String label, int index,BuildContext context) {
+  Widget _buildOptionButton(String label, int index, BuildContext context) {
     return Expanded(
       flex: 4,
       child: GestureDetector(
         onTap: () {
-          selectedIndex.value= index;
-          _handleDateSelection(index,context);
+          selectedIndex.value = index;
+          _handleDateSelection(index, context);
         },
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
@@ -177,15 +193,13 @@ class CustomerBillingController extends GetxController{
     );
   }
 
-  void _handleDateSelection(int index,BuildContext context) {
-
+  void _handleDateSelection(int index, BuildContext context) {
     DateTime now = DateTime.now();
     DateTime yesterday = DateTime.now().subtract(const Duration(days: 1));
     DateTime last7Days = DateTime.now().subtract(const Duration(days: 7));
     DateTime last30Days = DateTime.now().subtract(const Duration(days: 30));
     DateTime last6Months = DateTime.now().subtract(const Duration(days: 180));
     DateTime lastYear = DateTime.now().subtract(const Duration(days: 365));
-
 
     DateTime start, end;
 
@@ -225,7 +239,8 @@ class CustomerBillingController extends GetxController{
         return;
     }
 
-    buttonText.value = '${DateFormat.yMMMd().format(start)} - ${DateFormat.yMMMd().format(end)}';
+    buttonText.value =
+    '${DateFormat('dd MMM, yy').format(start)} - ${DateFormat('dd MMM, yy').format(end)}';
     startDate.value = DateFormat.yMMMd().format(start);
     endDate.value = DateFormat.yMMMd().format(end);
 
@@ -233,16 +248,14 @@ class CustomerBillingController extends GetxController{
     Navigator.pop(context);
   }
 
-  final List<CustomerList> customerList =
-      <CustomerList>[].obs;
-
+  final List<CustomerList> customerList = <CustomerList>[].obs;
 
   Future<void> getAllCustomerBilling(
-      String businessId,
-      String query,
-      String startDate,
-      String endDate,
-      ) async {
+    String businessId,
+    String query,
+    String startDate,
+    String endDate,
+  ) async {
     variableController.loading.value = true;
     try {
       customerList.clear();
@@ -256,8 +269,7 @@ class CustomerBillingController extends GetxController{
           size: 10,
           startDate: startDate,
           yes: 'yes',
-          urlIdentifier: '0'
-      );
+          urlIdentifier: '0');
 
       debugPrint("*************************");
       debugPrint("API Response: $res");
@@ -267,10 +279,18 @@ class CustomerBillingController extends GetxController{
         variableController.loading.value = false;
         ResCustomerBilling resLogin = ResCustomerBilling.fromJson(res);
         customerList.addAll(resLogin.customerList);
-        totalCustomer.value = resLogin.meta.totalCustomer is int ? resLogin.meta.totalCustomer.toDouble() : resLogin.meta.totalCustomer as double;
-        totalTransaction.value = resLogin.meta.totalTransaction is int ? resLogin.meta.totalTransaction.toDouble() : resLogin.meta.totalTransaction as double;
-        cancelledCheck.value = resLogin.meta.cancelTransaction is int ? resLogin.meta.cancelTransaction.toDouble() : resLogin.meta.cancelTransaction as double;
-        processingVolume.value = resLogin.meta.totalPayment is int ? resLogin.meta.totalPayment.toDouble() : resLogin.meta.totalPayment as double;
+        totalCustomer.value = resLogin.meta.totalCustomer is int
+            ? resLogin.meta.totalCustomer.toDouble()
+            : resLogin.meta.totalCustomer as double;
+        totalTransaction.value = resLogin.meta.totalTransaction is int
+            ? resLogin.meta.totalTransaction.toDouble()
+            : resLogin.meta.totalTransaction as double;
+        cancelledCheck.value = resLogin.meta.cancelTransaction is int
+            ? resLogin.meta.cancelTransaction.toDouble()
+            : resLogin.meta.cancelTransaction as double;
+        processingVolume.value = resLogin.meta.totalPayment is int
+            ? resLogin.meta.totalPayment.toDouble()
+            : resLogin.meta.totalPayment as double;
         if (resLogin.customerList.isEmpty) {
           MyToast.toast("No Customer Billing found.");
         }
@@ -286,4 +306,3 @@ class CustomerBillingController extends GetxController{
     }
   }
 }
-

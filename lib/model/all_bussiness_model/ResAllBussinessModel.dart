@@ -54,32 +54,33 @@ class ResAllBussiness {
     businessDetail = (json['business_detail'] != null
         ? new BusinessDetail.fromJson(json['business_detail'])
         : null)!;
-    support =
-        (json['support'] != null ? new Support.fromJson(json['support']) : null)!;
+    support = (json['support'] != null
+        ? new Support.fromJson(json['support'])
+        : null)!;
     bankDetails = (json['bank_details'] != null
         ? new BankDetails.fromJson(json['bank_details'])
         : null)!;
-    sId = json['_id']??"";
-    prefix = json['prefix']??"";
-    colorCode = json['color_code']??"";
-    creditLimit = json['credit_limit']??"";
-    blackFlag = json['black_flag']??"";
-    selfVerify = json['self_verify']??"";
-    selfDownload = json['self_download']??"";
-    isApproved = json['is_approved']??"";
-    remark = json['remark']??"";
-    lastUpdatedAccountmanid = json['last_updated_accountmanid']??"";
-    lastPayment = json['last_payment']??"";
-    accountManager = json['account_manager']??"";
-    depositorManager = json['depositor_manager']??"";
-    refferalManager = json['refferal_manager']??"";
-    isTerminated = json['is_terminated']??"";
-    terminatedNote = json['terminated_note']??"";
-    isEditRequest = json['is_edit_request']??"";
-    isDeleted = json['is_deleted']??"";
-    lastUpdated = json['last_updated']??"";
-    createdOn = json['created_on']??"";
-    iV = json['__v']??"";
+    sId = json['_id'] ?? "";
+    prefix = json['prefix'] ?? "";
+    colorCode = json['color_code'] ?? "";
+    creditLimit = json['credit_limit'] ?? "";
+    blackFlag = json['black_flag'] ?? "";
+    selfVerify = json['self_verify'] ?? "";
+    selfDownload = json['self_download'] ?? "";
+    isApproved = json['is_approved'] ?? "";
+    remark = json['remark'] ?? "";
+    lastUpdatedAccountmanid = json['last_updated_accountmanid'] ?? "";
+    lastPayment = json['last_payment'] ?? "";
+    accountManager = json['account_manager'] ?? "";
+    depositorManager = json['depositor_manager'] ?? "";
+    refferalManager = json['refferal_manager'] ?? "";
+    isTerminated = json['is_terminated'] ?? "";
+    terminatedNote = json['terminated_note'] ?? "";
+    isEditRequest = json['is_edit_request'] ?? "";
+    isDeleted = json['is_deleted'] ?? "";
+    lastUpdated = json['last_updated'] ?? "";
+    createdOn = json['created_on'] ?? "";
+    iV = json['__v'] ?? "";
   }
 
   Map<String, dynamic> toJson() {
@@ -87,7 +88,7 @@ class ResAllBussiness {
     data['business_detail'] = businessDetail.toJson();
     data['support'] = support.toJson();
     data['bank_details'] = bankDetails.toJson();
-      data['_id'] = sId;
+    data['_id'] = sId;
     data['prefix'] = prefix;
     data['color_code'] = colorCode;
     data['credit_limit'] = creditLimit;

@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:paycron/controller/billing_controller/customer_billing.dart';
@@ -30,14 +31,12 @@ class _CustomerBillingState extends State<CustomerBilling> {
     super.initState();
   }
 
-
   void callMethod() async {
     await customerBillingController.getAllCustomerBilling(
         CommonVariable.businessId.value,
         '',
         customerBillingController.startDate.value,
-        customerBillingController.endDate.value
-    );
+        customerBillingController.endDate.value);
   }
 
   @override
@@ -50,9 +49,11 @@ class _CustomerBillingState extends State<CustomerBilling> {
         backgroundColor: AppColors.appBackgroundColor,
         leading: IconButton(
           color: AppColors.appBlackColor,
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pop(context); // Action for back arrow
+            Navigator.pop(context);
           },
         ),
         titleSpacing: 0,
@@ -89,235 +90,210 @@ class _CustomerBillingState extends State<CustomerBilling> {
         ],
       ),
       endDrawer: const AppDrawer(),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              const Align(
-                alignment: Alignment.topLeft,
-                child: Padding(
-                  padding: EdgeInsets.only(left: 12.0, top: 20, bottom: 10),
-                  child: Text(
-                    "Customer Billing",
-                    style: TextStyle(
-                      fontFamily: 'Sofia Sans',
-                      color: AppColors.appBlackColor,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 30,
+      body: RefreshIndicator(
+        onRefresh: _refreshData,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.only(left: 16.0,right: 16.0),
+            child: Column(
+              children: [
+                const Align(
+                  alignment: Alignment.topLeft,
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 8.0, top: 10, bottom: 10),
+                    child: Text(
+                      "Customer Billing",
+                      style: TextStyle(
+                        fontFamily: 'Sofia Sans',
+                        color: AppColors.appBlackColor,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 30,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    flex: 2,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.appBackgroundGreyColor,
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 15, vertical: 10),
-                          shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(30),
+                Row(
+                  children: [
+                    Expanded(
+                      flex: 2,
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 8.0,right: 8.0),
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.appBackgroundGreyColor,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 15, vertical: 10),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            elevation: 0,
+                            shadowColor: Colors.black45,
                           ),
-                          elevation: 0,
-                          shadowColor: Colors.black45,
-                        ),
-                        onPressed: () => customerBillingController
-                            .showSelectDurationBottomSheet(context),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Obx(() {
-                              return Text(
-                                customerBillingController.buttonText.value,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.w400,
-                                  fontFamily: 'Sofia Sans',
-                                ),
-                              );
-                            }),
-                          ],
+                          onPressed: () => customerBillingController
+                              .showSelectDurationBottomSheet(context),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Obx(() {
+                                return Text(
+                                  customerBillingController.buttonText.value,
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w400,
+                                    fontFamily: 'Sofia Sans',
+                                  ),
+                                );
+                              }),
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  Expanded(
-                    child: Container(),
-                    // child: Padding(
-                    //   padding: const EdgeInsets.only(right: 8.0),
-                    //   child: Align(
-                    //     alignment: Alignment.centerLeft,
-                    //     child: Container(
-                    //       width: screenWidth / 4,
-                    //       height: 36,
-                    //       decoration: BoxDecoration(
-                    //         color: AppColors.appBlackColor,
-                    //         borderRadius: BorderRadius.circular(30),
-                    //         border: Border.all(
-                    //           color: AppColors.appBlackColor,
-                    //           width: 0, // Border thickness
-                    //         ),
-                    //       ),
-                    //       child: ElevatedButton(
-                    //         onPressed: () {},
-                    //         style: ElevatedButton.styleFrom(
-                    //           backgroundColor: Colors.transparent,
-                    //           shadowColor: Colors.transparent,
-                    //           // padding: const EdgeInsets.symmetric(
-                    //           //     vertical: 10),
-                    //         ),
-                    //         child: const Text(
-                    //           'Download',
-                    //           style: TextStyle(
-                    //             fontFamily: 'Sofia Sans',
-                    //             fontWeight: FontWeight.w400,
-                    //             fontSize: 14,
-                    //             color: AppColors.appWhiteColor, // Text color
-                    //           ),
-                    //         ),
-                    //       ),
-                    //     ),
-                    //   ),
-                    // ),
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 16.0,
-              ),
-              GridView.builder(
-                itemCount: 4,
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 10.0,
-                  mainAxisSpacing: 10.0,
-                  childAspectRatio:
-                      1.6, // Reduce height by increasing childAspectRatio
+                    Expanded(
+                      child: Container(),
+                    ),
+                  ],
                 ),
-                itemBuilder: (context, index) {
-                  String displayText;
-                  String textIcon = '';
-
-                  // Define a list of colors for the containers
-                  List<Color> containerColors = [
-                    AppColors.appParrotGreenColor,
-                    AppColors.appCreamColor,
-                    AppColors.appCreamColor,
-                    AppColors.appLightPurpleColor,
-                  ];
-
-                  switch (index) {
-                    case 0:
-                      displayText = "Total Customers";
-                      textIcon = ImageAssets.customerPerson;
-                      break;
-                    case 1:
-                      displayText = "Total Transaction";
-                      textIcon = ImageAssets.totalTransaction;
-                      break;
-                    case 2:
-                      displayText = "Cancelled Check";
-                      textIcon = ImageAssets.cancelCheck;
-                      break;
-                    case 3:
-                      displayText = "Processing Volume";
-                      textIcon = ImageAssets.processingVolume;
-                      break;
-                    default:
-                      displayText = ""; // Default text
-                  }
-
-                  return Container(
-                    decoration: BoxDecoration(
-                      color: containerColors[index],
-                      borderRadius: BorderRadius.circular(22.0),
-                      border: Border.all(
-                        color: AppColors.appBlueColor,
-                        style: BorderStyle.none,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.15),
-                          offset: const Offset(0, 0),
-                          blurRadius: 0,
-                          spreadRadius: 0,
-                        ),
-                      ],
+                const SizedBox(
+                  height: 16.0,
+                ),
+                Container(
+                  margin: const EdgeInsets.only(left: 8),
+                  child: GridView.builder(
+                    itemCount: 4,
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 10.0,
+                      mainAxisSpacing: 10.0,
+                      childAspectRatio:
+                          1.7,
                     ),
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                        vertical: MediaQuery.of(context).size.height *
-                            0.01,
-                        horizontal: MediaQuery.of(context).size.width *
-                            0.02,
-                      ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,  // Ensures column takes as little space as needed
-                          children: [
-                            Row(
-                              children: [
-                                Expanded( // Makes the Text widget take available space
-                                  child: Obx(() => Text(
-                                    index == 0
-                                        ? "\$${customerBillingController.totalCustomer.value}"
-                                        : index == 1
-                                        ? "\$${customerBillingController.totalTransaction.value}"
-                                        : index == 2
-                                        ? "\$${customerBillingController.cancelledCheck.value}"
-                                        : "\$${customerBillingController.processingVolume.value}",
-                                    style: const TextStyle(
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  )),
-                                ),
-                                SizedBox(width: 8),
-                                Image.asset(
-                                  textIcon,
-                                  height: MediaQuery.of(context).size.height * 0.05,
-                                  width: MediaQuery.of(context).size.width * 0.1,
-                                ),
-                              ],
+                    itemBuilder: (context, index) {
+                      String displayText;
+                      String textIcon = '';
+                      List<Color> containerColors = [
+                        AppColors.appParrotGreenColor,
+                        AppColors.appCreamColor,
+                        AppColors.appCreamColor,
+                        AppColors.appLightPurpleColor,
+                      ];
+
+                      switch (index) {
+                        case 0:
+                          displayText = "Total Customers";
+                          textIcon = ImageAssets.customerPerson;
+                          break;
+                        case 1:
+                          displayText = "Total Transaction";
+                          textIcon = ImageAssets.totalTransaction;
+                          break;
+                        case 2:
+                          displayText = "Cancelled Check";
+                          textIcon = ImageAssets.cancelCheck;
+                          break;
+                        case 3:
+                          displayText = "Processing Volume";
+                          textIcon = ImageAssets.processingVolume;
+                          break;
+                        default:
+                          displayText = ""; // Default text
+                      }
+
+                      return Container(
+                        decoration: BoxDecoration(
+                          color: containerColors[index],
+                          borderRadius: BorderRadius.circular(22.0),
+                          border: Border.all(
+                            color: AppColors.appBlueColor,
+                            style: BorderStyle.none,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.15),
+                              offset: const Offset(0, 0),
+                              blurRadius: 0,
+                              spreadRadius: 0,
                             ),
-                            SizedBox(height: MediaQuery.of(context).size.height * 0.01),
-                            Text(
-                              displayText,
-                              style: TextStyle(
-                                color: AppColors.appTextLightColor,
-                                fontWeight: FontWeight.w400,
-                                fontSize: MediaQuery.of(context).size.width * 0.04,
-                                fontFamily: 'Sofia Sans',
-                              ),
-                            ),
-                            SizedBox(height: MediaQuery.of(context).size.height * 0.01),
                           ],
-                        )
-                    ),
-                  );
-                },
-              ),
-              const SizedBox(
-                height: 8.0,
-              ),
-              SizedBox(height: MediaQuery.of(context).size.height * 0.02),
-              _buildRecentTransactionsSection(),
-            ],
+                        ),
+                        child: Padding(
+                            padding: EdgeInsets.symmetric(
+                              vertical: MediaQuery.of(context).size.height * 0.01,
+                              horizontal:
+                                  MediaQuery.of(context).size.width * 0.03,
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              // Ensures column takes as little space as needed
+                              children: [
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Obx(() => Text(
+                                            index == 0
+                                                ? "${customerBillingController.totalCustomer.value.toInt()}"
+                                                : index == 1
+                                                    ? "${customerBillingController.totalTransaction.value.toInt()}"
+                                                    : index == 2
+                                                        ? "${customerBillingController.cancelledCheck.value.toInt()}"
+                                                        : "${customerBillingController.processingVolume.value}",
+                                            style: const TextStyle(
+                                              fontSize: 24,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          )),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Image.asset(
+                                      textIcon,
+                                      height: MediaQuery.of(context).size.height *
+                                          0.05,
+                                      width:
+                                          MediaQuery.of(context).size.width * 0.1,
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(
+                                    height: MediaQuery.of(context).size.height *
+                                        0.01),
+                                Text(
+                                  displayText,
+                                  style: TextStyle(
+                                    color: AppColors.appTextLightColor,
+                                    fontWeight: FontWeight.w400,
+                                    fontSize:
+                                        MediaQuery.of(context).size.width * 0.04,
+                                    fontFamily: 'Sofia Sans',
+                                  ),
+                                ),
+                                SizedBox(
+                                    height: MediaQuery.of(context).size.height *
+                                        0.01),
+                              ],
+                            )),
+                      );
+                    },
+                  ),
+                ),
+                SizedBox(height: MediaQuery.of(context).size.height * 0.02),
+                _buildRecentTransactionsSection(),
+              ],
+            ),
           ),
         ),
       ),
     );
+  }
+
+  Future<void> _refreshData() async {
+    callMethod();
+    setState(() {});
   }
 
   Widget _buildRecentTransactionsSection() {
@@ -327,7 +303,7 @@ class _CustomerBillingState extends State<CustomerBilling> {
         borderRadius: BorderRadius.circular(12),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.only(left: 8.0,right: 16.0,top: 16.0,bottom: 16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -434,7 +410,7 @@ class _CustomerBillingState extends State<CustomerBilling> {
                 child: Align(
                   alignment: Alignment.centerRight,
                   child: Text(
-                    customerList.totalAmount.toString(),
+                    "\$${customerList.totalAmount.toString()}",
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       color: AppColors.appHeadingText,
@@ -446,7 +422,9 @@ class _CustomerBillingState extends State<CustomerBilling> {
               ),
             ],
           ),
-          const SizedBox(height: 10.0,)
+          const SizedBox(
+            height: 10.0,
+          )
         ],
       ),
     );

@@ -4,7 +4,7 @@ class ResMail {
   ResMail({required this.message});
 
   ResMail.fromJson(Map<String, dynamic> json) {
-    message = json['message']??"";
+    message = json['message'] ?? "";
   }
 
   Map<String, dynamic> toJson() {

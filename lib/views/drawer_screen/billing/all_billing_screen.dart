@@ -8,6 +8,8 @@ import 'package:paycron/model/billing_model/ResfilterData.dart';
 import 'package:paycron/utils/color_constants.dart';
 import 'package:paycron/views/widgets/NoDataScreen.dart';
 
+import '../../../utils/string_constants.dart';
+
 class AllBillingScreen extends StatefulWidget {
   const AllBillingScreen({super.key});
 
@@ -29,6 +31,8 @@ class _AllBillingScreenState extends State<AllBillingScreen> {
         backgroundColor: AppColors.appBackgroundColor,
         leading: IconButton(
           color: AppColors.appBlackColor,
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
@@ -71,8 +75,8 @@ class _AllBillingScreenState extends State<AllBillingScreen> {
                               elevation: 0,
                               shadowColor: Colors.black45,
                             ),
-                            onPressed: () =>
-                                billingController.showSelectDurationBottomSheet(context),
+                            onPressed: () => billingController
+                                .showSelectDurationBottomSheet(context),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
@@ -109,12 +113,14 @@ class _AllBillingScreenState extends State<AllBillingScreen> {
                                 ),
                               ),
                               child: ElevatedButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  billingController.downloadCSV();
+                                },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.transparent,
                                   shadowColor: Colors.transparent,
-                                  // padding: const EdgeInsets.symmetric(
-                                  //     vertical: 10),
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 10),
                                 ),
                                 child: const Text(
                                   'Download',
@@ -122,7 +128,8 @@ class _AllBillingScreenState extends State<AllBillingScreen> {
                                     fontFamily: 'Sofia Sans',
                                     fontWeight: FontWeight.w400,
                                     fontSize: 14,
-                                    color: AppColors.appWhiteColor, // Text color
+                                    color:
+                                        AppColors.appWhiteColor, // Text color
                                   ),
                                 ),
                               ),
@@ -132,10 +139,8 @@ class _AllBillingScreenState extends State<AllBillingScreen> {
                       ),
                     ],
                   ),
-                  SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.01),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.01),
                   _buildRecentTransactionsSection(),
-
                 ],
               ),
             ),
@@ -144,6 +149,7 @@ class _AllBillingScreenState extends State<AllBillingScreen> {
       ),
     );
   }
+
   Widget _buildRecentTransactionsSection() {
     double screenWidth = MediaQuery.of(context).size.width;
     return Card(
@@ -176,29 +182,27 @@ class _AllBillingScreenState extends State<AllBillingScreen> {
             const SizedBox(height: 8),
             _buildSearchBar(),
             Obx(() {
-              if (billingController
-                  .allBillingList.isEmpty) {
+              if (billingController.allBillingList.isEmpty) {
                 return variableController.loading.value
                     ? Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Center(
-                        child: Container(
-                          alignment: Alignment.center,
-                          height: 50,
-                          width: 50,
-                          child: Lottie.asset(
-                              "assets/lottie/half-circles.json"),
+                        padding: const EdgeInsets.all(8.0),
+                        child: Center(
+                          child: Container(
+                            alignment: Alignment.center,
+                            height: 50,
+                            width: 50,
+                            child:
+                                Lottie.asset("assets/lottie/half-circles.json"),
+                          ),
                         ),
-                      ),
-                    )
+                      )
                     : NoDataFoundCard(); // Your custom widget
               } else {
                 return ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   // Disable scrolling inside ListView
-                  itemCount: billingController
-                      .allBillingList.length,
+                  itemCount: billingController.allBillingList.length,
                   itemBuilder: (context, index) {
                     return listTransactionCard(
                       billingController.allBillingList,
@@ -214,6 +218,7 @@ class _AllBillingScreenState extends State<AllBillingScreen> {
       ),
     );
   }
+
   Widget _buildSearchBar() {
     return TextField(
       controller: billingController.searchController,
@@ -222,7 +227,7 @@ class _AllBillingScreenState extends State<AllBillingScreen> {
         filled: true,
         fillColor: AppColors.appNeutralColor5,
         prefixIcon: const Icon(Icons.search),
-        contentPadding: const EdgeInsets.all(16),
+        contentPadding: const EdgeInsets.all(8),
         enabledBorder: OutlineInputBorder(
           borderSide: const BorderSide(
             color: AppColors.appNeutralColor5,
@@ -247,7 +252,7 @@ class _AllBillingScreenState extends State<AllBillingScreen> {
     final createdDate = subscription.isCreated;
     DateTime dateTime = DateTime.parse(createdDate).toLocal();
     String formattedTime = DateFormat.jm().format(dateTime);
-    String formattedDate = DateFormat('dd MMM, yyyy').format(dateTime);
+    String formattedDate = DateFormat('dd MMM, yy').format(dateTime);
 
     return Card(
       elevation: 0,
@@ -255,15 +260,14 @@ class _AllBillingScreenState extends State<AllBillingScreen> {
         borderRadius: BorderRadius.circular(12),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Date and Status Row
             Row(
               children: [
                 Text(
-                  formattedDate,
+                  "$formattedDate   $formattedTime",
                   style: const TextStyle(
                     fontWeight: FontWeight.w600,
                     color: AppColors.appBlackColor,
@@ -271,20 +275,63 @@ class _AllBillingScreenState extends State<AllBillingScreen> {
                     fontFamily: 'Sofia Sans',
                   ),
                 ),
-                const SizedBox(width: 8),
+                SizedBox(width: MediaQuery.of(context).size.width *0.03),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding:
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   decoration: BoxDecoration(
-                    color: subscription.credit.toString() == '0'
+                    color: subscription.fundType.toString() == '0' && subscription.isApproved.toString() == '3'
+                        ? AppColors.appMintGreenColor
+                        : subscription.fundType.toString() == '1' && subscription.isApproved.toString() == '4'
+                        ? AppColors.appRedLightColor
+                        : subscription.fundType.toString() == '2' && subscription.isApproved.toString() == '3'
+                        ? AppColors.appMintGreenColor
+                        : subscription.fundType.toString() == '2' && subscription.isApproved.toString() == '4'
+                        ? AppColors.appRedLightColor
+                        : subscription.fundType.toString() == '3' && subscription.isApproved.toString() == '3'
+                        ? AppColors.appMintGreenColor
+                        : subscription.fundType.toString() == '3' && subscription.isApproved.toString() == '4'
+                        ? AppColors.appRedLightColor
+                        : subscription.fundType.toString() == '4' && subscription.isApproved.toString() == '3'
                         ? AppColors.appRedLightColor
                         : AppColors.appMintGreenColor,
+                    // subscription.credit.toString() == '0'
+                    //     ? AppColors.appRedLightColor
+                    //     : AppColors.appMintGreenColor,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: FittedBox(
                     child: Text(
-                      subscription.credit.toString() == '0' ? 'Debit' : 'Credit',
+                      subscription.fundType.toString() == '0' && subscription.isApproved.toString() == '3'
+                          ? 'Credit'
+                          : subscription.fundType.toString() == '1' && subscription.isApproved.toString() == '4'
+                          ? 'Debit'
+                          : subscription.fundType.toString() == '2' && subscription.isApproved.toString() == '3'
+                          ? 'Credit'
+                          : subscription.fundType.toString() == '2' && subscription.isApproved.toString() == '4'
+                          ? 'Debit'
+                          : subscription.fundType.toString() == '3' && subscription.isApproved.toString() == '3'
+                          ? 'Credit'
+                          : subscription.fundType.toString() == '3' && subscription.isApproved.toString() == '4'
+                          ? 'Debit'
+                          : subscription.fundType.toString() == '4' && subscription.isApproved.toString() == '3'
+                          ? 'Debit'
+                          : "",
                       style: TextStyle(
-                        color: subscription.credit.toString() == '0'
+                        color:
+                        subscription.fundType.toString() == '0' && subscription.isApproved.toString() == '3'
+                            ? AppColors.appGreenTextColor
+                            : subscription.fundType.toString() == '1' && subscription.isApproved.toString() == '4'
+                            ? AppColors.appRedColor
+                            : subscription.fundType.toString() == '2' && subscription.isApproved.toString() == '3'
+                            ? AppColors.appGreenTextColor
+                            : subscription.fundType.toString() == '2' && subscription.isApproved.toString() == '4'
+                            ? AppColors.appRedColor
+                            : subscription.fundType.toString() == '3' && subscription.isApproved.toString() == '3'
+                            ? AppColors.appGreenTextColor
+                            : subscription.fundType.toString() == '3' && subscription.isApproved.toString() == '4'
+                            ? AppColors.appRedColor
+                            : subscription.fundType.toString() == '4' && subscription.isApproved.toString() == '3'
                             ? AppColors.appRedColor
                             : AppColors.appGreenTextColor,
                         fontSize: 12,
@@ -311,14 +358,28 @@ class _AllBillingScreenState extends State<AllBillingScreen> {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                const SizedBox(width: 8), // Space between the two columns
+                const SizedBox(width: 8),
                 Text(
-                  subscription.credit.toString() == '0'
-                      ? "-\$${subscription.balance}"
-                      : "+\$${subscription.balance}",
+                  subscription.fundType.toString() == '0' && subscription.isApproved.toString() == '3'
+                      ? "+\$${double.parse(subscription.addedAmount.toString()).toStringAsFixed(2)}"
+                      : subscription.debit.toString() == "0"
+                      ? "+\$${double.parse(subscription.credit.toString()).toStringAsFixed(2)}"
+                      : "-\$${double.parse(subscription.debit.toString()).toStringAsFixed(2)}",
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
-                    color: subscription.credit.toString() == '0'
+                    color: subscription.fundType.toString() == '0' && subscription.isApproved.toString() == '3'
+                        ? AppColors.appGreenTextColor
+                        : subscription.fundType.toString() == '1' && subscription.isApproved.toString() == '4'
+                        ? AppColors.appRedColor
+                        : subscription.fundType.toString() == '2' && subscription.isApproved.toString() == '3'
+                        ? AppColors.appGreenTextColor
+                        : subscription.fundType.toString() == '2' && subscription.isApproved.toString() == '4'
+                        ? AppColors.appRedColor
+                        : subscription.fundType.toString() == '3' && subscription.isApproved.toString() == '3'
+                        ? AppColors.appGreenTextColor
+                        : subscription.fundType.toString() == '3' && subscription.isApproved.toString() == '4'
+                        ? AppColors.appRedColor
+                        : subscription.fundType.toString() == '4' && subscription.isApproved.toString() == '3'
                         ? AppColors.appRedColor
                         : AppColors.appGreenTextColor,
                     fontSize: 16,
@@ -328,18 +389,35 @@ class _AllBillingScreenState extends State<AllBillingScreen> {
               ],
             ),
             const SizedBox(height: 4),
-
-            // Source Text
-            Text(
-              "Source: ${subscription.description}",
-              style: const TextStyle(
-                fontWeight: FontWeight.w400,
-                color: AppColors.appHeadingText,
-                fontSize: 14,
-                fontFamily: 'Sofia Sans',
-              ),
-              overflow: TextOverflow.ellipsis,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: Text(
+                    "Source: ${subscription.description}",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w400,
+                      color: AppColors.appHeadingText,
+                      fontSize: 14,
+                      fontFamily: Constants.Sofiafontfamily,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  "Prepaid Balance: ${subscription.balance}",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    color: AppColors.appHeadingText,
+                    fontSize: 10,
+                    fontFamily: Constants.Sofiafontfamily,
+                  ),
+                ),
+              ],
             ),
+
           ],
         ),
       ),

@@ -6,9 +6,9 @@ class ReqMail {
   ReqMail({required this.to, required this.subject, required this.message});
 
   ReqMail.fromJson(Map<String, dynamic> json) {
-    to = json['to']??"";
-    subject = json['subject']??"";
-    message = json['message']??"";
+    to = json['to'] ?? "";
+    subject = json['subject'] ?? "";
+    message = json['message'] ?? "";
   }
 
   Map<String, dynamic> toJson() {

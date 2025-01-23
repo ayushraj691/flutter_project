@@ -1,6 +1,4 @@
-
 import 'dart:io';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -9,11 +7,12 @@ import 'package:intl/intl.dart';
 import 'package:paycron/controller/dashboard/merchant_controller/merchant_controller.dart';
 import 'package:paycron/controller/variable_controller.dart';
 import 'package:paycron/utils/color_constants.dart';
-import 'package:paycron/utils/image_assets.dart';
 import 'package:paycron/views/widgets/Dash_border_view.dart';
 import 'package:paycron/views/widgets/common_button.dart';
 import 'package:paycron/views/widgets/common_textform_field.dart';
 import 'package:permission_handler/permission_handler.dart';
+
+import '../../../utils/string_constants.dart';
 
 class SocialSecurityNumberScreen extends StatefulWidget {
   const SocialSecurityNumberScreen({super.key});
@@ -38,6 +37,8 @@ class _SocialSecurityNumberScreenState
       appBar: AppBar(
         backgroundColor: AppColors.appBackgroundColor,
         leading: IconButton(
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
           color: AppColors.appBlackColor,
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
@@ -45,7 +46,7 @@ class _SocialSecurityNumberScreenState
           },
         ),
         titleSpacing: 0,
-        title: const FittedBox(
+        title: FittedBox(
           fit: BoxFit.scaleDown,
           child: Text(
             "Social Security Number",
@@ -53,7 +54,7 @@ class _SocialSecurityNumberScreenState
               fontSize: 16, // Dynamic font size
               fontWeight: FontWeight.w600,
               color: AppColors.appTextColor,
-              fontFamily: 'Sofia Sans',
+              fontFamily: Constants.Sofiafontfamily,
             ),
           ),
         ),
@@ -84,15 +85,15 @@ class _SocialSecurityNumberScreenState
                                   width:
                                       MediaQuery.of(context).size.width / 1.24,
                                   child: RichText(
-                                    text: const TextSpan(
+                                    text: TextSpan(
                                       text: 'SSN Number ',
                                       style: TextStyle(
-                                        fontFamily: 'Sofia Sans',
+                                        fontFamily: Constants.Sofiafontfamily,
                                         fontSize: 12.0,
                                         fontWeight: FontWeight.w400,
                                         color: Colors.black,
                                       ),
-                                      children: [
+                                      children: const [
                                         TextSpan(
                                           text: '*',
                                           style: TextStyle(
@@ -143,21 +144,25 @@ class _SocialSecurityNumberScreenState
                                               // Gap between each dash
                                               borderRadius: 16.0,
                                             ),
-                                            child: const Center(
+                                            child: Center(
                                               child: Column(
                                                 mainAxisAlignment:
-                                                MainAxisAlignment.center,
+                                                    MainAxisAlignment.center,
                                                 children: [
-                                                  Icon(Icons.cloud_upload_outlined,
-                                                      size: 50, color: Colors.blue),
+                                                  const Icon(
+                                                      Icons
+                                                          .cloud_upload_outlined,
+                                                      size: 50,
+                                                      color: Colors.blue),
                                                   SizedBox(height: 8),
                                                   Text(
                                                     'Choose File to upload',
                                                     style: TextStyle(
                                                       color: Colors.blue,
-                                                      fontFamily: 'Sofia Sans',
+                                                      fontFamily: Constants.Sofiafontfamily,
                                                       fontSize: 14,
-                                                      fontWeight: FontWeight.w600,
+                                                      fontWeight:
+                                                          FontWeight.w600,
                                                     ),
                                                     textAlign: TextAlign.center,
                                                   ),
@@ -165,8 +170,9 @@ class _SocialSecurityNumberScreenState
                                                   Text(
                                                     'JPEG, JPG, PNG, PDF (Max file size 10MB)',
                                                     style: TextStyle(
-                                                      color: AppColors.appTextColor2,
-                                                      fontFamily: 'Sofia Sans',
+                                                      color: AppColors
+                                                          .appTextColor2,
+                                                      fontFamily: Constants.Sofiafontfamily,
                                                       fontSize: 10,
                                                     ),
                                                     textAlign: TextAlign.center,
@@ -182,7 +188,6 @@ class _SocialSecurityNumberScreenState
                                     ],
                                   ),
                                 ),
-
                               ],
                             ),
                           ),
@@ -255,6 +260,7 @@ class _SocialSecurityNumberScreenState
       }
     }
   }
+
   void _showError(String message) {
     showDialog(
       context: context,
@@ -275,7 +281,6 @@ class _SocialSecurityNumberScreenState
     );
   }
 
-
   Widget _buildFilePreview() {
     if (_selectedFile == null) {
       return const Text('No file selected');
@@ -284,7 +289,7 @@ class _SocialSecurityNumberScreenState
       final String fileSize =
           '${(fileSizeInBytes / (1024 * 1024)).toStringAsFixed(1)} MB';
       final String formattedDate =
-      DateFormat('dd/MM/yyyy').format(DateTime.now());
+          DateFormat('dd/MM/yyyy').format(DateTime.now());
       final String fileName = _selectedFile!.path.split('/').last;
 
       return Container(
@@ -314,7 +319,7 @@ class _SocialSecurityNumberScreenState
                       child: const Center(
                           child: Text('Error',
                               style:
-                              TextStyle(color: AppColors.appWhiteColor))),
+                                  TextStyle(color: AppColors.appWhiteColor))),
                     );
                   },
                 ),
@@ -331,18 +336,18 @@ class _SocialSecurityNumberScreenState
                 children: [
                   Text(
                     fileName,
-                    style: const TextStyle(
+                    style: TextStyle(
                         fontSize: 14,
-                        fontFamily: 'Sofia Sans',
-                        fontWeight: FontWeight.w500),
+                        fontFamily: Constants.Sofiafontfamily,
+                        fontWeight: FontWeight.w600),
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
                   Text(
                     '$fileSize | $formattedDate',
-                    style: const TextStyle(
+                    style: TextStyle(
                         fontSize: 12,
-                        fontFamily: 'Sofia Sans',
+                        fontFamily: Constants.Sofiafontfamily,
                         color: AppColors.appNeutralColor2),
                   ),
                 ],

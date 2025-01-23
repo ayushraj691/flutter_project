@@ -1,7 +1,13 @@
 import 'dart:convert';
+import 'dart:io';
+
+import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:open_filex/open_filex.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:paycron/controller/variable_controller.dart';
 import 'package:paycron/model/billing_model/ResSinglePlans.dart';
 import 'package:paycron/model/billing_model/ResfilterData.dart';
@@ -10,29 +16,50 @@ import 'package:paycron/network/api_call/url.dart';
 import 'package:paycron/utils/common_variable.dart';
 import 'package:paycron/utils/my_toast.dart';
 import 'package:paycron/views/widgets/date_picker_page.dart';
+import 'package:permission_handler/permission_handler.dart';
 
-class BillingInformationController extends GetxController{
-
+class BillingInformationController extends GetxController {
   var variableController = Get.find<VariableController>();
   TextEditingController searchController = TextEditingController();
   final buttonText = 'Select Date'.obs;
   final startDate = ''.obs;
   final endDate = ''.obs;
-  var name="".obs;
-  var details="".obs;
+  var name = "".obs;
+  var details = "".obs;
   var monthlyFee = 0.obs;
   var processingFee = "".obs;
   var perSwipeFee = "".obs;
   var verificationFee = "".obs;
   var dueDate = "".obs;
   final selectedIndex = 1.obs;
-
+  var itemsToShow = 10.obs;
 
   Map<String, dynamic> sortMap = {
-    "": "",
+    "is_created": "-1",
   };
   Map<String, dynamic> argumentMap = {
-    "": "",
+    "\$or": [
+      {
+        "\$and": [
+          {"is_approved": 3},
+          {
+            "fund_type": {
+              "\$in": [0, 1, 2, 3, 4],
+            },
+          },
+        ],
+      },
+      {
+        "\$and": [
+          {"is_approved": 4},
+          {
+            "fund_type": {
+              "\$in": [1, 2, 3, 4],
+            },
+          },
+        ],
+      },
+    ],
   };
 
 
@@ -40,23 +67,34 @@ class BillingInformationController extends GetxController{
     await getBillingTransactionData(
       CommonVariable.businessId.value,
       '',
-      "$argumentMap",
+      jsonEncode(argumentMap),
       startDate.value,
       endDate.value,
-      "$sortMap",
+      jsonEncode(sortMap),
     );
   }
 
-  void clearData(){
-     name="".obs;
-     details="".obs;
-     monthlyFee = 0.obs;
-     processingFee = "".obs;
-     perSwipeFee = "".obs;
-     verificationFee = "".obs;
-     dueDate = "".obs;
+  void clearData() {
+    name = "".obs;
+    details = "".obs;
+    monthlyFee = 0.obs;
+    processingFee = "".obs;
+    perSwipeFee = "".obs;
+    verificationFee = "".obs;
+    dueDate = "".obs;
   }
 
+  BillingInformationController() {
+    final DateTime now = DateTime.now();
+    final DateTime last15Days = DateTime.now().subtract(const Duration(days: 15));
+    setDateRange(now, last15Days);
+  }
+  void setDateRange(DateTime end, DateTime start) {
+    endDate.value =  DateFormat.yMMMd().format(end);
+    startDate.value =  DateFormat.yMMMd().format(start);
+    buttonText.value =
+    '${DateFormat('dd MMM, yy').format(start)} - ${DateFormat('dd MMM, yy').format(end)}';
+  }
 
   void showSelectDurationBottomSheet(BuildContext context) {
     showModalBottomSheet(
@@ -99,45 +137,53 @@ class BillingInformationController extends GetxController{
               ),
             ),
             const SizedBox(height: 16),
-            // Zigzag Button Layout
             Column(
               children: [
-                // First Row
                 Row(
                   children: [
-                    _buildOptionButton("Today", 1,context),
-                    const SizedBox(width: 8),
-                    _buildOptionButton("Yesterday", 2,context),
+                    Expanded(
+                      child: _buildOptionButton("Today", 1, context),
+                    ),
+                    const SizedBox(width: 8), // Spacing between buttons
+                    Expanded(
+                      child: _buildOptionButton("Yesterday", 2, context),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8), // Vertical spacing between rows
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildOptionButton("Last 7 days", 3, context),
+                    ),
+                    const SizedBox(width: 8), // Spacing between buttons
+                    Expanded(
+                      child: _buildOptionButton("Last 30 days", 4, context),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 8),
-
-                // Second Row
                 Row(
                   children: [
-                    const Spacer(flex: 1),
-                    _buildOptionButton("Last 7 days", 3,context),
+                    Expanded(
+                      child: _buildOptionButton("Last Month", 5, context),
+                    ),
                     const SizedBox(width: 8),
-                    _buildOptionButton("Last 30 days", 4,context),
+                    Expanded(
+                      child: _buildOptionButton("Last 2 months", 6, context),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 8),
-                // Third Row
                 Row(
                   children: [
-                    _buildOptionButton("Last Month", 5,context),
+                    Expanded(
+                      child: _buildOptionButton("Last 6 months", 7, context),
+                    ),
                     const SizedBox(width: 8),
-                    _buildOptionButton("Last 2 months", 6,context),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                // Fourth Row
-                Row(
-                  children: [
-                    const Spacer(flex: 1),
-                    _buildOptionButton("Last 6 months", 7,context),
-                    const SizedBox(width: 8),
-                    _buildOptionButton("Last 1 year", 8,context),
+                    Expanded(
+                      child: _buildOptionButton("Last 1 year", 8, context),
+                    ),
                   ],
                 ),
               ],
@@ -146,13 +192,16 @@ class BillingInformationController extends GetxController{
             ElevatedButton.icon(
               onPressed: () {
                 Navigator.pop(context);
-                Get.to(RangeDatePickerScreen(onSubmit: (DateTime? pickStartDate, DateTime? pickEndDate) {
-                  buttonText.value = '${DateFormat.yMMMd().format(pickStartDate!)} - ${DateFormat.yMMMd().format(pickEndDate!)}';
-                  startDate.value = DateFormat.yMMMd().format(pickStartDate);
-                  endDate.value = DateFormat.yMMMd().format(pickEndDate);
-                  callMethod();
-                  Navigator.pop(context);
-                },));
+                Get.to(RangeDatePickerScreen(
+                  onSubmit: (DateTime? pickStartDate, DateTime? pickEndDate) {
+                    buttonText.value =
+                        '${DateFormat('dd MMM, yy').format(pickStartDate!)} - ${DateFormat('dd MMM, yy').format(pickEndDate!)}';
+                    startDate.value = DateFormat.yMMMd().format(pickStartDate);
+                    endDate.value = DateFormat.yMMMd().format(pickEndDate);
+                    callMethod();
+                    Navigator.pop(context);
+                  },
+                ));
               },
               icon: const Icon(Icons.calendar_today),
               label: const Text("Custom range"),
@@ -175,13 +224,13 @@ class BillingInformationController extends GetxController{
     );
   }
 
-  Widget _buildOptionButton(String label, int index,BuildContext context) {
+  Widget _buildOptionButton(String label, int index, BuildContext context) {
     return Expanded(
       flex: 4,
       child: GestureDetector(
         onTap: () {
-          selectedIndex.value= index;
-          _handleDateSelection(index,context);
+          selectedIndex.value = index;
+          _handleDateSelection(index, context);
         },
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
@@ -204,15 +253,13 @@ class BillingInformationController extends GetxController{
     );
   }
 
-  void _handleDateSelection(int index,BuildContext context) {
-
+  void _handleDateSelection(int index, BuildContext context) {
     DateTime now = DateTime.now();
     DateTime yesterday = DateTime.now().subtract(const Duration(days: 1));
     DateTime last7Days = DateTime.now().subtract(const Duration(days: 7));
     DateTime last30Days = DateTime.now().subtract(const Duration(days: 30));
     DateTime last6Months = DateTime.now().subtract(const Duration(days: 180));
     DateTime lastYear = DateTime.now().subtract(const Duration(days: 365));
-
 
     DateTime start, end;
 
@@ -252,7 +299,8 @@ class BillingInformationController extends GetxController{
         return;
     }
 
-    buttonText.value = '${DateFormat.yMMMd().format(start)} - ${DateFormat.yMMMd().format(end)}';
+    buttonText.value =
+    '${DateFormat('dd MMM, yy').format(start)} - ${DateFormat('dd MMM, yy').format(end)}';
     startDate.value = DateFormat.yMMMd().format(start);
     endDate.value = DateFormat.yMMMd().format(end);
 
@@ -260,17 +308,129 @@ class BillingInformationController extends GetxController{
     Navigator.pop(context);
   }
 
-  final List<ResfilterData> allBillingList =
-      <ResfilterData>[].obs;
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+
+  Future<void> downloadCSV() async {
+    try {
+      final List<List<String>> csvRows = [
+        ['TransactionId', 'Prepaid', 'Amount', 'Created On', 'Source', 'status']
+      ];
+
+      for (var transaction in allBillingList) {
+        final createdDate = transaction.isCreated;
+        DateTime dateTime;
+        try {
+          dateTime = DateTime.parse(createdDate).toLocal();
+        } catch (e) {
+          debugPrint("Invalid date format: $createdDate");
+          dateTime = DateTime.now();
+        }
+
+        String formattedTime = DateFormat.jm().format(dateTime);
+        String formattedDate = DateFormat('dd MMM, yyyy').format(dateTime);
+
+        csvRows.add([
+          transaction.txnNumber,
+          transaction.balance.toString(),
+          transaction.debit.toString(),
+          "$formattedDate | $formattedTime",
+          transaction.description,
+          transaction.credit.toString() == '0' ? 'Debit' : 'Credit',
+        ]);
+      }
+
+      String csvString = const ListToCsvConverter().convert(csvRows);
+
+      var status = await Permission.storage.request();
+      if (status.isGranted) {
+        // Get the appropriate external storage directory
+        Directory? downloadsDirectory = await getExternalStorageDirectory();
+        if (downloadsDirectory != null) {
+          final filePath = "${downloadsDirectory.path}/allBilling.csv";
+          final file = File(filePath);
+
+          await file.writeAsString(csvString);
+          debugPrint("CSV file saved at: $filePath");
+
+          await flutterLocalNotificationsPlugin.show(
+            0,
+            'Download Complete',
+            'Tap to open the allBilling CSV file.',
+            const NotificationDetails(
+              android: AndroidNotificationDetails(
+                'download_channel',
+                'Downloads',
+                channelDescription: 'Notifications for file downloads',
+                importance: Importance.high,
+                priority: Priority.high,
+                playSound: true,
+              ),
+            ),
+            payload: filePath,
+          );
+
+          configureNotificationTapHandler(filePath);
+        } else {
+          debugPrint("Downloads directory not found.");
+        }
+      } else {
+        debugPrint("Storage permission denied.");
+      }
+    } catch (e) {
+      debugPrint("Error: $e");
+    }
+  }
+
+  Future<void> handleNotificationTap(String? payload) async {
+    try {
+      if (payload != null && payload.isNotEmpty) {
+        final file = File(payload);
+        if (file.existsSync()) {
+          final result = await OpenFilex.open(payload);
+          if (result.type != ResultType.done) {
+            debugPrint("Error opening file: ${result.message}");
+          } else {
+            debugPrint("File opened successfully: $payload");
+          }
+        } else {
+          debugPrint("File does not exist at the specified path: $payload");
+          MyToast.toast("File does not exist. Please try downloading again.");
+        }
+      } else {
+        debugPrint("Invalid file path: $payload");
+        MyToast.toast("Invalid file path. Unable to open the file.");
+      }
+    } catch (e) {
+      debugPrint("Exception while opening file: $e");
+      MyToast.toast(
+          "An error occurred while opening the file. Please try again.");
+    }
+  }
+
+  void configureNotificationTapHandler(String? payload) {
+    flutterLocalNotificationsPlugin.initialize(
+      const InitializationSettings(
+        android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+      ),
+      onDidReceiveNotificationResponse: (NotificationResponse response) async {
+        if (response.payload != null && response.payload!.isNotEmpty) {
+          handleNotificationTap(response.payload);
+        }
+      },
+    );
+  }
+
+  final List<ResfilterData> allBillingList = <ResfilterData>[].obs;
 
   getBillingTransactionData(
-      String businessId,
-      String query,
-      String argument,
-      String startDate,
-      String endDate,
-      String sort,
-      ) async {
+    String businessId,
+    String query,
+    String argument,
+    String startDate,
+    String endDate,
+    String sort,
+  ) async {
     variableController.loading.value = true;
 
     try {
@@ -282,6 +442,8 @@ class BillingInformationController extends GetxController{
           token: CommonVariable.token.value,
           query: query,
           endDate: endDate,
+          args: argument,
+          sort: sort,
           page: 1,
           size: 18,
           startDate: startDate,
@@ -295,8 +457,7 @@ class BillingInformationController extends GetxController{
       if (res != null) {
         variableController.loading.value = false;
 
-        List<ResfilterData> billingList =
-        JsonUtils.parseCustomerData(res);
+        List<ResfilterData> billingList = JsonUtils.parseCustomerData(res);
         allBillingList.addAll(billingList);
         if (allBillingList.isEmpty) {
           MyToast.toast("No Billing found.");
@@ -316,7 +477,8 @@ class BillingInformationController extends GetxController{
   Future<void> getSinglePlan() async {
     variableController.loading.value = true;
     try {
-      var res = await ApiCall.getApiCall(MyUrls.getSinglePlans, CommonVariable.token.value,CommonVariable.businessId.value);
+      var res = await ApiCall.getApiCall(MyUrls.getSinglePlans,
+          CommonVariable.token.value, CommonVariable.businessId.value);
       debugPrint("*************************");
       debugPrint("API Response: $res");
       debugPrint("*************************");
@@ -325,17 +487,17 @@ class BillingInformationController extends GetxController{
         variableController.loading.value = false;
         ResSinglePlans resSingleData = ResSinglePlans.fromJson(res);
         final planId = resSingleData.planId;
-        if(planId!=null){
+        if (planId != null) {
           name.value = planId.name;
           details.value = planId.details;
-          monthlyFee.value=planId.monthlyPrice;
-          processingFee.value=planId.planPrices.processingFees!.first;
-          verificationFee.value=planId.planPrices.verificationFee!.first;
+          monthlyFee.value = planId.monthlyPrice;
+          processingFee.value = planId.planPrices.processingFees!.first;
+          verificationFee.value = planId.planPrices.verificationFee!.first;
           perSwipeFee.value = planId.planPrices.perSwipeFee!.first;
           CommonVariable.planId.value = planId.sId;
           DateTime dateTime = DateTime.parse(resSingleData.dueDate!).toLocal();
           dueDate.value = DateFormat('dd MMM, yyyy').format(dateTime);
-        }else{
+        } else {
           MyToast.toast("Failed to retrieve plan data");
           variableController.loading.value = false;
         }
@@ -349,16 +511,12 @@ class BillingInformationController extends GetxController{
       variableController.loading.value = false;
     }
   }
-
-
 }
 
 class JsonUtils {
-  static List<ResfilterData> parseCustomerData(
-      dynamic jsonResponse) {
+  static List<ResfilterData> parseCustomerData(dynamic jsonResponse) {
     if (jsonResponse is String) {
-      final parsed = jsonDecode(
-          jsonResponse);
+      final parsed = jsonDecode(jsonResponse);
       return (parsed['data'] as List)
           .map((json) => ResfilterData.fromJson(json))
           .toList();
@@ -371,5 +529,3 @@ class JsonUtils {
     }
   }
 }
-
-

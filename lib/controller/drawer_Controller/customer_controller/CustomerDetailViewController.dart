@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:paycron/controller/variable_controller.dart';
@@ -8,34 +9,35 @@ import 'package:paycron/network/api_call/api_call.dart';
 import 'package:paycron/network/api_call/url.dart';
 import 'package:paycron/utils/common_variable.dart';
 import 'package:paycron/utils/my_toast.dart';
-import 'package:http/http.dart' as http;
 
-
-
-class CustomerDetailViewController extends GetxController{
-
+class CustomerDetailViewController extends GetxController {
   ///---------------------person Detail---------------
   RxString personName = "".obs;
   RxString personMobileNumber = "".obs;
   RxString personEmail = "".obs;
   RxString personDescription = "".obs;
 
-  final List<BankId> allBankList =
-      <BankId>[].obs;
+  final List<BankId> allBankList = <BankId>[].obs;
 
   final List<ResAllRecentTransaction> allRecentTransactionList =
       <ResAllRecentTransaction>[].obs;
 
   var filterValue = 'All'.obs;
-  var filterItems = <String>['All', 'New', 'Verify', 'Downloaded', 'Cancel', 'Delete', 'Reimbursement'].obs;
+  var filterItems = <String>[
+    'All',
+    'New',
+    'Verify',
+    'Downloaded',
+    'Cancel',
+    'Delete',
+    'Reimbursement'
+  ].obs;
 
   var variableController = Get.find<VariableController>();
 
-  final List<ResSingleData> allSingleDataList =
-      <ResSingleData>[].obs;
+  final List<ResSingleData> allSingleDataList = <ResSingleData>[].obs;
 
   TextEditingController searchController = TextEditingController();
-
 
   Map<String, dynamic> getArgumentMap(String filterValue) {
     Map<String, dynamic> argumentMap = {};
@@ -109,10 +111,10 @@ class CustomerDetailViewController extends GetxController{
     return argumentMap;
   }
 
-  disableAccount(String bankId) async{
+  disableAccount(String bankId) async {
     variableController.loading.value = true;
     var res =
-    await ApiCall.postApiCallWithoutBody(MyUrls.changeBankStatus,bankId);
+        await ApiCall.postApiCallWithoutBody(MyUrls.changeBankStatus, bankId);
     debugPrint("*************************");
     debugPrint("*****$res*******");
     debugPrint("*************************");
@@ -125,12 +127,12 @@ class CustomerDetailViewController extends GetxController{
     }
   }
 
-
   Future<void> getSingleData(String id) async {
     variableController.loading.value = true;
 
     try {
-      var res = await ApiCall.getApiCall(MyUrls.singleCustomer, CommonVariable.token.value, id);
+      var res = await ApiCall.getApiCall(
+          MyUrls.singleCustomer, CommonVariable.token.value, id);
 
       debugPrint("*************************");
       debugPrint("API Response: $res");
@@ -145,18 +147,18 @@ class CustomerDetailViewController extends GetxController{
         var singleCustomerData = ResSingleData.fromJson(res);
         allSingleDataList.add(singleCustomerData);
 
-        if (allSingleDataList.isNotEmpty && allSingleDataList[0].bankId.isNotEmpty) {
+        if (allSingleDataList.isNotEmpty &&
+            allSingleDataList[0].bankId.isNotEmpty) {
           allBankList.addAll(allSingleDataList[0].bankId);
         }
-        personName.value = allSingleDataList[0].info.custName??"";
-        personMobileNumber.value = allSingleDataList[0].info.mobile??"";
-        personEmail.value = allSingleDataList[0].info.email??"";
-        personDescription.value = allSingleDataList[0].info.description??"";
+        personName.value = allSingleDataList[0].info.custName ?? "";
+        personMobileNumber.value = allSingleDataList[0].info.mobile ?? "";
+        personEmail.value = allSingleDataList[0].info.email ?? "";
+        personDescription.value = allSingleDataList[0].info.description ?? "";
       } else {
         MyToast.toast("Failed to retrieve customer data");
         variableController.loading.value = false;
       }
-
     } catch (e) {
       debugPrint("Error occurred: $e");
       MyToast.toast("Something Went Wrong: ${e.toString()}");
@@ -165,28 +167,27 @@ class CustomerDetailViewController extends GetxController{
   }
 
   Future<void> getAllRecentTransactionData(
-      String businessId,
-      String query,
-      String argument,
-      String sort,
-      ) async {
+    String businessId,
+    String query,
+    String argument,
+    String sort,
+  ) async {
     variableController.loading.value = true;
     try {
       allRecentTransactionList.clear();
 
       var res = await ApiCall.getApiCallParam(
-        endpoint: MyUrls.allTransactionsByCustomerId,
-        id: businessId,
-        token: CommonVariable.token.value,
-        args: argument,
-        query: query,
-        endDate: '',
-        page: 1,
-        size: 21,
-        startDate: '',
-        yes: 'yes',
-        urlIdentifier: '1'
-      );
+          endpoint: MyUrls.allTransactionsByCustomerId,
+          id: businessId,
+          token: CommonVariable.token.value,
+          args: argument,
+          query: query,
+          endDate: '',
+          page: 1,
+          size: 21,
+          startDate: '',
+          yes: 'yes',
+          urlIdentifier: '1');
 
       debugPrint("*************************");
       debugPrint("API Response: $res");
@@ -195,11 +196,12 @@ class CustomerDetailViewController extends GetxController{
       if (res != null) {
         variableController.loading.value = false;
 
-        List<ResAllRecentTransaction> RecentTransactionList = JsonUtils.parseCustomerData(res);
+        List<ResAllRecentTransaction> RecentTransactionList =
+            JsonUtils.parseCustomerData(res);
         allRecentTransactionList.addAll(RecentTransactionList);
 
         if (allRecentTransactionList.isEmpty) {
-          MyToast.toast("No Recent Transaction found.");
+          // MyToast.toast("No Recent Transaction found.");
         }
       } else {
         MyToast.toast("Something went wrong. Please try again.");
@@ -214,22 +216,19 @@ class CustomerDetailViewController extends GetxController{
   }
 }
 
- class JsonUtils {
-   static List<ResAllRecentTransaction> parseCustomerData(
-       dynamic jsonResponse) {
-     if (jsonResponse is String) {
-       final parsed = jsonDecode(
-           jsonResponse);
-       return (parsed['data'] as List)
-           .map((json) => ResAllRecentTransaction.fromJson(json))
-           .toList();
-     } else if (jsonResponse is Map<String, dynamic>) {
-       return (jsonResponse['data'] as List)
-           .map((json) => ResAllRecentTransaction.fromJson(json))
-           .toList();
-     } else {
-       throw Exception('Unexpected data format');
-     }
-   }
- }
-
+class JsonUtils {
+  static List<ResAllRecentTransaction> parseCustomerData(dynamic jsonResponse) {
+    if (jsonResponse is String) {
+      final parsed = jsonDecode(jsonResponse);
+      return (parsed['data'] as List)
+          .map((json) => ResAllRecentTransaction.fromJson(json))
+          .toList();
+    } else if (jsonResponse is Map<String, dynamic>) {
+      return (jsonResponse['data'] as List)
+          .map((json) => ResAllRecentTransaction.fromJson(json))
+          .toList();
+    } else {
+      throw Exception('Unexpected data format');
+    }
+  }
+}

@@ -9,47 +9,49 @@ import 'package:paycron/network/api_call/api_call.dart';
 import 'package:paycron/network/api_call/url.dart';
 import 'package:paycron/utils/common_variable.dart';
 import 'package:paycron/utils/my_toast.dart';
-import 'package:paycron/views/drawer_screen/billing/billing_information.dart';
+
+import 'BillingInformationController.dart';
 
 class UpgradePlanController extends GetxController {
-
   var variableController = Get.find<VariableController>();
+  var billingController = Get.find<BillingInformationController>();
+
 
   var selectedPlanIndex = 0.obs;
+
   void setSelectedPlanIndex(int index) {
     selectedPlanIndex.value = index;
   }
 
-
   List<ResGetAllPlans> getAllPlanList =
       List<ResGetAllPlans>.empty(growable: true).obs;
 
-
   updatePlane() async {
     variableController.loading.value = true;
-    ReqPlanUpdate reqPlanUpdate = ReqPlanUpdate(planId: CommonVariable.temporaryPlanId.value);
+    ReqPlanUpdate reqPlanUpdate =
+        ReqPlanUpdate(planId: CommonVariable.temporaryPlanId.value);
     debugPrint(json.encode(reqPlanUpdate.toJson()));
-    var res =
-    await ApiCall.putApiCall(MyUrls.updatePlane, reqPlanUpdate,CommonVariable.token.value,CommonVariable.businessId.value);
+    var res = await ApiCall.putApiCall(MyUrls.updatePlane, reqPlanUpdate,
+        CommonVariable.token.value, CommonVariable.businessId.value);
     debugPrint("*************************");
     debugPrint("*****$res*******");
     debugPrint("*************************");
     if (res != null) {
-        variableController.loading.value = false;
-        CommonVariable.planId.value='';
-        Get.to(const BillingInformation());
+      variableController.loading.value = false;
+      CommonVariable.planId.value = '';
+      await billingController.getSinglePlan();
+      Get.back();
     } else {
       MyToast.toast("Something Went Wrong");
       variableController.loading.value = false;
     }
   }
 
-
-
   Future<void> getAllPlan() async {
     variableController.loading.value = true;
     try {
-      var res = await ApiCall.getApiCallWithoutId(MyUrls.getAllPlans, CommonVariable.token.value);
+      var res = await ApiCall.getApiCallWithoutId(
+          MyUrls.getAllPlans, CommonVariable.token.value);
       debugPrint("*************************");
       debugPrint("API Response: $res");
       debugPrint("*************************");
@@ -84,9 +86,7 @@ class JsonUtils {
           .map((json) => ResGetAllPlans.fromJson(json))
           .toList();
     } else if (jsonResponse is List) {
-      return jsonResponse
-          .map((json) => ResGetAllPlans.fromJson(json))
-          .toList();
+      return jsonResponse.map((json) => ResGetAllPlans.fromJson(json)).toList();
     } else {
       throw Exception('Unexpected data format');
     }

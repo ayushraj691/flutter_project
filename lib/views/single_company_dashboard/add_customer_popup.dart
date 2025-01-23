@@ -4,6 +4,8 @@ import 'package:paycron/controller/dashboard/create_payment_controller.dart';
 import 'package:paycron/utils/color_constants.dart';
 import 'package:paycron/views/widgets/common_textform_field.dart';
 
+import '../../utils/string_constants.dart';
+
 class CreateCustomerForm extends StatefulWidget {
   const CreateCustomerForm({super.key});
 
@@ -51,10 +53,10 @@ class _CreateCustomerFormState extends State<CreateCustomerForm> {
               ),
             ),
             SizedBox(height: screenHeight * 0.02), // Responsive space
-            const Text(
+            Text(
               "Create Customer",
               style: TextStyle(
-                fontFamily: 'Sofia Sans',
+                fontFamily: Constants.Sofiafontfamily,
                 fontSize: 16.0,
                 fontWeight: FontWeight.w600,
                 color: AppColors.appBlackColor,
@@ -77,8 +79,13 @@ class _CreateCustomerFormState extends State<CreateCustomerForm> {
                             Text(
                               '1. Personal Details',
                               style: TextStyle(
-                                fontWeight: currentStep == 1 ? FontWeight.normal : FontWeight.normal,
-                                color: currentStep == 1 || isPersonalDetailsFilled==true ? AppColors.appGreyColor : AppColors.appBlueColor,
+                                fontWeight: currentStep == 1
+                                    ? FontWeight.normal
+                                    : FontWeight.normal,
+                                color: currentStep == 1 ||
+                                        isPersonalDetailsFilled == true
+                                    ? AppColors.appGreyColor
+                                    : AppColors.appBlueColor,
                                 fontSize: 16,
                               ),
                             ),
@@ -89,7 +96,10 @@ class _CreateCustomerFormState extends State<CreateCustomerForm> {
                         SizedBox(height: 5),
                         Divider(
                           thickness: 2,
-                          color: currentStep == 1 || isPersonalDetailsFilled==true ? AppColors.appGreyColor : AppColors.appBlueColor,
+                          color: currentStep == 1 ||
+                                  isPersonalDetailsFilled == true
+                              ? AppColors.appGreyColor
+                              : AppColors.appBlueColor,
                         ),
                       ],
                     ),
@@ -105,7 +115,9 @@ class _CreateCustomerFormState extends State<CreateCustomerForm> {
                         });
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text("Please fill out personal details first!")),
+                          const SnackBar(
+                              content: Text(
+                                  "Please fill out personal details first!")),
                         );
                       }
                     },
@@ -114,15 +126,21 @@ class _CreateCustomerFormState extends State<CreateCustomerForm> {
                         Text(
                           '2. Account Details',
                           style: TextStyle(
-                            fontWeight: currentStep == 2 ? FontWeight.bold : FontWeight.normal,
-                            color: currentStep == 2 ? AppColors.appGreyColor : AppColors.appGreyColor,
+                            fontWeight: currentStep == 2
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                            color: currentStep == 2
+                                ? AppColors.appGreyColor
+                                : AppColors.appGreyColor,
                             fontSize: 16,
                           ),
                         ),
                         SizedBox(height: 5),
                         Divider(
                           thickness: 2,
-                          color: currentStep == 2 ? AppColors.appGreyColor : AppColors.appGreyColor,
+                          color: currentStep == 2
+                              ? AppColors.appGreyColor
+                              : AppColors.appGreyColor,
                         ),
                       ],
                     ),
@@ -135,36 +153,63 @@ class _CreateCustomerFormState extends State<CreateCustomerForm> {
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start, // Align fields to the left in the column
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  // Align fields to the left in the column
                   children: [
                     if (currentStep == 1) ...[
                       buildField(context, 'Name', 'Enter Name', nameController),
-                      buildField(context, 'Mobile Number', 'Enter Mobile Number', mobileController),
-                      buildField(context, 'Email Id', 'Enter Email Id', emailController),
-                      buildField(context, 'Description', 'Enter Description', descriptionController),
+                      buildField(context, 'Mobile Number',
+                          'Enter Mobile Number', mobileController),
+                      buildField(context, 'Email Id', 'Enter Email Id',
+                          emailController),
+                      buildField(context, 'Description', 'Enter Description',
+                          descriptionController),
                     ] else if (currentStep == 2) ...[
-                      buildField(context, 'Account Holder Name', 'Enter Account Holder Name', TextEditingController()),
-                      buildField(context, 'Routing Number', 'Enter Routing Number', TextEditingController()),
-                      buildField(context, 'Account Number', 'Enter Account Number', TextEditingController()),
-                      buildField(context, 'Confirm Account Number', 'Enter Confirm Account Number', TextEditingController()),
-                      buildField(context, 'Suit/Apt', 'Enter Suit/Apt', TextEditingController()),
-                      buildField(context, 'Street', 'Enter Street', TextEditingController()),
-                      SizedBox(height: screenHeight * 0.02), // Responsive space
+                      buildField(context, 'Account Holder Name',
+                          'Enter Account Holder Name', TextEditingController()),
+                      buildField(context, 'Routing Number',
+                          'Enter Routing Number', TextEditingController()),
+                      buildField(context, 'Account Number',
+                          'Enter Account Number', TextEditingController()),
+                      buildField(
+                          context,
+                          'Confirm Account Number',
+                          'Enter Confirm Account Number',
+                          TextEditingController()),
+                      buildField(context, 'Suit/Apt', 'Enter Suit/Apt',
+                          TextEditingController()),
+                      buildField(context, 'Street', 'Enter Street',
+                          TextEditingController()),
+                      SizedBox(height: screenHeight * 0.02),
+                      // Responsive space
                       Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,  // Align fields at the start of the Row
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        // Align fields at the start of the Row
                         children: [
-                          Expanded(child: buildField(context, 'Country', 'Enter Country', TextEditingController())),
-                          SizedBox(width: screenWidth * 0.02), // Responsive space
-                          Expanded(child: buildField(context, 'State', 'Enter State', TextEditingController())),
+                          Expanded(
+                              child: buildField(context, 'Country',
+                                  'Enter Country', TextEditingController())),
+                          SizedBox(width: screenWidth * 0.02),
+                          // Responsive space
+                          Expanded(
+                              child: buildField(context, 'State', 'Enter State',
+                                  TextEditingController())),
                         ],
                       ),
-                      SizedBox(height: screenHeight * 0.02), // Responsive space
+                      SizedBox(height: screenHeight * 0.02),
+                      // Responsive space
                       Row(
-                        crossAxisAlignment: CrossAxisAlignment.start, // Align fields at the start of the Row
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        // Align fields at the start of the Row
                         children: [
-                          Expanded(child: buildField(context, 'City', 'Enter City', TextEditingController())),
-                          SizedBox(width: screenWidth * 0.02), // Responsive space
-                          Expanded(child: buildField(context, 'Zip Code', 'Enter Zip Code', TextEditingController())),
+                          Expanded(
+                              child: buildField(context, 'City', 'Enter City',
+                                  TextEditingController())),
+                          SizedBox(width: screenWidth * 0.02),
+                          // Responsive space
+                          Expanded(
+                              child: buildField(context, 'Zip Code',
+                                  'Enter Zip Code', TextEditingController())),
                         ],
                       ),
                     ],
@@ -209,7 +254,8 @@ class _CreateCustomerFormState extends State<CreateCustomerForm> {
     );
   }
 
-  Widget buildField(BuildContext context, String label, String hintText, TextEditingController controller) {
+  Widget buildField(BuildContext context, String label, String hintText,
+      TextEditingController controller) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10.0),
       child: Column(
@@ -218,8 +264,8 @@ class _CreateCustomerFormState extends State<CreateCustomerForm> {
           RichText(
             text: TextSpan(
               text: '$label ',
-              style: const TextStyle(
-                fontFamily: 'Sofia Sans',
+              style: TextStyle(
+                fontFamily: Constants.Sofiafontfamily,
                 fontSize: 12.0,
                 fontWeight: FontWeight.w400,
                 color: Colors.black,

@@ -4,7 +4,7 @@ class ReqCheckRoutingNo {
   ReqCheckRoutingNo({required this.routingNumber});
 
   ReqCheckRoutingNo.fromJson(Map<String, dynamic> json) {
-    routingNumber = json['routing_number']??"";
+    routingNumber = json['routing_number'] ?? "";
   }
 
   Map<String, dynamic> toJson() {

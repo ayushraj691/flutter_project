@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -14,7 +15,6 @@ import 'package:paycron/views/app_home_screen/home_screen.dart';
 import 'package:paycron/views/dashboard/bottom_floating_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
 class AuthController extends GetxController {
   ///------------------- Internet Connectivity--------------
   var noInternetCount = 0.obs;
@@ -24,11 +24,11 @@ class AuthController extends GetxController {
 
   ///----------login------------------------
   Rx<TextEditingController> emailController = TextEditingController().obs;
-  Rx<TextEditingController> userPasswordController = TextEditingController().obs;
+  Rx<TextEditingController> userPasswordController =
+      TextEditingController().obs;
   RxBool isObsecureForLogin = true.obs;
   var checkBox = false.obs;
   var variableController = Get.find<VariableController>();
-
 
   getLogin() async {
     variableController.loading.value = true;
@@ -36,36 +36,36 @@ class AuthController extends GetxController {
         email: emailController.value.text,
         password: userPasswordController.value.text);
     debugPrint(json.encode(reqLogin.toJson()));
-    var res = await ApiCall.postApiCall(MyUrls.login, reqLogin,'');
+    var res = await ApiCall.postApiCall(MyUrls.login, reqLogin, '');
     debugPrint("*************************");
     debugPrint("*****$res*******");
     debugPrint("*************************");
     if (res != null) {
       ResLogin resLogin = ResLogin.fromJson(res);
-        SharedPreferences preferences = await SharedPreferences.getInstance();
-        preferences.setString("isLogin", "true");
-        variableController.loading.value = false;
-        debugPrint("********flag**********${"USERNAME"}****");
-        preferences.setString("EMAIL", resLogin.email);
-        preferences.setString("VERIFIED", resLogin.verified.toString());
-        preferences.setString("USER_ID", resLogin.userid);
-        preferences.setString("USER_NAME", resLogin.username);
-        preferences.setString("ROLE", resLogin.role);
-        preferences.setString("POSITION", resLogin.position);
-        preferences.setInt("BUSINESS_CHECK", resLogin.businesscheck);
-        preferences.setString("TOKEN", resLogin.token);
-        CommonVariable.getClientDetails();
-        if (resLogin.businesscheck==1){
-          Get.off(const PaycronFloatingBottomBar());
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+      preferences.setString("isLogin", "true");
+      variableController.loading.value = false;
+      debugPrint("********flag**********${"USERNAME"}****");
+      preferences.setString("EMAIL", resLogin.email);
+      preferences.setString("VERIFIED", resLogin.verified.toString());
+      preferences.setString("USER_ID", resLogin.userid);
+      preferences.setString("USER_NAME", resLogin.username);
+      preferences.setString("ROLE", resLogin.role);
+      preferences.setString("POSITION", resLogin.position);
+      preferences.setInt("BUSINESS_CHECK", resLogin.businesscheck);
+      preferences.setString("TOKEN", resLogin.token);
+      CommonVariable.getClientDetails();
+      if (resLogin.businesscheck == 1) {
+        Get.off(const PaycronFloatingBottomBar());
+        emailController.value.clear();
+        userPasswordController.value.clear();
+      } else {
+        if (resLogin.role == "merchant") {
+          Get.offAll(const HomeScreen());
           emailController.value.clear();
           userPasswordController.value.clear();
-        }else {
-          if (resLogin.role == "merchant") {
-            Get.offAll(const HomeScreen());
-            emailController.value.clear();
-            userPasswordController.value.clear();
-          }
         }
+      }
     } else {
       MyToast.toast("Something Went Wrong");
       variableController.loading.value = false;

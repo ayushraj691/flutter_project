@@ -30,28 +30,29 @@ class CommonButton extends StatelessWidget {
         onPressed: onPressed,
         icon: imagePath != null
             ? Image.asset(
-          imagePath!, // Display the image if provided
-          width: 20,
-          height: 20,
-        )
+                imagePath!, // Display the image if provided
+                width: 20,
+                height: 20,
+              )
             : icon != null
-            ? Icon(
-          icon,
-          size: 20, // Icon size
-          color: Colors.white, // Icon color (optional)
-        )
-            : SizedBox.shrink(), // Show empty space if no icon or image is provided
+                ? Icon(
+                    icon,
+                    size: 20,
+                    color: Colors.white,
+                  )
+                : const SizedBox.shrink(),
         label: Text(
           buttonName,
-          style: TextStyle(
+          style: const TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 17,
-            color: Colors.white, // Text color
+            color: Colors.white,
           ),
         ),
         style: ElevatedButton.styleFrom(
           fixedSize: Size(buttonWidth, 40),
           backgroundColor: Colors.transparent,
+          splashFactory: NoSplash.splashFactory,
           shadowColor: Colors.transparent,
         ),
       ),
@@ -70,7 +71,7 @@ class CommonButtonImage extends StatelessWidget {
   final String? imagePath;
 
   const CommonButtonImage({
-    Key? key,
+    super.key,
     required this.buttonName,
     required this.textColor,
     required this.onPressed,
@@ -79,7 +80,7 @@ class CommonButtonImage extends StatelessWidget {
     required this.borderColor,
     this.icon,
     this.imagePath,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -98,7 +99,8 @@ class CommonButtonImage extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.transparent,
           shadowColor: Colors.transparent,
-          padding: EdgeInsets.symmetric(vertical: 12),
+          splashFactory: NoSplash.splashFactory,
+          padding: const EdgeInsets.symmetric(vertical: 12),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -114,14 +116,14 @@ class CommonButtonImage extends StatelessWidget {
               ),
             ),
             if (imagePath != null) ...[
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Image.asset(
                 imagePath!,
                 width: 20,
                 height: 20,
               )
             ] else if (icon != null) ...[
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Icon(
                 icon,
                 size: 20,

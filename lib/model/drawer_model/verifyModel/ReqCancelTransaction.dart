@@ -6,7 +6,7 @@ class ReqCancelTransaction {
 
   ReqCancelTransaction.fromJson(Map<String, dynamic> json) {
     payId = json['pay_id'].cast<String>();
-    statusCode = json['status_code']??0;
+    statusCode = json['status_code'] ?? 0;
   }
 
   Map<String, dynamic> toJson() {

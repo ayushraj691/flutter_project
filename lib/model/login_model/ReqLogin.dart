@@ -5,8 +5,8 @@ class ReqLogin {
   ReqLogin({required this.email, required this.password});
 
   ReqLogin.fromJson(Map<String, dynamic> json) {
-    email = json['email']??"";
-    password = json['password']??"";
+    email = json['email'] ?? "";
+    password = json['password'] ?? "";
   }
 
   Map<String, dynamic> toJson() {

@@ -24,9 +24,7 @@ class ResAllFilterCustomerData {
       info: Info.fromJson(json['info']),
       sId: json['_id'] ?? "",
       businessId: json['business_id'] ?? "",
-      bankId: (json['bank_id'] as List)
-          .map((i) => BankId.fromJson(i))
-          .toList(),
+      bankId: (json['bank_id'] as List).map((i) => BankId.fromJson(i)).toList(),
       isDeleted: json['is_deleted'] ?? false,
       createdOn: json['created_on'] ?? "",
       lastUpdated: json['last_updated'] ?? "",

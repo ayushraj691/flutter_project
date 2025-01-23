@@ -7,6 +7,9 @@ import 'package:paycron/model/drawer_model/transaction_model/ResSinglePayment.da
 import 'package:paycron/utils/color_constants.dart';
 import 'package:paycron/views/widgets/NoDataScreen.dart';
 
+import '../../utils/general_methods.dart';
+import '../../utils/string_constants.dart';
+
 class SubscriptionTransactionsDetails extends StatefulWidget {
   final String id;
 
@@ -56,19 +59,21 @@ class _SubscriptionTransactionsDetailsState
           backgroundColor: AppColors.appBackgroundColor,
           leading: IconButton(
             color: AppColors.appBlackColor,
+            splashColor: Colors.transparent,
+            highlightColor: Colors.transparent,
             icon: const Icon(Icons.arrow_back),
             onPressed: () {
               Navigator.pop(context);
             },
           ),
           titleSpacing: 0,
-          title: const Text(
+          title:  Text(
             "Transaction Details",
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
               color: AppColors.appTextColor,
-              fontFamily: 'Sofia Sans',
+              fontFamily: Constants.Sofiafontfamily,
             ),
           ),
         ),
@@ -78,8 +83,8 @@ class _SubscriptionTransactionsDetailsState
               padding: const EdgeInsets.all(16.0),
               child: ListView(
                 children: [
-                  if (itemTransactionController.allSinglePaymentDataList
-                      .isEmpty &&
+                  if (itemTransactionController
+                      .allSinglePaymentDataList.isEmpty &&
                       !variableController.loading.value)
                     NoDataFoundCard() // Show "No Data" widget when the list is empty and not loading
                   else
@@ -88,8 +93,8 @@ class _SubscriptionTransactionsDetailsState
                       const SizedBox(height: 16.0),
                       Container(
                         padding: EdgeInsets.symmetric(
-                          vertical: screenHeight * 0.03,
-                          horizontal: screenWidth * 0.03,
+                          vertical: screenHeight * 0.02,
+                          horizontal: screenWidth * 0.02,
                         ), // Responsive padding
                         decoration: BoxDecoration(
                           color: AppColors.appTabBackgroundColor,
@@ -103,29 +108,29 @@ class _SubscriptionTransactionsDetailsState
                               children: [
                                 Row(
                                   children: [
-                                    SizedBox(width: screenWidth * 0.01),
+                                    SizedBox(width: screenWidth * 0.02),
                                     Column(
-                                      crossAxisAlignment: CrossAxisAlignment
-                                          .start,
+                                      crossAxisAlignment:
+                                      CrossAxisAlignment.start,
                                       children: [
-                                        const Text(
+                                         Text(
                                           'Date:',
                                           style: TextStyle(
                                             fontSize: 14,
-                                            fontFamily: 'Sofia Sans',
+                                            fontFamily: Constants.Sofiafontfamily,
                                             fontWeight: FontWeight.w400,
                                             color: AppColors.appNeutralColor2,
                                           ),
                                         ),
-                                        const SizedBox(height: 5.0,),
+                                        SizedBox(height: screenHeight * 0.006),
                                         Obx(() =>
                                             Text(
-                                              itemTransactionController.date
-                                                  .value,
-                                              style: const TextStyle(
+                                              itemTransactionController
+                                                  .date.value,
+                                              style:  TextStyle(
                                                 fontSize: 14,
-                                                fontFamily: 'Sofia Sans',
-                                                fontWeight: FontWeight.w500,
+                                                fontFamily: Constants.Sofiafontfamily,
+                                                fontWeight: FontWeight.w600,
                                                 color: AppColors
                                                     .appNeutralColor2,
                                               ),
@@ -134,36 +139,39 @@ class _SubscriptionTransactionsDetailsState
                                     ),
                                   ],
                                 ),
-                                const VerticalDivider(
-                                  thickness: 2,
-                                  color: AppColors.appBlackColor,
+                                SizedBox(
+                                  height: screenHeight * 0.04, // Adjust height
+                                  child: const VerticalDivider(
+                                    thickness: 2,
+                                    color: AppColors.appBackgroundGreyColor,
+                                    width: 20,
+                                  ),
                                 ),
                                 Row(
                                   children: [
-                                    SizedBox(width: screenWidth * 0.01),
-                                    // Responsive spacing
+                                    SizedBox(width: screenWidth * 0.02),
                                     Column(
-                                      crossAxisAlignment: CrossAxisAlignment
-                                          .start,
+                                      crossAxisAlignment:
+                                      CrossAxisAlignment.start,
                                       children: [
-                                        const Text(
-                                          'Transaction ID',
+                                         Text(
+                                          'Transaction ID  ',
                                           style: TextStyle(
                                             fontSize: 14,
-                                            fontFamily: 'Sofia Sans',
+                                            fontFamily: Constants.Sofiafontfamily,
                                             fontWeight: FontWeight.w400,
                                             color: AppColors.appNeutralColor2,
                                           ),
                                         ),
-                                        const SizedBox(height: 5.0,),
+                                        SizedBox(height: screenHeight * 0.006),
                                         Obx(() =>
                                             Text(
                                               itemTransactionController
                                                   .transactionId.value,
-                                              style: const TextStyle(
+                                              style:  TextStyle(
                                                 fontSize: 14,
-                                                fontFamily: 'Sofia Sans',
-                                                fontWeight: FontWeight.w500,
+                                                fontFamily: Constants.Sofiafontfamily,
+                                                fontWeight: FontWeight.w600,
                                                 color: AppColors
                                                     .appNeutralColor2,
                                               ),
@@ -172,30 +180,34 @@ class _SubscriptionTransactionsDetailsState
                                     ),
                                   ],
                                 ),
-                                const VerticalDivider(
-                                  thickness: 2,
-                                  color: AppColors.appBlackColor,
+                                SizedBox(
+                                  height: screenHeight * 0.04, // Adjust height
+                                  child: const VerticalDivider(
+                                    thickness: 2,
+                                    color: AppColors.appBackgroundGreyColor,
+                                    width: 20,
+                                  ),
                                 ),
                                 Column(
                                   children: [
-                                    const Text(
+                                     Text(
                                       'Amount',
                                       style: TextStyle(
                                         fontSize: 14,
-                                        fontFamily: 'Sofia Sans',
+                                        fontFamily: Constants.Sofiafontfamily,
                                         fontWeight: FontWeight.w400,
                                         color: AppColors.appNeutralColor2,
                                       ),
                                     ),
-                                    const SizedBox(height: 5.0,),
+                                    SizedBox(height: screenHeight * 0.006),
                                     Obx(() =>
                                         Text(
-                                          itemTransactionController.amount.value
+                                          GeneralMethods.formatAmount(itemTransactionController.amount.value)
                                               .toString(),
-                                          style: const TextStyle(
+                                          style:  TextStyle(
                                             fontSize: 14,
-                                            fontFamily: 'Sofia Sans',
-                                            fontWeight: FontWeight.w500,
+                                            fontFamily: Constants.Sofiafontfamily,
+                                            fontWeight: FontWeight.w600,
                                             color: AppColors.appBlackColor,
                                           ),
                                         )),
@@ -203,7 +215,9 @@ class _SubscriptionTransactionsDetailsState
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 10.0,),
+                            const SizedBox(
+                              height: 10.0,
+                            ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
@@ -211,19 +225,19 @@ class _SubscriptionTransactionsDetailsState
                                   children: [
                                     SizedBox(width: screenWidth * 0.02),
                                     Column(
-                                      crossAxisAlignment: CrossAxisAlignment
-                                          .start,
+                                      crossAxisAlignment:
+                                      CrossAxisAlignment.start,
                                       children: [
-                                        const Text(
-                                          'Recurring',
+                                         Text(
+                                          'Recurring      ',
                                           style: TextStyle(
                                             fontSize: 14,
-                                            fontFamily: 'Sofia Sans',
+                                            fontFamily: Constants.Sofiafontfamily,
                                             fontWeight: FontWeight.w400,
                                             color: AppColors.appNeutralColor2,
                                           ),
                                         ),
-                                        const SizedBox(height: 5.0,),
+                                        SizedBox(height: screenHeight * 0.006),
                                         Obx(() =>
                                             Text(
                                               "${itemTransactionController
@@ -231,25 +245,22 @@ class _SubscriptionTransactionsDetailsState
                                                   .value} ${itemTransactionController
                                                   .subscriptionType == 'weekly'
                                                   ? 'Week'
-                                                  : (
-                                                  itemTransactionController
-                                                      .subscriptionType ==
-                                                      'monthly' ? 'Month' : (
-                                                      itemTransactionController
-                                                          .subscriptionType ==
-                                                          'quarterly'
-                                                          ? 'Quarterly'
-                                                          : (
-                                                          itemTransactionController
-                                                              .subscriptionType ==
-                                                              'half-yearly'
-                                                              ? 'Half-Yearly'
-                                                              : 'Yearly'))
-                                              )}",
-                                              style: const TextStyle(
+                                                  : (itemTransactionController
+                                                  .subscriptionType == 'monthly'
+                                                  ? 'Month'
+                                                  : (itemTransactionController
+                                                  .subscriptionType ==
+                                                  'quarterly'
+                                                  ? 'Quarterly'
+                                                  : (itemTransactionController
+                                                  .subscriptionType ==
+                                                  'half-yearly'
+                                                  ? 'Half-Yearly'
+                                                  : 'Yearly')))}",
+                                              style:  TextStyle(
                                                 fontSize: 14,
-                                                fontFamily: 'Sofia Sans',
-                                                fontWeight: FontWeight.w500,
+                                                fontFamily: Constants.Sofiafontfamily,
+                                                fontWeight: FontWeight.w600,
                                                 color: AppColors
                                                     .appNeutralColor2,
                                               ),
@@ -258,37 +269,39 @@ class _SubscriptionTransactionsDetailsState
                                     ),
                                   ],
                                 ),
-                                const VerticalDivider(
-                                  thickness: 2,
-                                  color: AppColors.appBlackColor,
+                                SizedBox(
+                                  height: screenHeight * 0.04, // Adjust height
+                                  child: const VerticalDivider(
+                                    thickness: 2,
+                                    color: AppColors.appBackgroundGreyColor,
+                                    width: 20,
+                                  ),
                                 ),
-                                const SizedBox(width: 10.0,),
                                 Row(
                                   children: [
                                     SizedBox(width: screenWidth * 0.02),
-                                    // Responsive spacing
                                     Column(
-                                      crossAxisAlignment: CrossAxisAlignment
-                                          .start,
+                                      crossAxisAlignment:
+                                      CrossAxisAlignment.start,
                                       children: [
-                                        const Text(
-                                          'Scheduled Date:',
+                                         Text(
+                                          'Scheduled Date',
                                           style: TextStyle(
                                             fontSize: 14,
-                                            fontFamily: 'Sofia Sans',
+                                            fontFamily: Constants.Sofiafontfamily,
                                             fontWeight: FontWeight.w400,
                                             color: AppColors.appNeutralColor2,
                                           ),
                                         ),
-                                        const SizedBox(height: 5.0,),
+                                        SizedBox(height: screenHeight * 0.006),
                                         Obx(() =>
                                             Text(
                                               itemTransactionController
                                                   .scheduledDate.value,
-                                              style: const TextStyle(
+                                              style:  TextStyle(
                                                 fontSize: 14,
-                                                fontFamily: 'Sofia Sans',
-                                                fontWeight: FontWeight.w500,
+                                                fontFamily: Constants.Sofiafontfamily,
+                                                fontWeight: FontWeight.w600,
                                                 color: AppColors
                                                     .appNeutralColor2,
                                               ),
@@ -297,46 +310,52 @@ class _SubscriptionTransactionsDetailsState
                                     ),
                                   ],
                                 ),
-                                const VerticalDivider(
-                                  thickness: 2,
-                                  color: AppColors.appBlackColor,
+                                SizedBox(
+                                  height: screenHeight * 0.04, // Adjust height
+                                  child: const VerticalDivider(
+                                    thickness: 2,
+                                    color: AppColors.appBackgroundGreyColor,
+                                    width: 20,
+                                  ),
                                 ),
                                 Column(
                                   children: [
-                                    const Text(
+                                     Text(
                                       'Mode',
                                       style: TextStyle(
                                         fontSize: 14,
-                                        fontFamily: 'Sofia Sans',
+                                        fontFamily: Constants.Sofiafontfamily,
                                         fontWeight: FontWeight.w400,
                                         color: AppColors.appNeutralColor2,
                                       ),
                                     ),
-                                    const SizedBox(height: 5.0,),
+                                    SizedBox(height: screenHeight * 0.006),
                                     Align(
                                       alignment: Alignment.centerRight,
                                       child: Container(
                                         padding: const EdgeInsets.symmetric(
-                                            horizontal: 12, vertical: 4),
+                                            horizontal: 2, vertical: 4),
                                         decoration: BoxDecoration(
                                           color: itemTransactionController
-                                              .payMode.value == "0" ? AppColors
-                                              .appOrangeLightColor : AppColors
-                                              .appLightBlueColor,
+                                              .payMode.value ==
+                                              "0"
+                                              ? AppColors.appOrangeLightColor
+                                              : AppColors.appLightBlueColor,
                                           borderRadius: BorderRadius.circular(
                                               8),
                                         ),
                                         child: FittedBox(
-                                          child:
-                                          Obx(() =>
+                                          child: Obx(() =>
                                               Text(
                                                 itemTransactionController
-                                                    .payMode.value == "0"
+                                                    .payMode.value ==
+                                                    "0"
                                                     ? "Manual"
                                                     : "Auto",
                                                 style: TextStyle(
                                                   color: itemTransactionController
-                                                      .payMode.value == "0"
+                                                      .payMode.value ==
+                                                      "0"
                                                       ? AppColors.appYellowColor
                                                       : AppColors
                                                       .appTextBlueColor,
@@ -348,6 +367,7 @@ class _SubscriptionTransactionsDetailsState
                                     ),
                                   ],
                                 ),
+
                               ],
                             ),
                           ],
@@ -365,7 +385,7 @@ class _SubscriptionTransactionsDetailsState
                         },
                         child: _buildCustomerDetailsCard(),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 8),
                       _buildCustomerDetailCollapsibleSection(
                         title: "Business Details",
                         isExpanded: isBusinessDetailsExpanded,
@@ -377,7 +397,7 @@ class _SubscriptionTransactionsDetailsState
                         },
                         child: _buildBusinessDetailsCard(),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 8),
                       _buildCustomerDetailCollapsibleSection(
                         title: "Account Details",
                         isExpanded: isAccountDetailsExpanded,
@@ -389,7 +409,7 @@ class _SubscriptionTransactionsDetailsState
                         },
                         child: _buildAccountDetailsCard(),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 8),
                       _buildCustomerDetailCollapsibleSection(
                         title: "Purchase Details",
                         isExpanded: isPurchaseDetailsExpanded,
@@ -399,17 +419,17 @@ class _SubscriptionTransactionsDetailsState
                             !isPurchaseDetailsExpanded;
                           });
                         },
-                        child:
-                        ListView.builder(
+                        child: ListView.builder(
                           shrinkWrap: true,
                           // Ensures the ListView takes minimal height
                           physics: const NeverScrollableScrollPhysics(),
                           // Prevents nested scrolling
-                          itemCount: itemTransactionController.allProductList
-                              .length,
+                          itemCount:
+                          itemTransactionController.allProductList.length,
                           itemBuilder: (context, index) {
                             return _buildPurchaseDetailsCard(
-                                itemTransactionController.allProductList, index,
+                                itemTransactionController.allProductList,
+                                index,
                                 context);
                           },
                         ),
@@ -426,10 +446,9 @@ class _SubscriptionTransactionsDetailsState
                 child: Center(
                   child: Container(
                     alignment: Alignment.center,
-                    height: 150,
-                    width: 150,
-                    child: Lottie.asset(
-                        "assets/lottie/half-circles.json"),
+                    height: 50,
+                    width: 50,
+                    child: Lottie.asset("assets/lottie/half-circles.json"),
                   ),
                 ),
               ),
@@ -460,29 +479,6 @@ class _SubscriptionTransactionsDetailsState
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // PopupMenuButton<String>(
-                //   icon: Icon(Icons.more_vert),
-                //   onSelected: (value) {
-                //     // Handle menu selection
-                //     if (value == 'edit') {
-                //       // Handle edit action
-                //     } else if (value == 'delete') {
-                //       // Handle delete action
-                //     }
-                //   },
-                //   itemBuilder: (BuildContext context) {
-                //     return [
-                //       const PopupMenuItem<String>(
-                //         value: 'edit',
-                //         child: Text('Edit'),
-                //       ),
-                //       const PopupMenuItem<String>(
-                //         value: 'delete',`
-                //         child: Text('Delete'),
-                //       ),
-                //     ];
-                //   },
-                // ),
                 Icon(isExpanded ? Icons.arrow_drop_up : Icons.arrow_drop_down,
                     color: AppColors.appBlackColor),
               ],
@@ -497,7 +493,7 @@ class _SubscriptionTransactionsDetailsState
 
   Widget _buildCustomerDetailsCard() {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.only(left: 16.0,right: 16.0,bottom: 4.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -515,7 +511,7 @@ class _SubscriptionTransactionsDetailsState
 
   Widget _buildBusinessDetailsCard() {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.only(left: 16.0,right: 16.0,bottom: 4.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -532,7 +528,7 @@ class _SubscriptionTransactionsDetailsState
 
   Widget _buildAccountDetailsCard() {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.only(left: 16.0,right: 16.0,bottom: 4.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -546,10 +542,10 @@ class _SubscriptionTransactionsDetailsState
     );
   }
 
-  Widget _buildPurchaseDetailsCard(List<ProDetail> allproductList,
-      int index, context) {
+  Widget _buildPurchaseDetailsCard(List<ProDetail> allproductList, int index,
+      context) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.only(left: 16.0,right: 16.0,bottom: 4.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -562,117 +558,125 @@ class _SubscriptionTransactionsDetailsState
     );
   }
 
+
   Widget _buildPurchaseDetailRow(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Label Text
           Expanded(
             flex: 2,
             child: Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 fontWeight: FontWeight.w400,
                 color: AppColors.appNeutralColor2,
                 fontSize: 14,
-                fontFamily: 'Sofia Sans',
+                fontFamily: Constants.Sofiafontfamily,
               ),
             ),
           ),
-          const Expanded(
-            flex: 1,
-            child: Text(':',
-                style: TextStyle(
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.appBlackColor,
-                  fontSize: 14,
-                  fontFamily: 'Sofia Sans',
-                )),
+          Text(
+            ':',
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              color: AppColors.appBlackColor,
+              fontSize: 14,
+              fontFamily: Constants.Sofiafontfamily,
+            ),
           ),
+          SizedBox(width: MediaQuery.of(context).size.width * 0.08,),
           Expanded(
-            flex: 2,
-            child: Text(value,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.appBlackColor,
-                  fontSize: 14,
-                  fontFamily: 'Sofia Sans',
-                )),
+            flex: 3,
+            child: Text(
+              value,
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                color: AppColors.appBlackColor,
+                fontSize: 14,
+                fontFamily: Constants.Sofiafontfamily,
+              ),
+            ),
           ),
         ],
       ),
     );
   }
-
 
   Widget _buildDetailRow(String label, RxString value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Label Text
           Expanded(
             flex: 2,
             child: Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 fontWeight: FontWeight.w400,
                 color: AppColors.appNeutralColor2,
                 fontSize: 14,
-                fontFamily: 'Sofia Sans',
+                fontFamily: Constants.Sofiafontfamily,
               ),
             ),
           ),
-          const Expanded(
-            flex: 1,
-            child: Text(':',
-                style: TextStyle(
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.appBlackColor,
-                  fontSize: 14,
-                  fontFamily: 'Sofia Sans',
-                )),
+          Text(
+            ':',
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              color: AppColors.appBlackColor,
+              fontSize: 14,
+              fontFamily: Constants.Sofiafontfamily,
+            ),
           ),
+          SizedBox(width: MediaQuery.of(context).size.width * 0.08,),
           Expanded(
-            flex: 2,
-            child: Obx(() =>
-                Text(value.value,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.appBlackColor,
-                      fontSize: 14,
-                      fontFamily: 'Sofia Sans',
-                    ))),
+            flex: 3,
+            child: Obx(() => Text(
+              value.value,
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                color: AppColors.appBlackColor,
+                fontSize: 14,
+                fontFamily: Constants.Sofiafontfamily,
+              ),
+            )),
           ),
         ],
       ),
     );
   }
 
+
   Widget transactionCard() {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.only(left: 8.0, right: 8.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              const Text(
+               Text(
                 "-Check Number ",
                 style: TextStyle(
                   fontWeight: FontWeight.w400,
                   color: AppColors.appNeutralColor2,
                   fontSize: 14,
-                  fontFamily: 'Sofia Sans',
+                  fontFamily: Constants.Sofiafontfamily,
                 ),
               ),
               Obx(() =>
                   Text(':   ${itemTransactionController.checkNo.value}',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w500,
+                      style:  TextStyle(
+                        fontWeight: FontWeight.w600,
                         color: AppColors.appBlackColor,
                         fontSize: 14,
-                        fontFamily: 'Sofia Sans',
+                        fontFamily: Constants.Sofiafontfamily,
                       )))
               ,
               SizedBox(
@@ -902,22 +906,22 @@ class _SubscriptionTransactionsDetailsState
           ),
           Row(
             children: [
-              const Text(
+               Text(
                 "-Memo                   ",
                 style: TextStyle(
                   fontWeight: FontWeight.w400,
                   color: AppColors.appNeutralColor2,
                   fontSize: 14,
-                  fontFamily: 'Sofia Sans',
+                  fontFamily: Constants.Sofiafontfamily,
                 ),
               ),
               Obx(() =>
                   Text(':   ${itemTransactionController.memo}',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w500,
+                      style:  TextStyle(
+                        fontWeight: FontWeight.w600,
                         color: AppColors.appBlackColor,
                         fontSize: 14,
-                        fontFamily: 'Sofia Sans',
+                        fontFamily: Constants.Sofiafontfamily,
                       ))),
             ],
           )

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:paycron/controller/dashboard/merchant_controller/change_password_controller.dart';
-import 'package:paycron/controller/dashboard/merchant_controller/merchant_controller.dart';
 import 'package:paycron/controller/variable_controller.dart';
 import 'package:paycron/utils/color_constants.dart';
 import 'package:paycron/utils/my_toast.dart';
 import 'package:paycron/views/widgets/common_button.dart';
 import 'package:paycron/views/widgets/common_textform_field.dart';
+import '../../../utils/string_constants.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({super.key});
@@ -18,27 +18,26 @@ class ChangePasswordScreen extends StatefulWidget {
 class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   var variableController = Get.find<VariableController>();
   var changePasswordController = Get.find<ChangePasswordController>();
-  var merchantController = Get.find<MerchantController>();
-
 
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
-    changePasswordController.oldPassword.value.text = merchantController.password.value;
     return Scaffold(
       backgroundColor: AppColors.appBackgroundColor,
       appBar: AppBar(
         backgroundColor: AppColors.appBackgroundColor,
         leading: IconButton(
           color: AppColors.appBlackColor,
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
         titleSpacing: 0,
-        title: const FittedBox(
+        title: FittedBox(
           fit: BoxFit.scaleDown,
           child: Text(
             "Change Password",
@@ -46,7 +45,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               fontSize: 16, // Dynamic font size
               fontWeight: FontWeight.w600,
               color: AppColors.appTextColor,
-              fontFamily: 'Sofia Sans',
+              fontFamily: Constants.Sofiafontfamily,
             ),
           ),
         ),
@@ -77,71 +76,15 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                   width:
                                       MediaQuery.of(context).size.width / 1.24,
                                   child: RichText(
-                                    text: const TextSpan(
-                                      text: 'Current Password ',
-                                      style: TextStyle(
-                                        fontFamily: 'Sofia Sans',
-                                        fontSize: 12.0,
-                                        fontWeight: FontWeight.w400,
-                                        color: Colors.black,
-                                      ),
-                                      children: [
-                                        TextSpan(
-                                          text: '*',
-                                          style: TextStyle(
-                                            color: Colors.red,
-                                            fontSize: 12.0,
-                                            fontWeight: FontWeight.w400,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(
-                                  width: 10,
-                                  height: 4.0,
-                                ),
-                                CommonTextField(
-                                  hintText: "Current Password",
-                                  controller:
-                                      changePasswordController.oldPassword.value,
-                                  labelText: "Current Password",
-                                  maxLines: 1,
-                                  suffixIcon: changePasswordController
-                                          .isObsecureForCurrentPassword.value
-                                      ? Icons.visibility_off
-                                      : Icons.visibility,
-                                  obscureText: changePasswordController
-                                      .isObsecureForCurrentPassword.value,
-                                  suffixIconColor: AppColors.appGreyColor,
-                                  onSuffixIconTap: () {
-                                    changePasswordController
-                                            .isObsecureForCurrentPassword
-                                            .value =
-                                        !changePasswordController
-                                            .isObsecureForCurrentPassword.value;
-                                    setState(() {});
-                                  },
-                                  onChanged: (value) {},
-                                ),
-                                const SizedBox(
-                                  width: 10,
-                                  height: 12.0,
-                                ),
-                                SizedBox(
-                                  width:
-                                      MediaQuery.of(context).size.width / 1.24,
-                                  child: RichText(
-                                    text: const TextSpan(
+                                    text: TextSpan(
                                       text: 'New Password ',
                                       style: TextStyle(
-                                        fontFamily: 'Sofia Sans',
+                                        fontFamily: Constants.Sofiafontfamily,
                                         fontSize: 12.0,
                                         fontWeight: FontWeight.w400,
                                         color: Colors.black,
                                       ),
-                                      children: [
+                                      children: const [
                                         TextSpan(
                                           text: '*',
                                           style: TextStyle(
@@ -188,15 +131,15 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                   width:
                                       MediaQuery.of(context).size.width / 1.24,
                                   child: RichText(
-                                    text: const TextSpan(
+                                    text: TextSpan(
                                       text: 'Re-enter New Password ',
                                       style: TextStyle(
-                                        fontFamily: 'Sofia Sans',
+                                        fontFamily: Constants.Sofiafontfamily,
                                         fontSize: 12.0,
                                         fontWeight: FontWeight.w400,
                                         color: Colors.black,
                                       ),
-                                      children: [
+                                      children: const [
                                         TextSpan(
                                           text: '*',
                                           style: TextStyle(
@@ -260,24 +203,20 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               buttonWidth: screenWidth * 0.9,
               buttonName: "Change Password",
               onPressed: () {
-                if(changePasswordController.oldPassword.value.text.isEmpty){
-                  MyToast.toast("Please Enter Current Password");
-                }else if(changePasswordController.newPassword.text.isEmpty){
+                if (changePasswordController.newPassword.text.isEmpty) {
                   MyToast.toast("Please Enter New Password");
-                }else if(changePasswordController.confirmPassword.text.isEmpty){
-                  MyToast.toast("Please Enter Confirm Password");
-                }else{
-                  if (changePasswordController.oldPassword.value.text == changePasswordController.newPassword.text) {
+                } else if (changePasswordController
+                    .confirmPassword.text.isEmpty) {
+                  MyToast.toast("Please Re-enter New Password");
+                } else {
+                  if (changePasswordController.newPassword.text !=
+                      changePasswordController.confirmPassword.text) {
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      content: Text('New password cannot be the same as the old password.'),
-                    ));
-                  }else if (changePasswordController.newPassword.text != changePasswordController.confirmPassword.text) {
-                    // Display password mismatch error message
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      content: Text('New password and confirm password do not match.'),
+                      content: Text(
+                          'New password and confirm password do not match.'),
                     ));
                   } else {
-                   Get.back();
+                    changePasswordController.getChangePassword();
                   }
                 }
               },

@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:paycron/controller/auth/forgot_controller.dart';
@@ -31,7 +32,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.appBackgroundColor,
-      resizeToAvoidBottomInset: true, // Allows resizing when keyboard appears
+      resizeToAvoidBottomInset: true,
+      // Allows resizing when keyboard appears
       appBar: AppBar(
         backgroundColor: AppColors.appBackgroundColor,
         leading: IconButton(
@@ -95,13 +97,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     const SizedBox(height: 4.0),
                     CommonTextField(
                       controller:
-                      forgotPasswordController.emailController.value,
+                          forgotPasswordController.emailController.value,
                       labelText: "Email Id",
                       keyboardType: TextInputType.emailAddress,
                       focusNode: forgotPasswordController.emailFocusNode,
                       onChanged: (value) {
-                        String pattern =
-                            r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$';
+                        String pattern = r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$';
                         RegExp regExp = RegExp(pattern);
                         setState(() {
                           if (value.isEmpty) {
@@ -116,10 +117,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         });
                       },
                       decoration: InputDecoration(
-                        labelStyle: const TextStyle(
-                            color: AppColors.appBlueColor),
-                        contentPadding:
-                        const EdgeInsets.only(right: 16, left: 16),
+                        labelStyle:
+                            const TextStyle(color: AppColors.appBlueColor),
+                        isDense: true,
+                        contentPadding: const EdgeInsets.only(
+                            right: 16, left: 16,top: 10,bottom: 10),
                         focusedBorder: UnderlineInputBorder(
                           borderSide: BorderSide(
                             color: forgotPasswordController.emailValid.value
@@ -128,11 +130,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                             width: 1, // Thickness for the underline
                           ),
                         ),
-                        enabledBorder: const UnderlineInputBorder(
-                          borderSide: BorderSide(
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: const BorderSide(
                             color: AppColors.appNeutralColor5,
                             width: 1,
                           ),
+                          borderRadius: BorderRadius.circular(8.0)
                         ),
                         errorBorder: const UnderlineInputBorder(
                           borderSide: BorderSide(
@@ -143,9 +146,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         errorText: forgotPasswordController.emailValid.value
                             ? null
                             : (forgotPasswordController
-                            .emailController.value.text.isEmpty
-                            ? 'Email is required'
-                            : 'Invalid Email'),
+                                    .emailController.value.text.isEmpty
+                                ? 'Email is required'
+                                : 'Invalid Email'),
                         hintText: "Enter email",
                         filled: true,
                         fillColor: AppColors.appNeutralColor5,

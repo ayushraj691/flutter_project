@@ -22,8 +22,7 @@ class _ActiveTabProductState extends State<ActiveTabProduct> {
   TextEditingController searchController = TextEditingController();
   var activeTabProductController = Get.find<ActiveProductController>();
   var variableController = Get.find<VariableController>();
-  List<ResAllFilterProductData> filteredItems =
-      <ResAllFilterProductData>[].obs;
+  List<ResAllFilterProductData> filteredItems = <ResAllFilterProductData>[].obs;
   Map<String, dynamic> sortMap = {
     "": "",
   };
@@ -33,7 +32,7 @@ class _ActiveTabProductState extends State<ActiveTabProduct> {
 
   @override
   void initState() {
-    Future.delayed(const Duration(seconds: 0),(){
+    Future.delayed(const Duration(seconds: 0), () {
       callMethod();
       searchController.addListener(_filterItems);
     });
@@ -67,48 +66,55 @@ class _ActiveTabProductState extends State<ActiveTabProduct> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     return RefreshIndicator(
       onRefresh: _refreshData,
       child: Padding(
-        padding: const EdgeInsets.only(top: 10.0,bottom: 30),
+        padding: const EdgeInsets.only( bottom: 20),
         child: Column(
           children: [
             Expanded(
               child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
                 child: Column(
                   children: [
                     Row(
                       children: [
                         Expanded(
-                          child:  Padding(
-                            padding: const EdgeInsets.all(8.0),
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                                left: 4.0, right: 8.0, bottom: 8.0, top: 8.0),
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.appBackgroundGreyColor, // Button color
-                                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                                backgroundColor:
+                                    AppColors.appBackgroundGreyColor,
+                                // Button color
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 15, vertical: 10),
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(30), // Rounded corners
+                                  borderRadius: BorderRadius.circular(
+                                      30), // Rounded corners
                                 ),
                                 elevation: 0,
                                 shadowColor: Colors.black45,
                               ),
-                              onPressed: () => activeTabProductController.showSelectDurationBottomSheet(context),
+                              onPressed: () => activeTabProductController
+                                  .showSelectDurationBottomSheet(context),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Obx(() =>  Text(
-                                    activeTabProductController.buttonText.value, // Display the selected date on the button
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      color: AppColors.appBlackColor,
-                                      fontWeight: FontWeight.w400,
-                                      fontFamily: 'Sofia Sans',
-                                    ),
-                                  )),
+                                  Obx(() => Text(
+                                        activeTabProductController
+                                            .buttonText.value,
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          color: AppColors.appBlackColor,
+                                          fontWeight: FontWeight.w400,
+                                          fontFamily: 'Sofia Sans',
+                                        ),
+                                      )),
                                 ],
                               ),
                             ),
@@ -120,22 +126,29 @@ class _ActiveTabProductState extends State<ActiveTabProduct> {
                             child: Container(
                               width: screenWidth / 4,
                               decoration: BoxDecoration(
-                                color: AppColors.appBlackColor, // Button background color
-                                borderRadius: BorderRadius.circular(30), // Rounded corners
+                                color: AppColors.appBlackColor,
+                                // Button background color
+                                borderRadius: BorderRadius.circular(30),
+                                // Rounded corners
                                 border: Border.all(
-                                  color: AppColors.appBlackColor, // Button border color
+                                  color: AppColors.appBlackColor,
+                                  // Button border color
                                   width: 0, // Border thickness
                                 ),
                               ),
                               height: 36,
                               child: ElevatedButton(
                                 onPressed: () async {
-                                  await activeTabProductController.downloadCSV();
+                                  await activeTabProductController
+                                      .downloadCSV();
                                 }, // Button press callback
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.transparent, // Transparent to show container color
-                                  shadowColor: Colors.transparent, // Remove button shadow
-                                  padding: EdgeInsets.symmetric(vertical: 10), // Button height padding
+                                  backgroundColor: Colors.transparent,
+                                  // Transparent to show container color
+                                  shadowColor: Colors.transparent,
+                                  // Remove button shadow
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 10), // Button height padding
                                 ),
                                 child: const Text(
                                   'Download',
@@ -143,7 +156,8 @@ class _ActiveTabProductState extends State<ActiveTabProduct> {
                                     fontFamily: 'Sofia Sans',
                                     fontWeight: FontWeight.w400,
                                     fontSize: 14,
-                                    color: AppColors.appWhiteColor, // Text color
+                                    color:
+                                        AppColors.appWhiteColor, // Text color
                                   ),
                                 ),
                               ),
@@ -153,7 +167,8 @@ class _ActiveTabProductState extends State<ActiveTabProduct> {
                       ],
                     ),
                     Padding(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.only(
+                          bottom: 8.0),
                       child: Card(
                         elevation: 0,
                         shape: RoundedRectangleBorder(
@@ -162,15 +177,18 @@ class _ActiveTabProductState extends State<ActiveTabProduct> {
                         child: Column(
                           children: [
                             Padding(
-                              padding: const EdgeInsets.all(8.0),
+                              padding: const EdgeInsets.all(16.0),
                               child: TextField(
                                 controller: searchController,
                                 decoration: InputDecoration(
-                                  hintText: 'Search by name or email',
+                                  hintText: 'Search by name',
                                   filled: true,
                                   fillColor: AppColors.appNeutralColor5,
                                   prefixIcon: const Icon(Icons.search),
-                                  contentPadding: const EdgeInsets.all(16),
+                                  hintStyle: const TextStyle(fontSize: 14.0,color: AppColors.appGreyColor
+                                      ,fontWeight: FontWeight.w400
+                                  ),
+                                  contentPadding: const EdgeInsets.all(8),
                                   enabledBorder: OutlineInputBorder(
                                     borderSide: const BorderSide(
                                       color: AppColors.appNeutralColor5,
@@ -189,36 +207,39 @@ class _ActiveTabProductState extends State<ActiveTabProduct> {
                               ),
                             ),
                             Obx(() {
-                              if (activeTabProductController.allProductDataList.isEmpty) {
+                              if (activeTabProductController
+                                  .allProductDataList.isEmpty) {
                                 return variableController.loading.value
-                                    ?Padding(
-                                  padding: EdgeInsets.all(8.0),
-                                  child: Container(
-                                    alignment: Alignment.center,
-                                    height: 50,
-                                    width: 50,
-                                    child: Lottie.asset(
-                                        "assets/lottie/half-circles.json"),
-                                  ),
-                                )
+                                    ? Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Container(
+                                          alignment: Alignment.center,
+                                          height: 50,
+                                          width: 50,
+                                          child: Lottie.asset(
+                                              "assets/lottie/half-circles.json"),
+                                        ),
+                                      )
                                     : NoDataFoundCard(); // Your custom widget
                               } else {
-                                return  ListView.builder(
+                                return ListView.builder(
                                   shrinkWrap: true,
-                                  physics: const NeverScrollableScrollPhysics(), // Disable scrolling inside ListView
-                                  itemCount:  filteredItems.length,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  // Disable scrolling inside ListView
+                                  itemCount: filteredItems.length,
                                   itemBuilder: (context, index) {
-                                    return listItem( filteredItems,index, context);
+                                    return listItem(
+                                        filteredItems, index, context);
                                   },
                                 );
                               }
                             }),
-
                           ],
                         ),
                       ),
                     ),
-                    SizedBox(height: 10), // Add extra space to avoid button overlap with content
+                    SizedBox(height: 10),
+                    // Add extra space to avoid button overlap with content
                   ],
                 ),
               ),
@@ -248,8 +269,8 @@ class _ActiveTabProductState extends State<ActiveTabProduct> {
   }
 }
 
-
-Widget listItem(List<ResAllFilterProductData> allProductDataList, int index, context) {
+Widget listItem(
+    List<ResAllFilterProductData> allProductDataList, int index, context) {
   final product = allProductDataList[index];
   final productName = product.proName;
   final productId = product.proId;
@@ -263,11 +284,17 @@ Widget listItem(List<ResAllFilterProductData> allProductDataList, int index, con
   String formattedDate = DateFormat('dd MMM, yyyy').format(dateTime);
 
   return InkWell(
-      onTap: productstatus ? null : () async {  // Disable onTap if productstatus is true
-        Get.to(ProductDetailsScreen(id: product.sId,));
-      },
-      child: Opacity( // Apply opacity based on productstatus
-        opacity: productstatus ? 0.5 : 1.0, // Make item transparent if productstatus is true
+      onTap: productstatus
+          ? null
+          : () async {
+              Get.to(ProductDetailsScreen(
+                id: product.sId,
+              ));
+            },
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      child: Opacity(
+        opacity: productstatus ? 0.5 : 1.0,
         child: Padding(
           padding: const EdgeInsets.all(0.0),
           child: Card(

@@ -12,6 +12,8 @@ import 'package:paycron/views/drawer_screen/customer/createCustomerForm.dart';
 import 'package:paycron/views/drawer_screen/customer/inActive_customer.dart';
 import 'package:paycron/views/widgets/common_button.dart';
 
+import '../../../utils/string_constants.dart';
+
 class DrawerCustomerDetailScreen extends StatefulWidget {
   const DrawerCustomerDetailScreen({super.key});
 
@@ -20,9 +22,25 @@ class DrawerCustomerDetailScreen extends StatefulWidget {
       _DrawerCustomerDetailScreenState();
 }
 
-class _DrawerCustomerDetailScreenState
-    extends State<DrawerCustomerDetailScreen> {
+class _DrawerCustomerDetailScreenState extends State<DrawerCustomerDetailScreen>
+    with SingleTickerProviderStateMixin {
   var addCustomerController = Get.find<AddCustomerController>();
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 3, vsync: this);
+    _tabController.addListener(() {
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,50 +48,64 @@ class _DrawerCustomerDetailScreenState
     double screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: AppColors.appBackgroundColor,
-      appBar: AppBar(
-        backgroundColor: AppColors.appBackgroundColor,
-        leading: IconButton(
-          color: AppColors.appBlackColor,
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        titleSpacing: 0, // Removes extra space between arrow and title
-        title: Obx(
-              () => Text(
-            CommonVariable.businessName.value,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: AppColors.appTextColor,
-              fontFamily: 'Sofia Sans',
-            ),
+        appBar: AppBar(
+          backgroundColor: AppColors.appBackgroundColor,
+          leading: IconButton(
+            color: AppColors.appBlackColor,
+            splashColor: Colors.transparent,
+            highlightColor: Colors.transparent,
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pop(context);
+            },
           ),
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.all(4.0),
-            child: InkWell(
-              onTap: () => {
-                Get.to(const BusinessProfileScreen())
-              },
-              child: CircleAvatar(
-                radius: screenHeight / 45,
-                backgroundImage: AssetImage(ImageAssets.profile),
+          titleSpacing: 0,
+          title: Obx(
+                () => Text(
+              CommonVariable.businessName.value,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: AppColors.appTextColor,
+                fontFamily: 'Sofia Sans',
               ),
             ),
           ),
-          Builder(
-            builder: (BuildContext context) => IconButton(
-              icon: Image.asset(ImageAssets.closeDrawer), // Your drawer icon
-              onPressed: () {
-                Scaffold.of(context).openEndDrawer();
-              },
+          actions: [
+            Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: InkWell(
+                onTap: () {
+                  Get.to(const BusinessProfileScreen());
+                },
+                splashColor: Colors.transparent,
+                highlightColor: Colors.transparent,
+                child:  Container(
+                  width: screenHeight / 20,
+                  height: screenHeight / 20,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    image: DecorationImage(
+                      image: AssetImage(ImageAssets.profile),
+                      fit: BoxFit.fill,
+                      alignment: Alignment.center,
+                    ),
+                  ),
+                ),
+              ),
             ),
-          ),
-        ],
-      ),
+            Builder(
+              builder: (BuildContext context) => IconButton(
+                icon: Image.asset(ImageAssets.closeDrawer),
+                splashColor: Colors.transparent,
+                highlightColor: Colors.transparent,
+                onPressed: () {
+                  Scaffold.of(context).openEndDrawer();
+                },
+              ),
+            ),
+          ],
+        ),
       endDrawer: const AppDrawer(),
       body: SingleChildScrollView(
         child: Column(
@@ -81,7 +113,7 @@ class _DrawerCustomerDetailScreenState
             const Align(
               alignment: Alignment.topLeft,
               child: Padding(
-                padding: EdgeInsets.only(left: 12.0, top: 20, bottom: 10),
+                padding: EdgeInsets.only(left: 16.0, top: 10, bottom: 10),
                 child: Text(
                   "Customers",
                   style: TextStyle(
@@ -93,24 +125,38 @@ class _DrawerCustomerDetailScreenState
                 ),
               ),
             ),
-            DefaultTabController(
-              length: 3,
+            Container(
+              margin: const EdgeInsets.only(left: 12.0,right: 12.0),
               child: Column(
                 children: [
-                  const TabBar(
+                  TabBar(
+                    controller: _tabController,
                     labelColor: AppColors.appBlueColor,
                     unselectedLabelColor: Colors.grey,
-                    indicatorColor: AppColors.appBlueColor,
-                    tabs: [
+                    labelStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w600,fontFamily: Constants.Sofiafontfamily),
+                    indicator: const BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          color: AppColors.appBlueColor,
+                          width: 1.0,
+                        ),
+                      ),
+                    ),
+                    tabs: const [
                       Tab(text: 'All'),
                       Tab(text: 'Active'),
                       Tab(text: 'Inactive'),
                     ],
                   ),
+                  Container(
+                    height: 1,
+                    color: Colors.grey.withOpacity(0.4),
+                  ),
                   SizedBox(
-                    height: screenHeight *0.72,
-                    child: const TabBarView(
-                      children: [
+                    height: MediaQuery.of(context).size.height * 0.73,
+                    child: TabBarView(
+                      controller: _tabController,
+                      children: const [
                         AllTab(),
                         ActiveTab(),
                         InActiveTab(),
@@ -119,7 +165,7 @@ class _DrawerCustomerDetailScreenState
                   ),
                 ],
               ),
-            ),
+            )
           ],
         ),
       ),
@@ -127,7 +173,7 @@ class _DrawerCustomerDetailScreenState
         padding: const EdgeInsets.only(
           left: 12.0,
           right: 12.0,
-          bottom : 12.0,
+          bottom: 12.0,
         ),
         child: CommonButton(
           buttonWidth: screenWidth * 0.9,

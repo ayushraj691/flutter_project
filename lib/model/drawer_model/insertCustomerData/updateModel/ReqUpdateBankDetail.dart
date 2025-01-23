@@ -1,15 +1,15 @@
 class ReqUpdateBankDetail {
- late String accountName;
- late String accountNumber;
- late String address;
- late String apartment;
- late String city;
- late String country;
- late String custId;
- late String postalCode;
- late bool primary;
- late String routingNumber;
- late String state;
+  late String accountName;
+  late String accountNumber;
+  late String address;
+  late String apartment;
+  late String city;
+  late String country;
+  late String custId;
+  late String postalCode;
+  late bool primary;
+  late String routingNumber;
+  late String state;
 
   ReqUpdateBankDetail(
       {required this.accountName,
@@ -25,17 +25,17 @@ class ReqUpdateBankDetail {
       required this.state});
 
   ReqUpdateBankDetail.fromJson(Map<String, dynamic> json) {
-    accountName = json['account_name']??"";
-    accountNumber = json['account_number']??"";
-    address = json['address']??"";
-    apartment = json['apartment']??"";
-    city = json['city']??"";
-    country = json['country']??"";
-    custId = json['cust_id']??"";
-    postalCode = json['postal_code']??"";
-    primary = json['primary']??"";
-    routingNumber = json['routing_number']??"";
-    state = json['state']??"";
+    accountName = json['account_name'] ?? "";
+    accountNumber = json['account_number'] ?? "";
+    address = json['address'] ?? "";
+    apartment = json['apartment'] ?? "";
+    city = json['city'] ?? "";
+    country = json['country'] ?? "";
+    custId = json['cust_id'] ?? "";
+    postalCode = json['postal_code'] ?? "";
+    primary = json['primary'] ?? "";
+    routingNumber = json['routing_number'] ?? "";
+    state = json['state'] ?? "";
   }
 
   Map<String, dynamic> toJson() {

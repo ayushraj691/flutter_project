@@ -13,6 +13,8 @@ import 'package:paycron/views/funds/successful_screen.dart';
 import 'package:paycron/views/funds/unsuccessful_screen.dart';
 import 'package:paycron/views/widgets/common_button.dart';
 
+import '../../utils/string_constants.dart';
+
 class FundsMainScreen extends StatefulWidget {
   const FundsMainScreen({super.key});
 
@@ -20,36 +22,16 @@ class FundsMainScreen extends StatefulWidget {
   State<FundsMainScreen> createState() => _FundsMainScreenState();
 }
 
-class _FundsMainScreenState extends State<FundsMainScreen> {
-  final ScrollController _scrollController = ScrollController();
+class _FundsMainScreenState extends State<FundsMainScreen>
+    with SingleTickerProviderStateMixin {
   var addCustomerController = Get.find<AddCustomerController>();
+  late TabController _tabController;
 
   @override
   void initState() {
+    _tabController = TabController(length: 4, vsync: this);
     super.initState();
-    _scrollController.addListener(_scrollListener);
   }
-
-  void _scrollListener() {
-    setState(() {
-    });
-  }
-
-  // void _scrollLeft() {
-  //   _scrollController.animateTo(
-  //     _scrollController.position.pixels - 100,
-  //     duration: const Duration(milliseconds: 300),
-  //     curve: Curves.easeOut,
-  //   );
-  // }
-
-  // void _scrollRight() {
-  //   _scrollController.animateTo(
-  //     _scrollController.position.pixels + 100,
-  //     duration: const Duration(milliseconds: 300),
-  //     curve: Curves.easeOut,
-  //   );
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -57,8 +39,10 @@ class _FundsMainScreenState extends State<FundsMainScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppColors.appWhiteColor,
+        backgroundColor: AppColors.appBackgroundColor,
         leading: IconButton(
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
           color: AppColors.appBlackColor,
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
@@ -66,22 +50,22 @@ class _FundsMainScreenState extends State<FundsMainScreen> {
           },
         ),
         titleSpacing: 0,
-        title: Obx(() => Text(
-          CommonVariable.businessName.value,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: AppColors.appTextColor,
-            fontFamily: 'Sofia Sans',
+        title: Obx(
+          () => Text(
+            CommonVariable.businessName.value,
+            style:  TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: AppColors.appTextColor,
+              fontFamily: Constants.Sofiafontfamily,
+            ),
           ),
-        ),),
+        ),
         actions: [
           Padding(
             padding: const EdgeInsets.all(4.0),
             child: InkWell(
-              onTap: () => {
-                Get.to(const BusinessProfileScreen())
-              },
+              onTap: () => {Get.to(const BusinessProfileScreen())},
               child: CircleAvatar(
                 radius: screenHeight / 45,
                 backgroundImage: AssetImage(ImageAssets.profile),
@@ -99,99 +83,101 @@ class _FundsMainScreenState extends State<FundsMainScreen> {
         ],
       ),
       endDrawer: const AppDrawer(),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            const Align(
-              alignment: Alignment.topLeft,
-              child: Padding(
-                padding: EdgeInsets.only(left: 12.0, top: 20, bottom: 10),
-                child: Text(
-                  "Funds",
-                  style: TextStyle(
-                    fontFamily: 'Sofia Sans',
-                    color: AppColors.appBlackColor,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 30,
+      body: Container(
+        color: AppColors.appBackgroundColor,
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Column(
+            children: [
+              Align(
+                alignment: Alignment.topLeft,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 12.0, top: 10, bottom: 10),
+                  child: Text(
+                    "Funds",
+                    style: TextStyle(
+                      fontFamily: Constants.Sofiafontfamily,
+                      color: AppColors.appBlackColor,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 30,
+                    ),
                   ),
                 ),
               ),
-            ),
-            Expanded(
-              child: DefaultTabController(
-                length: 4,
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        // Left Arrow
-                        // Visibility(
-                        //   visible: _showLeftArrow,
-                        //   child: IconButton(
-                        //     icon: const SizedBox(
-                        //       width: 24,
-                        //       height: 24,
-                        //       child: Icon(Icons.arrow_back_ios,
-                        //           color: AppColors.appBlueColor, size: 18),
-                        //     ),
-                        //     onPressed: _showLeftArrow ? _scrollLeft : null,
-                        //   ),
-                        // ),
-                        Expanded(
-                          child: SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            controller: _scrollController,
-                            child: const TabBar(
-                              isScrollable: true,
-                              labelColor: AppColors.appBlueColor,
-                              unselectedLabelColor: Colors.grey,
-                              indicatorColor: AppColors.appBlueColor,
-                              tabs: [
-                                Tab(text: 'All'),
-                                Tab(text: 'Pending'),
-                                Tab(text: 'Successful'),
-                                Tab(text: 'Unsuccessful'),
-                              ],
+              Expanded(
+                child: DefaultTabController(
+                  length: 4,
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: TabBar(
+                                controller: _tabController,
+                                isScrollable: true,
+                                labelColor: AppColors.appBlueColor,
+                                unselectedLabelColor: Colors.grey,
+                                indicator: const BoxDecoration(
+                                  border: Border(
+                                    bottom: BorderSide(
+                                      color: AppColors.appBlueColor,
+                                      width: 1.0,
+                                    ),
+                                  ),
+                                ),
+                                tabs: const [
+                                  Tab(text: 'All'),
+                                  Tab(text: 'Pending'),
+                                  Tab(text: 'Successful'),
+                                  Tab(text: 'Unsuccessful'),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                        // Visibility(
-                        //   visible: _showRightArrow,
-                        //   child: IconButton(
-                        //     icon: const SizedBox(
-                        //       width: 24, // Small width
-                        //       height: 24, // Small height
-                        //       child: Icon(Icons.arrow_forward_ios,
-                        //           color: AppColors.appBlueColor, size: 18),
-                        //     ),
-                        //     onPressed: _showRightArrow ? _scrollRight : null,
-                        //   ),
-                        // ),
-                      ],
-                    ),
-                    const Expanded(
-                      child: TabBarView(
-                        children: [
-                          AllFundsScreen(),
-                          PendingScreen(),
-                          SuccessfullScreen(),
-                          UnsuccessfullScreen(),
                         ],
                       ),
-                    ),
-                  ],
+                      SizedBox(
+                        height: 1.0,
+                        child: Row(
+                          children: List.generate(4, (index) {
+                            return Expanded(
+                              child: Container(
+                                color: index == _tabController.index
+                                    ? Colors.grey
+                                    : Colors.grey,
+                              ),
+                            );
+                          }),
+                        ),
+                      ),
+
+                      // TabBarView for tab content
+                      Expanded(
+                        child: TabBarView(
+                          controller: _tabController,
+                          children: const [
+                            AllFundsScreen(),
+                            PendingScreen(),
+                            SuccessfullScreen(),
+                            UnsuccessfullScreen(),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.only(
           left: 12.0,
           right: 12.0,
-          bottom : 12.0,
+          bottom: 12.0,
         ),
         child: CommonButton(
           buttonWidth: MediaQuery.of(context).size.width * 0.9,
@@ -203,11 +189,5 @@ class _FundsMainScreenState extends State<FundsMainScreen> {
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
   }
 }

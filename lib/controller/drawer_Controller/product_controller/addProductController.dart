@@ -1,25 +1,27 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 import 'package:paycron/controller/variable_controller.dart';
 import 'package:paycron/network/api_call/url.dart';
 import 'package:paycron/utils/common_variable.dart';
 import 'package:paycron/utils/general_methods.dart';
 import 'package:paycron/utils/my_toast.dart';
-import 'package:http/http.dart' as http;
-import 'package:paycron/views/drawer_screen/product/Company_product_screen.dart';
 
+import 'all_product_controller.dart';
 
-class AddProductController extends GetxController{
-
+class AddProductController extends GetxController {
   var variableController = Get.find<VariableController>();
-
+  var allTabProductController = Get.find<AllTabProductController>();
 
   Rx<TextEditingController> productNameController = TextEditingController().obs;
   Rx<TextEditingController> productIdController = TextEditingController().obs;
-  Rx<TextEditingController> productPriceController = TextEditingController().obs;
-  Rx<TextEditingController> productDescriptionController = TextEditingController().obs;
+  Rx<TextEditingController> productPriceController =
+      TextEditingController().obs;
+  Rx<TextEditingController> productDescriptionController =
+      TextEditingController().obs;
   final FocusNode productNameFocusNode = FocusNode();
   final FocusNode productIdFocusNode = FocusNode();
   final FocusNode productPriceFocusNode = FocusNode();
@@ -30,7 +32,6 @@ class AddProductController extends GetxController{
 
   var productNameMessage = null;
   var productPriceMessage = null;
-
 
   File? selectedFile;
 
@@ -53,7 +54,7 @@ class AddProductController extends GetxController{
       productPriceMessage = 'Product Price is required';
       FocusScope.of(context).requestFocus(productPriceFocusNode);
       return false;
-    }else {
+    } else {
       productNameValid = productPriceValid = true.obs;
       return true;
     }
@@ -71,7 +72,8 @@ class AddProductController extends GetxController{
     };
 
     try {
-      final uri = Uri.parse('${MyUrls.BASE_URL}/${MyUrls.addProduct}/${CommonVariable.businessId.value}');
+      final uri = Uri.parse(
+          '${MyUrls.BASE_URL}/${MyUrls.addProduct}/${CommonVariable.businessId.value}');
       var request = http.MultipartRequest('POST', uri);
       request.fields['pro_name'] = formData['pro_name'];
       request.fields['pro_id'] = formData['pro_id'];
@@ -102,7 +104,7 @@ class AddProductController extends GetxController{
         if (res != null) {
           MyToast.toast("Product added successfully.");
           Get.back();
-          Get.off(const CompanyDetailProductScreen());
+          allTabProductController.callMethod();
         } else {
           MyToast.toast("Something went wrong.");
         }
@@ -117,6 +119,4 @@ class AddProductController extends GetxController{
       variableController.loading.value = false;
     }
   }
-
-
 }

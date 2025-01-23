@@ -4,20 +4,20 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:paycron/controller/drawer_Controller/customer_controller/add_customer_controller.dart';
 import 'package:paycron/utils/color_constants.dart';
+import 'package:paycron/utils/string_constants.dart';
 import 'package:paycron/views/widgets/common_textform_field.dart';
 
 class AddAccountPopup extends StatefulWidget {
   final String id;
   final VoidCallback onSave;
 
-  const AddAccountPopup( this.id, {super.key, required this.onSave});
+  const AddAccountPopup(this.id, {super.key, required this.onSave});
 
   @override
   State<AddAccountPopup> createState() => _AddAccountPopupState();
 }
 
 class _AddAccountPopupState extends State<AddAccountPopup> {
-
   var addCustomerController = Get.find<AddCustomerController>();
   Timer? _debounce;
 
@@ -31,7 +31,8 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
           .addListener(_routingNumberListener);
     });
   }
-  void _routingNumberListener() async{
+
+  void _routingNumberListener() async {
     final input = addCustomerController.routingNumberController.text;
 
     if (_debounce?.isActive ?? false) _debounce!.cancel();
@@ -65,6 +66,14 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
     return Container(
       padding: EdgeInsets.all(screenWidth * 0.05),
       height: screenHeight * 0.8,
+      decoration: BoxDecoration(
+        color: AppColors.appWhiteColor,
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(30.0),
+          topRight: Radius.circular(30.0),
+        ),
+        border: Border.all(color: Colors.grey, width: 0.2),
+      ),
       child: Form(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -81,12 +90,12 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
               ),
             ),
             SizedBox(height: screenHeight * 0.02), // Responsive space
-            const Align(
+            Align(
               alignment: Alignment.center,
               child: Text(
                 "Add More Account",
                 style: TextStyle(
-                  fontFamily: 'Sofia Sans',
+                  fontFamily: Constants.Sofiafontfamily,
                   fontSize: 16.0,
                   fontWeight: FontWeight.w600,
                   color: Colors.black,
@@ -94,12 +103,12 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
               ),
             ),
             SizedBox(height: screenHeight * 0.03),
-            const Text(
+            Text(
               "Account Details",
               style: TextStyle(
-                fontFamily: 'Sofia Sans',
+                fontFamily: Constants.Sofiafontfamily,
                 fontSize: 16.0,
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w600,
                 color: Colors.black,
               ),
             ),
@@ -122,15 +131,15 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             RichText(
-                              text: const TextSpan(
+                              text:  TextSpan(
                                 text: 'Account Holder Name ',
                                 style: TextStyle(
-                                  fontFamily: 'Sofia Sans',
+                                  fontFamily: Constants.Sofiafontfamily,
                                   fontSize: 12.0,
                                   fontWeight: FontWeight.w400,
                                   color: Colors.black,
                                 ),
-                                children: [
+                                children: const [
                                   TextSpan(
                                     text: '*',
                                     style: TextStyle(
@@ -144,53 +153,65 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                             ),
                             const SizedBox(height: 4.0),
                             CommonTextField(
-                              controller: addCustomerController.accountHolderNameController.value,
+                              controller: addCustomerController
+                                  .accountHolderNameController.value,
                               labelText: "Account Holder Name",
-                              focusNode: addCustomerController.accountNameFocusNode,
+                              focusNode:
+                                  addCustomerController.accountNameFocusNode,
                               keyboardType: TextInputType.text,
                               inputFormatters: [
-                                FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z\s]*$')),
+                                FilteringTextInputFormatter.allow(
+                                    RegExp(r'^[a-zA-Z\s]*$')),
                               ],
                               onChanged: (value) {
                                 String pattern = r'^[a-zA-Z\s]*$';
                                 RegExp regExp = RegExp(pattern);
                                 setState(() {
                                   if (value.isEmpty) {
-                                    addCustomerController.AccountNameValid = false.obs;
+                                    addCustomerController.AccountNameValid =
+                                        false.obs;
                                   } else if (regExp.hasMatch(value)) {
-                                    addCustomerController.AccountNameValid = true.obs;
+                                    addCustomerController.AccountNameValid =
+                                        true.obs;
                                   } else {
-                                    addCustomerController.AccountNameValid = false.obs;
+                                    addCustomerController.AccountNameValid =
+                                        false.obs;
                                   }
                                 });
                               },
                               decoration: InputDecoration(
-                                labelStyle: const TextStyle(color: AppColors.appBlueColor),
-                                contentPadding: const EdgeInsets.all(18),
+                                labelStyle: const TextStyle(
+                                    color: AppColors.appBlueColor),
+                                isDense: true,
+                                contentPadding: const EdgeInsets.only(
+                                    right: 16, left: 16,top: 12,bottom: 12),
                                 focusedBorder: UnderlineInputBorder(
                                   borderSide: BorderSide(
-                                    color: addCustomerController.AccountNameValid.value
+                                    color: addCustomerController
+                                            .AccountNameValid.value
                                         ? AppColors.appNeutralColor5
                                         : AppColors.appRedColor,
-                                    width: 2,
+                                    width: 1,
                                   ),
                                 ),
-                                enabledBorder: const UnderlineInputBorder(
-                                  borderSide: BorderSide(
+                                enabledBorder: UnderlineInputBorder(
+                                  borderSide: const BorderSide(
                                     color: AppColors.appNeutralColor5,
                                     width: 1,
                                   ),
+                                  borderRadius: BorderRadius.circular(8),
                                 ),
                                 errorBorder: const UnderlineInputBorder(
                                   borderSide: BorderSide(
                                     color: AppColors.appRedColor,
                                     // Error border for invalid input
-                                    width: 2,
+                                    width: 1,
                                   ),
                                 ),
-                                errorText: addCustomerController.AccountNameValid.value
-                                    ? null
-                                    : 'Account Holder Name is required',
+                                errorText:
+                                    addCustomerController.AccountNameValid.value
+                                        ? null
+                                        : 'Account Holder Name is required',
                                 hintText: "Enter Account Holder Name",
                                 filled: true,
                                 fillColor: AppColors.appNeutralColor5,
@@ -205,15 +226,15 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             RichText(
-                              text: const TextSpan(
+                              text:  TextSpan(
                                 text: 'Routing Number ',
                                 style: TextStyle(
-                                  fontFamily: 'Sofia Sans',
+                                  fontFamily: Constants.Sofiafontfamily,
                                   fontSize: 12.0,
                                   fontWeight: FontWeight.w400,
                                   color: Colors.black,
                                 ),
-                                children: [
+                                children: const [
                                   TextSpan(
                                     text: '*',
                                     style: TextStyle(
@@ -227,16 +248,22 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                             ),
                             const SizedBox(height: 4.0),
                             StatefulBuilder(
-                              builder: (BuildContext context, StateSetter setState) {
+                              builder:
+                                  (BuildContext context, StateSetter setState) {
                                 return CommonTextField(
-                                  controller: addCustomerController.routingNumberController,
+                                  controller: addCustomerController
+                                      .routingNumberController,
                                   labelText: "Routing Number",
                                   maxLength: 9,
-                                  focusNode: addCustomerController.routingFocusNode,
+                                  focusNode:
+                                      addCustomerController.routingFocusNode,
                                   keyboardType: TextInputType.number,
-                                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly
+                                  ],
                                   onSubmitted: (value) {
-                                    addCustomerController.routingNumberController
+                                    addCustomerController
+                                        .routingNumberController
                                         .addListener(_routingNumberListener);
                                   },
                                   onChanged: (value) {
@@ -244,47 +271,59 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                                     RegExp regExp = RegExp(pattern);
                                     setState(() {
                                       if (value.isEmpty) {
-                                        addCustomerController.routingValid = false.obs;
-                                        addCustomerController.routingErrorMessage =
-                                        'Routing Number cannot be empty';
+                                        addCustomerController.routingValid =
+                                            false.obs;
+                                        addCustomerController
+                                                .routingErrorMessage =
+                                            'Routing Number cannot be empty';
                                       } else if (!regExp.hasMatch(value)) {
-                                        addCustomerController.routingValid = false.obs;
-                                        addCustomerController.routingErrorMessage =
-                                        'Routing Number must be 9 digits';
+                                        addCustomerController.routingValid =
+                                            false.obs;
+                                        addCustomerController
+                                                .routingErrorMessage =
+                                            'Routing Number must be 9 digits';
                                       } else {
-                                        addCustomerController.routingNumberController
-                                            .addListener(_routingNumberListener);
+                                        addCustomerController
+                                            .routingNumberController
+                                            .addListener(
+                                                _routingNumberListener);
                                       }
                                     });
                                   },
                                   decoration: InputDecoration(
                                     counterText: '',
-                                    labelStyle:
-                                    const TextStyle(color: AppColors.appBlueColor),
-                                    contentPadding: const EdgeInsets.all(18),
+                                    labelStyle: const TextStyle(
+                                        color: AppColors.appBlueColor),
+                                    isDense: true,
+                                    contentPadding: const EdgeInsets.only(
+                                        right: 16, left: 16,top: 12,bottom: 12),
                                     focusedBorder: UnderlineInputBorder(
                                       borderSide: BorderSide(
-                                        color: addCustomerController.routingValid.value
+                                        color: addCustomerController
+                                                .routingValid.value
                                             ? AppColors.appNeutralColor5
                                             : AppColors.appRedColor,
-                                        width: 2,
+                                        width: 1,
                                       ),
                                     ),
-                                    enabledBorder: const UnderlineInputBorder(
-                                      borderSide: BorderSide(
+                                    enabledBorder: UnderlineInputBorder(
+                                      borderSide: const BorderSide(
                                         color: AppColors.appNeutralColor5,
                                         width: 1,
                                       ),
+                                      borderRadius: BorderRadius.circular(8),
                                     ),
                                     errorBorder: const UnderlineInputBorder(
                                       borderSide: BorderSide(
                                         color: AppColors.appRedColor,
-                                        width: 2,
+                                        width: 1,
                                       ),
                                     ),
-                                    errorText: addCustomerController.routingValid.value
-                                        ? null
-                                        : addCustomerController.routingErrorMessage,
+                                    errorText:
+                                        addCustomerController.routingValid.value
+                                            ? null
+                                            : addCustomerController
+                                                .routingErrorMessage,
                                     hintText: "Enter Routing Number",
                                     filled: true,
                                     fillColor: AppColors.appNeutralColor5,
@@ -306,7 +345,8 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                       ),
                       const SizedBox(height: 10.0),
                       Visibility(
-                        visible: addCustomerController.isRoutingNumberValid.value,
+                        visible:
+                            addCustomerController.isRoutingNumberValid.value,
                         child: Center(
                           child: Container(
                             padding: const EdgeInsets.all(16),
@@ -327,30 +367,30 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 // Bank Name Row
-                                Obx(() => _buildDetailRow(
-                                    "Bank Name", addCustomerController.bankName.value)),
+                                Obx(() => _buildDetailRow("Bank Name",
+                                    addCustomerController.bankName.value)),
                                 const SizedBox(height: 4),
                                 // Holder's Name Row
                                 Obx(
-                                      () => _buildDetailRow(
-                                      "Address", addCustomerController.bankAddress.value),
+                                  () => _buildDetailRow("Address",
+                                      addCustomerController.bankAddress.value),
                                 ),
                                 const SizedBox(height: 4),
                                 // Postal Code Row
                                 Obx(
-                                      () => _buildDetailRow(
-                                      "Postal Code", addCustomerController.postalCode.value),
+                                  () => _buildDetailRow("Postal Code",
+                                      addCustomerController.postalCode.value),
                                 ),
                                 const SizedBox(height: 4),
                                 // State Row
                                 Obx(
-                                      () => _buildDetailRow(
-                                      "State", addCustomerController.state.value),
+                                  () => _buildDetailRow("State",
+                                      addCustomerController.state.value),
                                 ),
                                 const SizedBox(height: 4),
                                 // City Row
                                 Obx(
-                                      () => _buildDetailRow(
+                                  () => _buildDetailRow(
                                       "City", addCustomerController.city.value),
                                 ),
                               ],
@@ -359,7 +399,8 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                         ),
                       ),
                       Visibility(
-                          visible: addCustomerController.isRoutingNumberValid.value,
+                          visible:
+                              addCustomerController.isRoutingNumberValid.value,
                           child: const SizedBox(
                             height: 16,
                           )),
@@ -369,15 +410,15 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             RichText(
-                              text: const TextSpan(
+                              text: TextSpan(
                                 text: 'Account Number ',
                                 style: TextStyle(
-                                  fontFamily: 'Sofia Sans',
+                                  fontFamily: Constants.Sofiafontfamily,
                                   fontSize: 12.0,
                                   fontWeight: FontWeight.w400,
                                   color: Colors.black,
                                 ),
-                                children: [
+                                children: const [
                                   TextSpan(
                                     text: '*',
                                     style: TextStyle(
@@ -391,58 +432,74 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                             ),
                             const SizedBox(height: 4.0),
                             StatefulBuilder(
-                              builder: (BuildContext context, StateSetter setState) {
+                              builder:
+                                  (BuildContext context, StateSetter setState) {
                                 return CommonTextField(
-                                  controller: addCustomerController.accountNumberController.value,
+                                  controller: addCustomerController
+                                      .accountNumberController.value,
                                   labelText: "Account Number",
-                                  focusNode: addCustomerController.accountNumberFocusNode,
+                                  focusNode: addCustomerController
+                                      .accountNumberFocusNode,
                                   keyboardType: TextInputType.number,
-                                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly
+                                  ],
                                   onChanged: (value) {
                                     setState(() {
                                       if (value.isEmpty) {
-                                        addCustomerController.AccountNumberValid = false.obs;
-                                        addCustomerController.accountNumberErrorMessage =
-                                        'Account number is required';
+                                        addCustomerController
+                                            .AccountNumberValid = false.obs;
+                                        addCustomerController
+                                                .accountNumberErrorMessage =
+                                            'Account number is required';
                                       } else if (value.length > 15) {
-                                        addCustomerController.AccountNumberValid = false.obs;
-                                        addCustomerController.accountNumberErrorMessage =
-                                        'Account number must be 15 digits or less';
+                                        addCustomerController
+                                            .AccountNumberValid = false.obs;
+                                        addCustomerController
+                                                .accountNumberErrorMessage =
+                                            'Account number must be 15 digits or less';
                                       } else {
-                                        addCustomerController.AccountNumberValid = true.obs;
-                                        addCustomerController.accountNumberErrorMessage =
-                                        null;
+                                        addCustomerController
+                                            .AccountNumberValid = true.obs;
+                                        addCustomerController
+                                            .accountNumberErrorMessage = null;
                                       }
                                     });
                                   },
                                   decoration: InputDecoration(
                                     counterText: '',
-                                    labelStyle:
-                                    const TextStyle(color: AppColors.appBlueColor),
-                                    contentPadding: const EdgeInsets.all(18),
+                                    labelStyle: const TextStyle(
+                                        color: AppColors.appBlueColor),
+                                    isDense: true,
+                                    contentPadding: const EdgeInsets.only(
+                                        right: 16, left: 16,top: 12,bottom: 12),
                                     focusedBorder: UnderlineInputBorder(
                                       borderSide: BorderSide(
-                                        color: addCustomerController.AccountNumberValid.value
+                                        color: addCustomerController
+                                                .AccountNumberValid.value
                                             ? AppColors.appNeutralColor5
                                             : AppColors.appRedColor,
-                                        width: 2,
+                                        width: 1,
                                       ),
                                     ),
-                                    enabledBorder: const UnderlineInputBorder(
-                                      borderSide: BorderSide(
+                                    enabledBorder: UnderlineInputBorder(
+                                      borderSide: const BorderSide(
                                         color: AppColors.appNeutralColor5,
                                         width: 1,
                                       ),
+                                      borderRadius: BorderRadius.circular(8),
                                     ),
                                     errorBorder: const UnderlineInputBorder(
                                       borderSide: BorderSide(
                                         color: AppColors.appRedColor,
-                                        width: 2,
+                                        width: 1,
                                       ),
                                     ),
-                                    errorText: addCustomerController.AccountNumberValid.value
+                                    errorText: addCustomerController
+                                            .AccountNumberValid.value
                                         ? null
-                                        : addCustomerController.accountNumberErrorMessage,
+                                        : addCustomerController
+                                            .accountNumberErrorMessage,
                                     hintText: "Enter Account Number",
                                     filled: true,
                                     fillColor: AppColors.appNeutralColor5,
@@ -468,15 +525,15 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             RichText(
-                              text: const TextSpan(
+                              text: TextSpan(
                                 text: 'Confirm Account Number ',
                                 style: TextStyle(
-                                  fontFamily: 'Sofia Sans',
+                                  fontFamily: Constants.Sofiafontfamily,
                                   fontSize: 12.0,
                                   fontWeight: FontWeight.w400,
                                   color: Colors.black,
                                 ),
-                                children: [
+                                children: const [
                                   TextSpan(
                                     text: '*',
                                     style: TextStyle(
@@ -490,61 +547,80 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                             ),
                             const SizedBox(height: 4.0),
                             CommonTextField(
-                              controller:
-                              addCustomerController.confirmAccountNumberController.value,
+                              controller: addCustomerController
+                                  .confirmAccountNumberController.value,
                               labelText: "Confirm Account Number",
                               keyboardType: TextInputType.number,
-                              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                              focusNode: addCustomerController.confirmAccountNumberFocusNode,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly
+                              ],
+                              focusNode: addCustomerController
+                                  .confirmAccountNumberFocusNode,
                               onChanged: (value) {
                                 setState(() {
                                   if (value.isEmpty) {
-                                    addCustomerController.ConfirmAccountNumberValid = false.obs;
-                                    addCustomerController.confirmAccountErrorMessage =
-                                    'Confirm Account number is required';
+                                    addCustomerController
+                                        .ConfirmAccountNumberValid = false.obs;
+                                    addCustomerController
+                                            .confirmAccountErrorMessage =
+                                        'Confirm Account number is required';
                                   } else if (value !=
-                                      addCustomerController.accountNumberController.value.text
+                                      addCustomerController
+                                          .accountNumberController.value.text
                                           .trim()) {
-                                    addCustomerController.ConfirmAccountNumberValid = false.obs;
-                                    addCustomerController.confirmAccountErrorMessage =
-                                    'Account Number & Confirm Account Number should be the same';
+                                    addCustomerController
+                                        .ConfirmAccountNumberValid = false.obs;
+                                    addCustomerController
+                                            .confirmAccountErrorMessage =
+                                        'Account Number & Confirm Account Number should be the same';
                                   } else if (value.length > 15) {
-                                    addCustomerController.ConfirmAccountNumberValid = false.obs;
-                                    addCustomerController.confirmAccountErrorMessage =
-                                    'Confirm Account number must be 15 digits or less';
+                                    addCustomerController
+                                        .ConfirmAccountNumberValid = false.obs;
+                                    addCustomerController
+                                            .confirmAccountErrorMessage =
+                                        'Confirm Account number must be 15 digits or less';
                                   } else {
-                                    addCustomerController.ConfirmAccountNumberValid = true.obs;
-                                    addCustomerController.confirmAccountErrorMessage = null;
+                                    addCustomerController
+                                        .ConfirmAccountNumberValid = true.obs;
+                                    addCustomerController
+                                        .confirmAccountErrorMessage = null;
                                   }
                                 });
                               },
                               decoration: InputDecoration(
                                 counterText: '',
-                                labelStyle: const TextStyle(color: AppColors.appBlueColor),
-                                contentPadding: const EdgeInsets.all(18),
+                                labelStyle: const TextStyle(
+                                    color: AppColors.appBlueColor),
+                                isDense: true,
+                                contentPadding: const EdgeInsets.only(
+                                    right: 16, left: 16,top: 12,bottom: 12),
                                 focusedBorder: UnderlineInputBorder(
                                   borderSide: BorderSide(
-                                    color: addCustomerController.ConfirmAccountNumberValid.value
+                                    color: addCustomerController
+                                            .ConfirmAccountNumberValid.value
                                         ? AppColors.appNeutralColor5
                                         : AppColors.appRedColor,
-                                    width: 2,
+                                    width: 1,
                                   ),
                                 ),
-                                enabledBorder: const UnderlineInputBorder(
-                                  borderSide: BorderSide(
+                                enabledBorder: UnderlineInputBorder(
+                                  borderSide: const BorderSide(
                                     color: AppColors.appNeutralColor5,
                                     width: 1,
                                   ),
+                                  borderRadius: BorderRadius.circular(8),
                                 ),
                                 errorBorder: const UnderlineInputBorder(
                                   borderSide: BorderSide(
                                     color: AppColors.appRedColor,
-                                    width: 2,
+                                    width: 1,
                                   ),
                                 ),
-                                errorText: addCustomerController.ConfirmAccountNumberValid.value
+                                errorText: addCustomerController
+                                        .ConfirmAccountNumberValid.value
                                     ? null
-                                    : addCustomerController.confirmAccountErrorMessage,
+                                    : addCustomerController
+                                        .confirmAccountErrorMessage,
                                 hintText: "Re-enter Account Number",
                                 filled: true,
                                 fillColor: AppColors.appNeutralColor5,
@@ -554,7 +630,8 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                                   return 'Confirm account number is required';
                                 }
                                 if (value.trim() !=
-                                    addCustomerController.accountNumberController.value.text
+                                    addCustomerController
+                                        .accountNumberController.value.text
                                         .trim()) {
                                   return 'Account Number & Confirm Account Number should be the same';
                                 }
@@ -567,10 +644,10 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                       const SizedBox(
                         height: 10,
                       ),
-                      const Text(
+                      Text(
                         "Account Holder’s Address",
                         style: TextStyle(
-                          fontFamily: 'Sofia Sans',
+                          fontFamily: Constants.Sofiafontfamily,
                           fontSize: 14.0,
                           fontWeight: FontWeight.w600,
                           color: AppColors.appBlackColor,
@@ -589,15 +666,15 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             RichText(
-                              text: const TextSpan(
+                              text: TextSpan(
                                 text: 'Suit/Apt ',
                                 style: TextStyle(
-                                  fontFamily: 'Sofia Sans',
+                                  fontFamily: Constants.Sofiafontfamily,
                                   fontSize: 12.0,
                                   fontWeight: FontWeight.w400,
                                   color: Colors.black,
                                 ),
-                                children: [
+                                children: const [
                                   TextSpan(
                                     text: '*',
                                     style: TextStyle(
@@ -611,47 +688,57 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                             ),
                             const SizedBox(height: 4.0),
                             CommonTextField(
-                              controller: addCustomerController.suitAptController.value,
+                              controller:
+                                  addCustomerController.suitAptController.value,
                               labelText: "Suit/Apt",
                               keyboardType: TextInputType.text,
                               focusNode: addCustomerController.suitAptFocusNode,
                               onChanged: (value) {
                                 setState(() {
                                   if (value.isEmpty) {
-                                    addCustomerController.suitAptValid = false.obs;
+                                    addCustomerController.suitAptValid =
+                                        false.obs;
                                     addCustomerController.suitAptErrorMessage =
-                                    'Suit/Apt is required';
+                                        'Suit/Apt is required';
                                   } else {
-                                    addCustomerController.suitAptValid = true.obs;
-                                    addCustomerController.suitAptErrorMessage = null;
+                                    addCustomerController.suitAptValid =
+                                        true.obs;
+                                    addCustomerController.suitAptErrorMessage =
+                                        null;
                                   }
                                 });
                               },
                               decoration: InputDecoration(
                                 counterText: '',
-                                labelStyle: const TextStyle(color: AppColors.appBlueColor),
-                                contentPadding: const EdgeInsets.all(18),
+                                labelStyle: const TextStyle(
+                                    color: AppColors.appBlueColor),
+                                isDense: true,
+                                contentPadding: const EdgeInsets.only(
+                                    right: 16, left: 16,top: 12,bottom: 12),
                                 focusedBorder: UnderlineInputBorder(
                                   borderSide: BorderSide(
-                                    color: addCustomerController.suitAptValid.value
-                                        ? AppColors.appNeutralColor5
-                                        : AppColors.appRedColor,
-                                    width: 2,
+                                    color:
+                                        addCustomerController.suitAptValid.value
+                                            ? AppColors.appNeutralColor5
+                                            : AppColors.appRedColor,
+                                    width: 1,
                                   ),
                                 ),
-                                enabledBorder: const UnderlineInputBorder(
-                                  borderSide: BorderSide(
+                                enabledBorder: UnderlineInputBorder(
+                                  borderSide: const BorderSide(
                                     color: AppColors.appNeutralColor5,
                                     width: 1,
                                   ),
+                                  borderRadius: BorderRadius.circular(8),
                                 ),
                                 errorBorder: const UnderlineInputBorder(
                                   borderSide: BorderSide(
                                     color: AppColors.appRedColor,
-                                    width: 2,
+                                    width: 1,
                                   ),
                                 ),
-                                errorText: addCustomerController.suitAptValid.value
+                                errorText: addCustomerController
+                                        .suitAptValid.value
                                     ? null
                                     : addCustomerController.suitAptErrorMessage,
                                 hintText: "Enter Suit/Apt",
@@ -674,15 +761,15 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             RichText(
-                              text: const TextSpan(
+                              text: TextSpan(
                                 text: 'Street ',
                                 style: TextStyle(
-                                  fontFamily: 'Sofia Sans',
+                                  fontFamily: Constants.Sofiafontfamily,
                                   fontSize: 12.0,
                                   fontWeight: FontWeight.w400,
                                   color: Colors.black,
                                 ),
-                                children: [
+                                children: const [
                                   TextSpan(
                                     text: '*',
                                     style: TextStyle(
@@ -696,47 +783,57 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                             ),
                             const SizedBox(height: 4.0),
                             CommonTextField(
-                              controller: addCustomerController.streetController.value,
+                              controller:
+                                  addCustomerController.streetController.value,
                               labelText: "Street",
                               keyboardType: TextInputType.text,
                               focusNode: addCustomerController.streetFocusNode,
                               onChanged: (value) {
                                 setState(() {
                                   if (value.isEmpty) {
-                                    addCustomerController.streetValid = false.obs;
+                                    addCustomerController.streetValid =
+                                        false.obs;
                                     addCustomerController.streetErrorMessage =
-                                    'Street is required';
+                                        'Street is required';
                                   } else {
-                                    addCustomerController.streetValid = true.obs;
-                                    addCustomerController.streetErrorMessage = null;
+                                    addCustomerController.streetValid =
+                                        true.obs;
+                                    addCustomerController.streetErrorMessage =
+                                        null;
                                   }
                                 });
                               },
                               decoration: InputDecoration(
                                 counterText: '',
-                                labelStyle: const TextStyle(color: AppColors.appBlueColor),
-                                contentPadding: const EdgeInsets.all(18),
+                                labelStyle: const TextStyle(
+                                    color: AppColors.appBlueColor),
+                                isDense: true,
+                                contentPadding: const EdgeInsets.only(
+                                    right: 16, left: 16,top: 12,bottom: 12),
                                 focusedBorder: UnderlineInputBorder(
                                   borderSide: BorderSide(
-                                    color: addCustomerController.streetValid.value
-                                        ? AppColors.appNeutralColor5
-                                        : AppColors.appRedColor,
-                                    width: 2,
+                                    color:
+                                        addCustomerController.streetValid.value
+                                            ? AppColors.appNeutralColor5
+                                            : AppColors.appRedColor,
+                                    width: 1,
                                   ),
                                 ),
-                                enabledBorder: const UnderlineInputBorder(
-                                  borderSide: BorderSide(
+                                enabledBorder: UnderlineInputBorder(
+                                  borderSide: const BorderSide(
                                     color: AppColors.appNeutralColor5,
                                     width: 1,
                                   ),
+                                  borderRadius: BorderRadius.circular(8),
                                 ),
                                 errorBorder: const UnderlineInputBorder(
                                   borderSide: BorderSide(
                                     color: AppColors.appRedColor,
-                                    width: 2,
+                                    width: 1,
                                   ),
                                 ),
-                                errorText: addCustomerController.streetValid.value
+                                errorText: addCustomerController
+                                        .streetValid.value
                                     ? null
                                     : addCustomerController.streetErrorMessage,
                                 hintText: "Enter Street",
@@ -763,15 +860,15 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   RichText(
-                                    text: const TextSpan(
+                                    text: TextSpan(
                                       text: 'Country ',
                                       style: TextStyle(
-                                        fontFamily: 'Sofia Sans',
+                                        fontFamily: Constants.Sofiafontfamily,
                                         fontSize: 12.0,
                                         fontWeight: FontWeight.w400,
                                         color: Colors.black,
                                       ),
-                                      children: [
+                                      children: const [
                                         TextSpan(
                                           text: '*',
                                           style: TextStyle(
@@ -785,61 +882,76 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                                   ),
                                   const SizedBox(height: 4.0),
                                   CommonTextField(
-                                    controller: addCustomerController.countryController.value,
+                                    controller: addCustomerController
+                                        .countryController.value,
                                     labelText: "Country",
                                     keyboardType: TextInputType.text,
-                                    focusNode: addCustomerController.countryFocusNode,
+                                    focusNode:
+                                        addCustomerController.countryFocusNode,
                                     onChanged: (value) {
                                       String pattern = r'^[a-zA-Z\s]*$';
                                       RegExp regExp = RegExp(pattern);
                                       setState(() {
                                         if (value.isEmpty) {
-                                          addCustomerController.countrytValid = false.obs;
-                                          addCustomerController.countryterrorMessage =
-                                          'Country is required';
+                                          addCustomerController.countrytValid =
+                                              false.obs;
+                                          addCustomerController
+                                                  .countryterrorMessage =
+                                              'Country is required';
                                         } else if (regExp.hasMatch(value)) {
-                                          addCustomerController.countrytValid = true.obs;
-                                          addCustomerController.countryterrorMessage = null;
+                                          addCustomerController.countrytValid =
+                                              true.obs;
+                                          addCustomerController
+                                              .countryterrorMessage = null;
                                         } else {
-                                          addCustomerController.countrytValid = true.obs;
-                                          addCustomerController.countryterrorMessage = null;
+                                          addCustomerController.countrytValid =
+                                              true.obs;
+                                          addCustomerController
+                                              .countryterrorMessage = null;
                                         }
                                       });
                                     },
                                     decoration: InputDecoration(
                                       counterText: '',
-                                      labelStyle:
-                                      const TextStyle(color: AppColors.appBlueColor),
-                                      contentPadding: const EdgeInsets.all(18),
+                                      labelStyle: const TextStyle(
+                                          color: AppColors.appBlueColor),
+                                      isDense: true,
+                                      contentPadding: const EdgeInsets.only(
+                                          right: 16, left: 16,top: 12,bottom: 12),
                                       focusedBorder: UnderlineInputBorder(
                                         borderSide: BorderSide(
-                                          color: addCustomerController.countrytValid.value
+                                          color: addCustomerController
+                                                  .countrytValid.value
                                               ? AppColors.appNeutralColor5
                                               : AppColors.appRedColor,
-                                          width: 2,
+                                          width: 1,
                                         ),
                                       ),
-                                      enabledBorder: const UnderlineInputBorder(
-                                        borderSide: BorderSide(
+                                      enabledBorder: UnderlineInputBorder(
+                                        borderSide: const BorderSide(
                                           color: AppColors.appNeutralColor5,
                                           width: 1,
                                         ),
+                                        borderRadius: BorderRadius.circular(8),
                                       ),
                                       errorBorder: const UnderlineInputBorder(
                                         borderSide: BorderSide(
                                           color: AppColors.appRedColor,
-                                          width: 2,
+                                          width: 1,
                                         ),
                                       ),
-                                      errorText: addCustomerController.countrytValid.value
+                                      errorText: addCustomerController
+                                              .countrytValid.value
                                           ? null
-                                          : addCustomerController.countryterrorMessage,
+                                          : addCustomerController
+                                              .countryterrorMessage,
                                       hintText: "Enter Country",
                                       filled: true,
                                       fillColor: AppColors.appNeutralColor5,
                                     ),
                                     validator: (value) {
-                                      if (value == null || value.trim().isEmpty) {
+                                      if (value == null ||
+                                          value.trim().isEmpty) {
                                         return 'Country is required';
                                       }
                                       return null;
@@ -857,15 +969,15 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   RichText(
-                                    text: const TextSpan(
+                                    text: TextSpan(
                                       text: 'State ',
                                       style: TextStyle(
-                                        fontFamily: 'Sofia Sans',
+                                        fontFamily: Constants.Sofiafontfamily,
                                         fontSize: 12.0,
                                         fontWeight: FontWeight.w400,
                                         color: Colors.black,
                                       ),
-                                      children: [
+                                      children: const [
                                         TextSpan(
                                           text: '*',
                                           style: TextStyle(
@@ -879,61 +991,76 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                                   ),
                                   const SizedBox(height: 4.0),
                                   CommonTextField(
-                                    controller: addCustomerController.stateController.value,
+                                    controller: addCustomerController
+                                        .stateController.value,
                                     labelText: "State",
                                     keyboardType: TextInputType.text,
-                                    focusNode: addCustomerController.stateFocusNode,
+                                    focusNode:
+                                        addCustomerController.stateFocusNode,
                                     onChanged: (value) {
                                       String pattern = r'^[a-zA-Z\s]*$';
                                       RegExp regExp = RegExp(pattern);
                                       setState(() {
                                         if (value.isEmpty) {
-                                          addCustomerController.stateValid = false.obs;
-                                          addCustomerController.stateErrorMessage =
-                                          'State is required';
+                                          addCustomerController.stateValid =
+                                              false.obs;
+                                          addCustomerController
+                                                  .stateErrorMessage =
+                                              'State is required';
                                         } else if (regExp.hasMatch(value)) {
-                                          addCustomerController.stateValid = true.obs;
-                                          addCustomerController.stateErrorMessage = null;
+                                          addCustomerController.stateValid =
+                                              true.obs;
+                                          addCustomerController
+                                              .stateErrorMessage = null;
                                         } else {
-                                          addCustomerController.stateValid = true.obs;
-                                          addCustomerController.stateErrorMessage = null;
+                                          addCustomerController.stateValid =
+                                              true.obs;
+                                          addCustomerController
+                                              .stateErrorMessage = null;
                                         }
                                       });
                                     },
                                     decoration: InputDecoration(
                                       counterText: '',
-                                      labelStyle:
-                                      const TextStyle(color: AppColors.appBlueColor),
-                                      contentPadding: const EdgeInsets.all(18),
+                                      labelStyle: const TextStyle(
+                                          color: AppColors.appBlueColor),
+                                      isDense: true,
+                                      contentPadding: const EdgeInsets.only(
+                                          right: 16, left: 16,top: 12,bottom: 12),
                                       focusedBorder: UnderlineInputBorder(
                                         borderSide: BorderSide(
-                                          color: addCustomerController.stateValid.value
+                                          color: addCustomerController
+                                                  .stateValid.value
                                               ? AppColors.appNeutralColor5
                                               : AppColors.appRedColor,
-                                          width: 2,
+                                          width: 1,
                                         ),
                                       ),
-                                      enabledBorder: const UnderlineInputBorder(
-                                        borderSide: BorderSide(
+                                      enabledBorder: UnderlineInputBorder(
+                                        borderSide: const BorderSide(
                                           color: AppColors.appNeutralColor5,
                                           width: 1,
                                         ),
+                                        borderRadius: BorderRadius.circular(8),
                                       ),
                                       errorBorder: const UnderlineInputBorder(
                                         borderSide: BorderSide(
                                           color: AppColors.appRedColor,
-                                          width: 2,
+                                          width: 1,
                                         ),
                                       ),
-                                      errorText: addCustomerController.stateValid.value
-                                          ? null
-                                          : addCustomerController.stateErrorMessage,
+                                      errorText:
+                                          addCustomerController.stateValid.value
+                                              ? null
+                                              : addCustomerController
+                                                  .stateErrorMessage,
                                       hintText: "Enter State",
                                       filled: true,
                                       fillColor: AppColors.appNeutralColor5,
                                     ),
                                     validator: (value) {
-                                      if (value == null || value.trim().isEmpty) {
+                                      if (value == null ||
+                                          value.trim().isEmpty) {
                                         return 'State is required';
                                       }
                                       return null;
@@ -957,15 +1084,15 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   RichText(
-                                    text: const TextSpan(
+                                    text:  TextSpan(
                                       text: 'City ',
                                       style: TextStyle(
-                                        fontFamily: 'Sofia Sans',
+                                        fontFamily: Constants.Sofiafontfamily,
                                         fontSize: 12.0,
                                         fontWeight: FontWeight.w400,
                                         color: Colors.black,
                                       ),
-                                      children: [
+                                      children: const [
                                         TextSpan(
                                           text: '*',
                                           style: TextStyle(
@@ -979,56 +1106,69 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                                   ),
                                   const SizedBox(height: 4.0),
                                   CommonTextField(
-                                    controller: addCustomerController.cityController.value,
+                                    controller: addCustomerController
+                                        .cityController.value,
                                     labelText: "City",
-                                    focusNode: addCustomerController.cityFocusNode,
+                                    focusNode:
+                                        addCustomerController.cityFocusNode,
                                     keyboardType: TextInputType.text,
                                     onChanged: (value) {
                                       setState(() {
                                         if (value.isEmpty) {
-                                          addCustomerController.cityValid = false.obs;
-                                          addCustomerController.cityErrorMessage =
-                                          'City is required';
+                                          addCustomerController.cityValid =
+                                              false.obs;
+                                          addCustomerController
+                                                  .cityErrorMessage =
+                                              'City is required';
                                         } else {
-                                          addCustomerController.cityValid = true.obs;
-                                          addCustomerController.cityErrorMessage = null;
+                                          addCustomerController.cityValid =
+                                              true.obs;
+                                          addCustomerController
+                                              .cityErrorMessage = null;
                                         }
                                       });
                                     },
                                     decoration: InputDecoration(
                                       counterText: '',
-                                      labelStyle:
-                                      const TextStyle(color: AppColors.appBlueColor),
-                                      contentPadding: const EdgeInsets.all(18),
+                                      labelStyle: const TextStyle(
+                                          color: AppColors.appBlueColor),
+                                      isDense: true,
+                                      contentPadding: const EdgeInsets.only(
+                                          right: 16, left: 16,top: 12,bottom: 12),
                                       focusedBorder: UnderlineInputBorder(
                                         borderSide: BorderSide(
-                                          color: addCustomerController.cityValid.value
+                                          color: addCustomerController
+                                                  .cityValid.value
                                               ? AppColors.appNeutralColor5
                                               : AppColors.appRedColor,
-                                          width: 2,
+                                          width: 1,
                                         ),
                                       ),
-                                      enabledBorder: const UnderlineInputBorder(
-                                        borderSide: BorderSide(
+                                      enabledBorder: UnderlineInputBorder(
+                                        borderSide: const BorderSide(
                                           color: AppColors.appNeutralColor5,
                                           width: 1,
                                         ),
+                                        borderRadius: BorderRadius.circular(8),
                                       ),
                                       errorBorder: const UnderlineInputBorder(
                                         borderSide: BorderSide(
                                           color: AppColors.appRedColor,
-                                          width: 2,
+                                          width: 1,
                                         ),
                                       ),
-                                      errorText: addCustomerController.cityValid.value
-                                          ? null
-                                          : addCustomerController.cityErrorMessage,
+                                      errorText:
+                                          addCustomerController.cityValid.value
+                                              ? null
+                                              : addCustomerController
+                                                  .cityErrorMessage,
                                       hintText: "Enter City",
                                       filled: true,
                                       fillColor: AppColors.appNeutralColor5,
                                     ),
                                     validator: (value) {
-                                      if (value == null || value.trim().isEmpty) {
+                                      if (value == null ||
+                                          value.trim().isEmpty) {
                                         return 'City is required';
                                       }
                                       return null;
@@ -1046,15 +1186,15 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   RichText(
-                                    text: const TextSpan(
+                                    text: TextSpan(
                                       text: 'Zip Code ',
                                       style: TextStyle(
-                                        fontFamily: 'Sofia Sans',
+                                        fontFamily: Constants.Sofiafontfamily,
                                         fontSize: 12.0,
                                         fontWeight: FontWeight.w400,
                                         color: Colors.black,
                                       ),
-                                      children: [
+                                      children: const [
                                         TextSpan(
                                           text: '*',
                                           style: TextStyle(
@@ -1068,64 +1208,81 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                                   ),
                                   const SizedBox(height: 4.0),
                                   CommonTextField(
-                                    controller: addCustomerController.zipController.value,
+                                    controller: addCustomerController
+                                        .zipController.value,
                                     labelText: "Zip Code",
-                                    focusNode: addCustomerController.zipcodeFocusNode,
+                                    focusNode:
+                                        addCustomerController.zipcodeFocusNode,
                                     keyboardType: TextInputType.number,
                                     maxLength: 6,
-                                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.digitsOnly
+                                    ],
                                     onChanged: (value) {
                                       String pattern = r'^\d{6}$';
                                       RegExp regExp = RegExp(pattern);
                                       setState(() {
                                         if (value.isEmpty) {
-                                          addCustomerController.zipcodeValid = false.obs;
-                                          addCustomerController.zipcodeErrorMessage =
-                                          'Zip Code is required';
+                                          addCustomerController.zipcodeValid =
+                                              false.obs;
+                                          addCustomerController
+                                                  .zipcodeErrorMessage =
+                                              'Zip Code is required';
                                         } else if (!regExp.hasMatch(value)) {
-                                          addCustomerController.zipcodeValid = false.obs;
-                                          addCustomerController.zipcodeErrorMessage =
-                                          'Zip Code must be 6 digits';
+                                          addCustomerController.zipcodeValid =
+                                              false.obs;
+                                          addCustomerController
+                                                  .zipcodeErrorMessage =
+                                              'Zip Code must be 6 digits';
                                         } else {
-                                          addCustomerController.zipcodeValid = true.obs;
-                                          addCustomerController.zipcodeErrorMessage = null;
+                                          addCustomerController.zipcodeValid =
+                                              true.obs;
+                                          addCustomerController
+                                              .zipcodeErrorMessage = null;
                                         }
                                       });
                                     },
                                     decoration: InputDecoration(
                                       counterText: '',
-                                      labelStyle:
-                                      const TextStyle(color: AppColors.appBlueColor),
-                                      contentPadding: const EdgeInsets.all(18),
+                                      labelStyle: const TextStyle(
+                                          color: AppColors.appBlueColor),
+                                      isDense: true,
+                                      contentPadding: const EdgeInsets.only(
+                                          right: 16, left: 16,top: 12,bottom: 12),
                                       focusedBorder: UnderlineInputBorder(
                                         borderSide: BorderSide(
-                                          color: addCustomerController.zipcodeValid.value
+                                          color: addCustomerController
+                                                  .zipcodeValid.value
                                               ? AppColors.appNeutralColor5
                                               : AppColors.appRedColor,
-                                          width: 2,
+                                          width: 1,
                                         ),
                                       ),
-                                      enabledBorder: const UnderlineInputBorder(
-                                        borderSide: BorderSide(
+                                      enabledBorder: UnderlineInputBorder(
+                                        borderSide: const BorderSide(
                                           color: AppColors.appNeutralColor5,
                                           width: 1,
                                         ),
+                                        borderRadius: BorderRadius.circular(8),
                                       ),
                                       errorBorder: const UnderlineInputBorder(
                                         borderSide: BorderSide(
                                           color: AppColors.appRedColor,
-                                          width: 2,
+                                          width: 1,
                                         ),
                                       ),
-                                      errorText: addCustomerController.zipcodeValid.value
+                                      errorText: addCustomerController
+                                              .zipcodeValid.value
                                           ? null
-                                          : addCustomerController.zipcodeErrorMessage,
+                                          : addCustomerController
+                                              .zipcodeErrorMessage,
                                       hintText: "Enter Zip Code",
                                       filled: true,
                                       fillColor: AppColors.appNeutralColor5,
                                     ),
                                     validator: (value) {
-                                      if (value == null || value.trim().isEmpty) {
+                                      if (value == null ||
+                                          value.trim().isEmpty) {
                                         return 'Zip Code is required';
                                       }
                                       return null;
@@ -1141,22 +1298,24 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Switch(
-                            value:addCustomerController.isSwitched,
+                            value: addCustomerController.isSwitched,
                             onChanged: (value) {
                               setState(() {
-                               addCustomerController.isSwitched =
-                                    value;
+                                addCustomerController.isSwitched = value;
                               });
                             },
                             activeColor: AppColors.appBlueColor,
-                            inactiveThumbColor:
-                            AppColors.appGreyColor, // Color of the switch when OFF
+                            inactiveThumbColor: AppColors
+                                .appGreyColor, // Color of the switch when OFF
                           ),
                           const SizedBox(height: 20),
-                          const Text(
-                            'Make It Primary',
-                            style: TextStyle(fontSize: 12,fontWeight:FontWeight.w400
-                                , fontFamily: 'Sofia Sans',color: AppColors.appGreyColor),
+                          Text(
+                            'Primary',
+                            style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w400,
+                                fontFamily: Constants.Sofiafontfamily,
+                                color: AppColors.appGreyColor),
                           ),
                         ],
                       ),
@@ -1217,22 +1376,22 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
             flex: 2,
             child: Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 fontWeight: FontWeight.w400,
                 color: AppColors.appNeutralColor2,
                 fontSize: 14,
-                fontFamily: 'Sofia Sans',
+                fontFamily: Constants.Sofiafontfamily,
               ),
             ),
           ),
           Expanded(
             flex: 2,
             child: Text(':  $value',
-                style: const TextStyle(
-                  fontWeight: FontWeight.w500,
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
                   color: AppColors.appBlackColor,
                   fontSize: 14,
-                  fontFamily: 'Sofia Sans',
+                  fontFamily: Constants.Sofiafontfamily,
                 )),
           ),
         ],
@@ -1247,7 +1406,9 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
       TextEditingController controller,
       TextInputType keyboardType,
       bool? isMandatory,
-      [String? regexPattern, List<TextInputFormatter>? inputFormatters]  // Optional regex pattern for additional validation
+      [String? regexPattern,
+      List<TextInputFormatter>? inputFormatters]
+      // Optional regex pattern for additional validation
       ) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10.0),
@@ -1257,8 +1418,8 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
           RichText(
             text: TextSpan(
               text: '$label ',
-              style: const TextStyle(
-                fontFamily: 'Sofia Sans',
+              style: TextStyle(
+                fontFamily: Constants.Sofiafontfamily,
                 fontSize: 12.0,
                 fontWeight: FontWeight.w400,
                 color: Colors.black,
@@ -1301,7 +1462,6 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
     );
   }
 
-
   Widget buildMultilineField(
       BuildContext context,
       String label,
@@ -1310,7 +1470,9 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
       TextEditingController controller,
       TextInputType keyboardType,
       bool? isMandatory,
-      [String? regexPattern, List<TextInputFormatter>? inputFormatters]// Optional regex pattern for additional validation
+      [String? regexPattern,
+      List<TextInputFormatter>? inputFormatters]
+      // Optional regex pattern for additional validation
       ) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10.0),
@@ -1320,8 +1482,8 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
           RichText(
             text: TextSpan(
               text: '$label ',
-              style: const TextStyle(
-                fontFamily: 'Sofia Sans',
+              style: TextStyle(
+                fontFamily: Constants.Sofiafontfamily,
                 fontSize: 12.0,
                 fontWeight: FontWeight.w400,
                 color: Colors.black,
@@ -1358,11 +1520,16 @@ class _AddAccountPopupState extends State<AddAccountPopup> {
                 return '$label must be 6 digits';
               }
               if (label == 'Confirm Account Number' &&
-                  addCustomerController.accountNumberController.value.text.trim() !=
-                      addCustomerController.confirmAccountNumberController.value.text.trim()) {
+                  addCustomerController.accountNumberController.value.text
+                          .trim() !=
+                      addCustomerController
+                          .confirmAccountNumberController.value.text
+                          .trim()) {
                 return 'Account Number & Confirm Account Number Should Be Same';
               }
-              if (maxlength >= 15 && value != null && value.trim().length > 15) {
+              if (maxlength >= 15 &&
+                  value != null &&
+                  value.trim().length > 15) {
                 return '$label must be 15 digits or less';
               }
               if (regexPattern != null && value != null && value.isNotEmpty) {

@@ -5,7 +5,8 @@ class IndicatorWidget extends StatelessWidget {
   final IconData icon;
   final Color iconColor;
 
-  const IndicatorWidget({required this.iconColor ,required this.title, required this.icon});
+  const IndicatorWidget(
+      {required this.iconColor, required this.title, required this.icon});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +19,8 @@ class IndicatorWidget extends StatelessWidget {
           size: 20,
           color: iconColor,
         ),
-        SizedBox(width: screenWidth * 0.02), // Further reduce the width of the SizedBox
+        SizedBox(width: screenWidth * 0.02),
+        // Further reduce the width of the SizedBox
         Text(
           title,
           style: TextStyle(

@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -33,14 +34,14 @@ class _DeleteSubmemberScreenState extends State<DeleteSubmemberScreen> {
 
   @override
   void initState() {
-    Future.delayed(const Duration(seconds: 0),()async {
+    Future.delayed(const Duration(seconds: 0), () async {
       CallMethod();
       searchController.addListener(_filterItems);
     });
     super.initState();
   }
 
-  void CallMethod() async{
+  void CallMethod() async {
     await deleteSubmemberTabController.getDeleteSubmember(
       CommonVariable.userId.value,
       '',
@@ -60,7 +61,6 @@ class _DeleteSubmemberScreenState extends State<DeleteSubmemberScreen> {
           .toList();
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -84,11 +84,13 @@ class _DeleteSubmemberScreenState extends State<DeleteSubmemberScreen> {
                           child: TextField(
                             controller: searchController,
                             decoration: InputDecoration(
-                              hintText: 'Search by name or email',
                               filled: true,
                               fillColor: AppColors.appNeutralColor5,
                               prefixIcon: const Icon(Icons.search),
-                              contentPadding: const EdgeInsets.all(16),
+                              hintText: 'Search by Fund source',
+                              hintStyle: const TextStyle(fontSize: 14.0,color: AppColors.appGreyColor
+                              ),
+                              contentPadding: const EdgeInsets.all(8),
                               enabledBorder: OutlineInputBorder(
                                 borderSide: const BorderSide(
                                   color: AppColors.appNeutralColor5,
@@ -111,15 +113,15 @@ class _DeleteSubmemberScreenState extends State<DeleteSubmemberScreen> {
                               .deleteSubmemberList.isEmpty) {
                             return variableController.loading.value
                                 ? Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Container(
-                                alignment: Alignment.center,
-                                height: 50,
-                                width: 50,
-                                child: Lottie.asset(
-                                    "assets/lottie/half-circles.json"),
-                              ),
-                            )
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Container(
+                                      alignment: Alignment.center,
+                                      height: 50,
+                                      width: 50,
+                                      child: Lottie.asset(
+                                          "assets/lottie/half-circles.json"),
+                                    ),
+                                  )
                                 : NoDataFoundCard();
                           } else {
                             return ListView.builder(
@@ -127,7 +129,8 @@ class _DeleteSubmemberScreenState extends State<DeleteSubmemberScreen> {
                               physics: const NeverScrollableScrollPhysics(),
                               itemCount: filteredItems.length,
                               itemBuilder: (context, index) {
-                                return listMemberCard(filteredItems, index, context);
+                                return listMemberCard(
+                                    filteredItems, index, context);
                               },
                             );
                           }
@@ -145,14 +148,13 @@ class _DeleteSubmemberScreenState extends State<DeleteSubmemberScreen> {
     );
   }
 
-
   Widget listMemberCard(
       List<ResAllSubmemberModel> allSubmemberList, int index, context) {
     final submember = allSubmemberList[index];
     final createdDate = submember.userdetails.createdOn;
     DateTime dateTime = DateTime.parse(createdDate).toLocal();
     String formattedTime = DateFormat.jm().format(dateTime);
-    String formattedDate = DateFormat('dd MMM, yyyy').format(dateTime);
+    String formattedDate = DateFormat('dd MMM, yy').format(dateTime);
 
     return Card(
       elevation: 0,
@@ -171,12 +173,12 @@ class _DeleteSubmemberScreenState extends State<DeleteSubmemberScreen> {
                     Flexible(
                       flex: 3,
                       child: Text(
-                        "$formattedDate,$formattedTime",
-                        style: const TextStyle(
+                        "$formattedDate  $formattedTime",
+                        style: TextStyle(
                           fontWeight: FontWeight.w600,
                           color: AppColors.appBlackColor,
                           fontSize: 14,
-                          fontFamily: 'Sofia Sans',
+                          fontFamily: Constants.Sofiafontfamily,
                         ),
                       ),
                     ),
@@ -189,71 +191,77 @@ class _DeleteSubmemberScreenState extends State<DeleteSubmemberScreen> {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 12, vertical: 4),
                           decoration: BoxDecoration(
-                            color: submember.userdetails.isDeletedRequest == true &&
-                                submember.userdetails.isDeletedSuper ==
-                                    true
+                            color: submember.userdetails.isDeletedRequest ==
+                                        true &&
+                                    submember.userdetails.isDeletedSuper == true
                                 ? AppColors.appLightYellowColor
-                                : (submember.userdetails.isDeletedRequest ==
-                                true &&
-                                submember
-                                    .userdetails.isDeletedSuper ==
-                                    false
-                                ? AppColors.appNeutralColor5
-                                : (submember.userdetails
-                                .isDeletedRequest ==
-                                false &&
-                                submember.userdetails
-                                    .isDeletedSuper ==
-                                    false && submember.userdetails
-                                .isVerfied ==
-                                true
-                                ? AppColors.appMintGreenColor
-                                : AppColors.appRedLightColor)),
+                                : (submember
+                                                .userdetails.isDeletedRequest ==
+                                            true &&
+                                        submember
+                                                .userdetails.isDeletedSuper ==
+                                            false
+                                    ? AppColors.appNeutralColor5
+                                    : (submember.userdetails
+                                                    .isDeletedRequest ==
+                                                false &&
+                                            submember.userdetails
+                                                    .isDeletedSuper ==
+                                                false &&
+                                            submember.userdetails.isVerfied ==
+                                                true
+                                        ? AppColors.appMintGreenColor
+                                        : AppColors.appRedLightColor)),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: FittedBox(
                             child: Text(
                               submember.userdetails.isDeletedRequest == true &&
-                                  submember.userdetails.isDeletedSuper ==
-                                      true
-                                  ? "Delete"
-                                  : (submember.userdetails.isDeletedRequest ==
-                                  true &&
-                                  submember
-                                      .userdetails.isDeletedSuper ==
-                                      false
-                                  ? "Delete Request"
-                                  : (submember.userdetails
-                                  .isDeletedRequest ==
-                                  false &&
-                                  submember.userdetails
-                                      .isDeletedSuper ==
-                                      false && submember.userdetails
-                                  .isVerfied ==
-                                  true
-                                  ? "Active"
-                                  : "Inactive")),
-                              style: TextStyle(
-                                  color: submember.userdetails.isDeletedRequest == true &&
                                       submember.userdetails.isDeletedSuper ==
                                           true
-                                      ? AppColors.appOrangeTextColor
-                                      : (submember.userdetails.isDeletedRequest ==
-                                      true &&
-                                      submember
-                                          .userdetails.isDeletedSuper ==
-                                          false
-                                      ? AppColors.appTextColor2
+                                  ? "Delete"
+                                  : (submember.userdetails.isDeletedRequest ==
+                                              true &&
+                                          submember
+                                                  .userdetails.isDeletedSuper ==
+                                              false
+                                      ? "Delete Request"
                                       : (submember.userdetails
-                                      .isDeletedRequest ==
-                                      false &&
-                                      submember.userdetails
-                                          .isDeletedSuper ==
-                                          false && submember.userdetails
-                                      .isVerfied ==
-                                      true
-                                      ? AppColors.appGreenDarkColor
-                                      : AppColors.appRedColor)),
+                                                      .isDeletedRequest ==
+                                                  false &&
+                                              submember.userdetails
+                                                      .isDeletedSuper ==
+                                                  false &&
+                                              submember.userdetails.isVerfied ==
+                                                  true
+                                          ? "Active"
+                                          : "Inactive")),
+                              style: TextStyle(
+                                  color: submember.userdetails
+                                                  .isDeletedRequest ==
+                                              true &&
+                                          submember
+                                                  .userdetails.isDeletedSuper ==
+                                              true
+                                      ? AppColors.appOrangeTextColor
+                                      : (submember.userdetails
+                                                      .isDeletedRequest ==
+                                                  true &&
+                                              submember.userdetails
+                                                      .isDeletedSuper ==
+                                                  false
+                                          ? AppColors.appTextColor2
+                                          : (submember.userdetails
+                                                          .isDeletedRequest ==
+                                                      false &&
+                                                  submember.userdetails
+                                                          .isDeletedSuper ==
+                                                      false &&
+                                                  submember.userdetails
+                                                          .isVerfied ==
+                                                      true
+                                              ? AppColors.appGreenDarkColor
+                                              : AppColors.appRedColor)),
                                   fontSize: 12),
                             ),
                           ),
@@ -270,11 +278,11 @@ class _DeleteSubmemberScreenState extends State<DeleteSubmemberScreen> {
                       flex: 3,
                       child: Text(
                         "Business: ${submember.business.accountId.businessDetail.businessName}",
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.w400,
                           color: AppColors.appHeadingText,
                           fontSize: 14,
-                          fontFamily: 'Sofia Sans',
+                          fontFamily: Constants.Sofiafontfamily,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -284,11 +292,11 @@ class _DeleteSubmemberScreenState extends State<DeleteSubmemberScreen> {
                 const SizedBox(height: 4),
                 Text(
                   "Submember: ${submember.userdetails.fullName}",
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.w400,
                     color: AppColors.appHeadingText,
                     fontSize: 14,
-                    fontFamily: 'Sofia Sans',
+                    fontFamily: Constants.Sofiafontfamily,
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -355,5 +363,4 @@ class _DeleteSubmemberScreenState extends State<DeleteSubmemberScreen> {
       ),
     );
   }
-
 }

@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:http/http.dart' as http;
-import 'package:html/parser.dart' as html_parser;
+
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:html/parser.dart' as html_parser;
+import 'package:http/http.dart' as http;
 import 'package:paycron/controller/variable_controller.dart';
 import 'package:paycron/model/funds_model/ResAllGateway.dart';
 import 'package:paycron/network/api_call/api_call.dart';
@@ -11,19 +12,17 @@ import 'package:paycron/network/api_call/url.dart';
 import 'package:paycron/utils/common_variable.dart';
 import 'package:paycron/utils/my_toast.dart';
 
-class FundController extends GetxController{
-
+class FundController extends GetxController {
   var variableController = Get.find<VariableController>();
 
-  Rx<TextEditingController> addProofAmountController = TextEditingController().obs;
+  Rx<TextEditingController> addProofAmountController =
+      TextEditingController().obs;
   var fundsSource = "".obs;
   final FocusNode addProofAmountFocusNode = FocusNode();
   Rx<bool> addProofAmountValid = true.obs;
   var addProofAmountMessage = null;
 
-
   File? selectedFile;
-
 
   List<ResAllGateway> allGatewayDataList =
       List<ResAllGateway>.empty(growable: true).obs;
@@ -31,7 +30,8 @@ class FundController extends GetxController{
   Future<void> getAllGateway() async {
     variableController.loading.value = true;
     try {
-      var res = await ApiCall.getApiCallWithoutId(MyUrls.getAllGateway, CommonVariable.token.value);
+      var res = await ApiCall.getApiCallWithoutId(
+          MyUrls.getAllGateway, CommonVariable.token.value);
       debugPrint("*************************");
       debugPrint("API Response: $res");
       debugPrint("*************************");
@@ -44,7 +44,7 @@ class FundController extends GetxController{
         allGatewayDataList.addAll(allGatewayList);
 
         if (allGatewayDataList.isEmpty) {
-          MyToast.toast("No Gateway found.");
+          // MyToast.toast("No Gateway found.");
         }
       } else {
         MyToast.toast("Failed to retrieve customer data");
@@ -71,12 +71,11 @@ class FundController extends GetxController{
     } else if (selectedFile == null) {
       MyToast.toast('Select Product Image');
       return false;
-    }else {
+    } else {
       addProofAmountValid = true.obs;
       return true;
     }
   }
-
 
   Future<void> insertFundsData() async {
     variableController.loading.value = true;
@@ -87,7 +86,8 @@ class FundController extends GetxController{
     };
 
     try {
-      final uri = Uri.parse('${MyUrls.BASE_URL}/${MyUrls.addFundsByBusiness}/${CommonVariable.businessId.value}');
+      final uri = Uri.parse(
+          '${MyUrls.BASE_URL}/${MyUrls.addFundsByBusiness}/${CommonVariable.businessId.value}');
       var request = http.MultipartRequest('POST', uri);
       request.fields['added_now'] = formData['added_now'];
       request.fields['fund_source'] = formData['fund_source'];
@@ -145,10 +145,12 @@ class JsonUtils {
         gateways.add(ResAllGateway(
           sId: item['_id'],
           name: item['name'],
-          details: details, // Now contains plain text or extracted text from HTML
+          details: details,
+          // Now contains plain text or extracted text from HTML
           isDeleted: item['is_deleted'],
           createdOn: item['created_on'],
-          lastUpdated: item['last_updated'], iV: item['__v'],
+          lastUpdated: item['last_updated'],
+          iV: item['__v'],
         ));
       }
     }

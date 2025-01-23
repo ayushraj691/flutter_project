@@ -73,8 +73,12 @@ class DynamicEmailSenderState extends State<DynamicEmailSender> {
 
   sendInvoice() async {
     variableController.loading.value = true;
-    ReqMail reqMail = ReqMail(to: emailController.value.text, subject: subjectController.value.text, message: bodyController.value.text);
-    var res = await ApiCall.postApiCall(MyUrls.sendInvoice, reqMail,CommonVariable.token.value);
+    ReqMail reqMail = ReqMail(
+        to: emailController.value.text,
+        subject: subjectController.value.text,
+        message: bodyController.value.text);
+    var res = await ApiCall.postApiCall(
+        MyUrls.sendInvoice, reqMail, CommonVariable.token.value);
     debugPrint("*************************");
     debugPrint("*****$res*******");
     debugPrint("*************************");
@@ -91,16 +95,18 @@ class DynamicEmailSenderState extends State<DynamicEmailSender> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
-    subjectController.value.text = "Business Name : ${CommonVariable.businessName.value}";
+    subjectController.value.text =
+        "Business Name : ${CommonVariable.businessName.value}";
     return Scaffold(
       backgroundColor: AppColors.appBackgroundColor,
       appBar: AppBar(
         backgroundColor: AppColors.appBackgroundColor,
         leading: IconButton(
           color: AppColors.appBlackColor,
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);

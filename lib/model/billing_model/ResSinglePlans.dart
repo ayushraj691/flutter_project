@@ -9,18 +9,19 @@ class ResSinglePlans {
 
   ResSinglePlans(
       {required this.sId,
-        required this.businessId,
-        required this.planId,
-        required this.createdOn,
-        required this.dueDate,
-        required this.lastUpdated,
-        required this.iV});
+      required this.businessId,
+      required this.planId,
+      required this.createdOn,
+      required this.dueDate,
+      required this.lastUpdated,
+      required this.iV});
 
   ResSinglePlans.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
     businessId = json['business_id'];
-    planId =
-    (json['plan_id'] != null ? new PlanId.fromJson(json['plan_id']) : null)!;
+    planId = (json['plan_id'] != null
+        ? new PlanId.fromJson(json['plan_id'])
+        : null)!;
     createdOn = json['created_on'];
     dueDate = json['due_date'];
     lastUpdated = json['last_updated'];
@@ -50,7 +51,11 @@ class PlanId {
   late int monthlyPrice;
 
   PlanId(
-      {required this.sId, required this.name, required this.planPrices, required this.details, required this.monthlyPrice});
+      {required this.sId,
+      required this.name,
+      required this.planPrices,
+      required this.details,
+      required this.monthlyPrice});
 
   PlanId.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];

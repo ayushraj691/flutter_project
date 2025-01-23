@@ -12,40 +12,52 @@ class SubMember extends StatefulWidget {
   State<SubMember> createState() => _SubMemberState();
 }
 
-class _SubMemberState extends State<SubMember> {
-
+class _SubMemberState extends State<SubMember> with SingleTickerProviderStateMixin{
   final ScrollController _scrollController = ScrollController();
-  bool _showLeftArrow = false;
-  bool _showRightArrow = true;
+
+  late TabController _tabController;
+
+  final double tabWidth = 100.0;
+  late double screenWidth;
 
   @override
   void initState() {
     super.initState();
-    _scrollController.addListener(_scrollListener);
-  }
-
-  void _scrollListener() {
-    setState(() {
-      _showLeftArrow = _scrollController.position.pixels > 0;
-      _showRightArrow = _scrollController.position.pixels <
-          _scrollController.position.maxScrollExtent;
+    _tabController = TabController(length: 4, vsync: this);
+    _tabController.addListener(() {
+      if (!_tabController.indexIsChanging) {
+        _scrollToSelectedTab(_tabController.index);
+      }
     });
   }
 
-  void _scrollLeft() {
-    _scrollController.animateTo(
-      _scrollController.position.pixels - 100,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeOut,
-    );
+  void _scrollToSelectedTab(int index) {
+    if (_scrollController.hasClients) {
+      final targetScrollOffset =
+          (index * tabWidth) - (screenWidth / 2) + (tabWidth / 2);
+      final clampedOffset = targetScrollOffset.clamp(
+        0.0,
+        _scrollController.position.maxScrollExtent,
+      );
+      _scrollController.animateTo(
+        clampedOffset,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
   }
 
-  void _scrollRight() {
-    _scrollController.animateTo(
-      _scrollController.position.pixels + 100,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeOut,
-    );
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    screenWidth = MediaQuery.of(context).size.width; // Get screen width
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    _tabController.dispose();
+    super.dispose();
   }
 
   @override
@@ -53,7 +65,7 @@ class _SubMemberState extends State<SubMember> {
     return Scaffold(
       backgroundColor: AppColors.appBackgroundColor,
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.only(left: 8.0,right: 8.0),
         child: Column(
           children: [
             Expanded(
@@ -63,19 +75,6 @@ class _SubMemberState extends State<SubMember> {
                   children: [
                     Row(
                       children: [
-                        // Left Arrow
-                        Visibility(
-                          visible: _showLeftArrow,
-                          child: IconButton(
-                            icon: const SizedBox(
-                              width: 24,
-                              height: 24,
-                              child: Icon(Icons.arrow_back_ios,
-                                  color: AppColors.appBlueColor, size: 18),
-                            ),
-                            onPressed: _showLeftArrow ? _scrollLeft : null,
-                          ),
-                        ),
                         Expanded(
                           child: SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
@@ -84,29 +83,38 @@ class _SubMemberState extends State<SubMember> {
                               isScrollable: true,
                               labelColor: AppColors.appBlueColor,
                               unselectedLabelColor: Colors.grey,
-                              indicatorColor: AppColors.appBlueColor,
+                              indicator: BoxDecoration(
+                                border: Border(
+                                  bottom: BorderSide(
+                                    color: AppColors.appBlueColor,
+                                    width: 1.0,
+                                  ),
+                                ),
+                              ),
                               tabs: [
                                 Tab(text: 'All'),
-                                Tab(text: 'Delete'),
+                                Tab(text: 'Deleted'),
                                 Tab(text: 'Delete request'),
                                 Tab(text: 'Active'),
                               ],
                             ),
                           ),
                         ),
-                        Visibility(
-                          visible: _showRightArrow,
-                          child: IconButton(
-                            icon: const SizedBox(
-                              width: 24,
-                              height: 24,
-                              child: Icon(Icons.arrow_forward_ios,
-                                  color: AppColors.appBlueColor, size: 18),
-                            ),
-                            onPressed: _showRightArrow ? _scrollRight : null,
-                          ),
-                        ),
                       ],
+                    ),
+                    SizedBox(
+                      height: 1.0,
+                      child: Row(
+                        children: List.generate(4, (index) {
+                          return Expanded(
+                            child: Container(
+                              color: index == _tabController.index
+                                  ? Colors.grey
+                                  : Colors.grey,
+                            ),
+                          );
+                        }),
+                      ),
                     ),
                     const Expanded(
                       child: TabBarView(
@@ -126,12 +134,6 @@ class _SubMemberState extends State<SubMember> {
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
   }
 
 }

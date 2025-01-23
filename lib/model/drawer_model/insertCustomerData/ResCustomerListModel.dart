@@ -21,13 +21,16 @@ class ResCustomerList {
 
   factory ResCustomerList.fromJson(Map<String, dynamic> json) {
     return ResCustomerList(
-      info: Info.fromJson(json['info']), // Make sure Info class has a proper fromJson method
+      info: Info.fromJson(json['info']),
+      // Make sure Info class has a proper fromJson method
       sId: json['_id'] ?? "",
       businessId: json['business_id'] ?? "",
       bankId: (json['bank_id'] as List)
-          .map((i) => BankId.fromJson(i)) // Make sure BankId class has a proper fromJson method
+          .map((i) => BankId.fromJson(
+              i)) // Make sure BankId class has a proper fromJson method
           .toList(),
-      isDeleted: json['is_deleted'] ?? false, // Assuming is_deleted is of type bool
+      isDeleted: json['is_deleted'] ?? false,
+      // Assuming is_deleted is of type bool
       createdOn: json['created_on'] ?? "",
       lastUpdated: json['last_updated'] ?? "",
       iV: json['__v'] ?? 0, // If __v is an integer, set a default value of 0

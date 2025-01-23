@@ -1,9 +1,9 @@
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:paycron/controller/fund_controller/funds_controller.dart';
@@ -18,6 +18,8 @@ import 'package:paycron/views/widgets/NoDataScreen.dart';
 import 'package:paycron/views/widgets/common_button.dart';
 import 'package:paycron/views/widgets/common_textform_field.dart';
 import 'package:permission_handler/permission_handler.dart';
+import '../../utils/general_methods.dart';
+import '../../utils/style.dart';
 
 class AddFunds extends StatefulWidget {
   const AddFunds({super.key});
@@ -35,7 +37,7 @@ class _AddFundsState extends State<AddFunds> {
 
   @override
   void initState() {
-    Future.delayed(const Duration(seconds: 0),(){
+    Future.delayed(const Duration(seconds: 0), () {
       callMethod();
     });
     super.initState();
@@ -59,6 +61,8 @@ class _AddFundsState extends State<AddFunds> {
       appBar: AppBar(
         backgroundColor: AppColors.appBackgroundColor,
         leading: IconButton(
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
           color: AppColors.appBlackColor,
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
@@ -66,13 +70,13 @@ class _AddFundsState extends State<AddFunds> {
           },
         ),
         titleSpacing: 0,
-        title: const Text(
+        title: Text(
           "Add Fund",
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
             color: AppColors.appTextColor,
-            fontFamily: 'Sofia Sans',
+            fontFamily: Constants.Sofiafontfamily,
           ),
         ),
       ),
@@ -81,14 +85,14 @@ class _AddFundsState extends State<AddFunds> {
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              const Align(
+              Align(
                 alignment: Alignment.topLeft,
                 child: Padding(
-                  padding: EdgeInsets.only(left: 12.0, top: 10, bottom: 10),
+                  padding: const EdgeInsets.only(left: 12.0, top: 10, bottom: 10),
                   child: Text(
                     "Prepaid Balance",
                     style: TextStyle(
-                      fontFamily: 'Sofia Sans',
+                      fontFamily: Constants.Sofiafontfamily,
                       color: AppColors.appBlackColor,
                       fontWeight: FontWeight.w600,
                       fontSize: 30,
@@ -170,29 +174,30 @@ class _AddFundsState extends State<AddFunds> {
                               color: AppColors.appTextLightColor,
                               fontWeight: FontWeight.w400,
                               fontSize: MediaQuery.of(context).size.width *
-                                  0.04, // Responsive font size
-                              fontFamily: 'Sofia Sans',
+                                  0.046,
+                              fontFamily: Constants.Sofiafontfamily,
                             ),
                           ),
                           SizedBox(
                               height: MediaQuery.of(context).size.height *
-                                  0.01), // Responsive space
-                          Obx(() =>   Flexible(
-                            child: Text(
-                              index == 1
-                                  ? "\$${CommonVariable.pendingBalance.value}"
-                                  : "\$${CommonVariable.approvedBalance.value}",
-                              style: TextStyle(
-                                color: AppColors.appBlackColor,
-                                fontWeight: FontWeight.w400,
-                                fontSize: MediaQuery.of(context).size.width * 0.06, // Responsive font size
-                                fontFamily: 'Sofia Sans',
+                                  0.01),
+                          Obx(
+                            () => Flexible(
+                              child: Text(
+                                index == 1
+                                    ? GeneralMethods.formatAmount(CommonVariable.approvedBalance.value)
+                                    : "\$${CommonVariable.pendingBalance.value}",
+                                style: TextStyle(
+                                  color: AppColors.appBlackColor,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: MediaQuery.of(context).size.width * 0.06,
+                                  fontFamily: Constants.Sofiafontfamily,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
-                              maxLines: 1, // Ensures only one line
-                              overflow: TextOverflow.ellipsis,
                             ),
-                          ),)
-                          ,
+                          ),
                         ],
                       ),
                     ),
@@ -215,14 +220,14 @@ class _AddFundsState extends State<AddFunds> {
                       children: [
                         Container(
                           margin: const EdgeInsets.only(left: 16, right: 16),
-                          child: const Align(
+                          child: Align(
                             alignment: Alignment.topLeft,
                             child: Text(
                               'Add Proof of Payment',
                               style: TextStyle(
-                                fontFamily: 'Sofia Sans',
+                                fontFamily: Constants.Sofiafontfamily,
                                 fontSize: 16.0,
-                                fontWeight: FontWeight.w500,
+                                fontWeight: FontWeight.w600,
                                 color: Colors.black,
                               ),
                             ),
@@ -230,37 +235,46 @@ class _AddFundsState extends State<AddFunds> {
                         ),
                         Padding(
                           padding: const EdgeInsets.all(16.0),
-                          child:
-                          CommonTextField(
-                            controller: addFundController.addProofAmountController.value,
-                            focusNode: addFundController.addProofAmountFocusNode,
-                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                          child: CommonTextField(
+                            controller: addFundController
+                                .addProofAmountController.value,
+                            focusNode:
+                                addFundController.addProofAmountFocusNode,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly
+                            ],
                             onChanged: (value) {
                               setState(() {
                                 if (value.isEmpty) {
-                                  addFundController.addProofAmountValid= false.obs;
-                                }else {
-                                  addFundController.addProofAmountValid = true.obs;
+                                  addFundController.addProofAmountValid =
+                                      false.obs;
+                                } else {
+                                  addFundController.addProofAmountValid =
+                                      true.obs;
                                 }
                               });
                             },
                             decoration: InputDecoration(
-                              labelStyle: const TextStyle(color: AppColors.appBlueColor),
-                              contentPadding: const EdgeInsets.only(right: 16,left: 16),
+                              labelStyle: const TextStyle(
+                                  color: AppColors.appBlueColor),
+                              isDense: true,
+                              contentPadding:
+                                  const EdgeInsets.only(right: 16, left: 16,top: 12,bottom: 12),
                               focusedBorder: UnderlineInputBorder(
                                 borderSide: BorderSide(
-                                  color: addFundController.addProofAmountValid.value
+                                  color: addFundController
+                                          .addProofAmountValid.value
                                       ? AppColors.appNeutralColor5
                                       : AppColors.appRedColor,
                                   width: 1,
                                 ),
                               ),
-                              enabledBorder: const UnderlineInputBorder(
-                                borderSide: BorderSide(
+                              enabledBorder: UnderlineInputBorder(
+                                borderSide: const BorderSide(
                                   color: AppColors.appNeutralColor5,
-                                  // Default color for enabled state
                                   width: 1,
                                 ),
+                                borderRadius: BorderRadius.circular(8.0)
                               ),
                               errorBorder: const UnderlineInputBorder(
                                 borderSide: BorderSide(
@@ -269,9 +283,10 @@ class _AddFundsState extends State<AddFunds> {
                                   width: 1,
                                 ),
                               ),
-                              errorText: addFundController.addProofAmountValid.value
-                                  ? null
-                                  : 'Amount is required',
+                              errorText:
+                                  addFundController.addProofAmountValid.value
+                                      ? null
+                                      : 'Amount is required',
                               hintText: "Enter Amount",
                               filled: true,
                               fillColor: AppColors.appNeutralColor5,
@@ -306,30 +321,30 @@ class _AddFundsState extends State<AddFunds> {
                                       // Gap between each dash
                                       borderRadius: 16.0,
                                     ),
-                                    child: const Center(
+                                    child: Center(
                                       child: Column(
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
-                                          Icon(Icons.cloud_upload_outlined,
+                                          const Icon(Icons.cloud_upload_outlined,
                                               size: 50, color: Colors.blue),
-                                          SizedBox(height: 8),
+                                          const SizedBox(height: 8),
                                           Text(
                                             'Choose File to upload',
                                             style: TextStyle(
                                               color: Colors.blue,
-                                              fontFamily: 'Sofia Sans',
+                                              fontFamily: Constants.Sofiafontfamily,
                                               fontSize: 14,
                                               fontWeight: FontWeight.w600,
                                             ),
                                             textAlign: TextAlign.center,
                                           ),
-                                          SizedBox(height: 4),
+                                          const SizedBox(height: 4),
                                           Text(
                                             'JPEG, JPG, PNG, PDF (Max file size 10MB)',
                                             style: TextStyle(
                                               color: AppColors.appTextColor2,
-                                              fontFamily: 'Sofia Sans',
+                                              fontFamily: Constants.Sofiafontfamily,
                                               fontSize: 10,
                                             ),
                                             textAlign: TextAlign.center,
@@ -364,14 +379,14 @@ class _AddFundsState extends State<AddFunds> {
                       padding: const EdgeInsets.all(12.0),
                       child: Column(
                         children: [
-                          const Align(
+                          Align(
                             alignment: Alignment.topLeft,
                             child: Text(
                               'Choose Prepay',
                               style: TextStyle(
-                                fontFamily: 'Sofia Sans',
+                                fontFamily: Constants.Sofiafontfamily,
                                 fontSize: 16.0,
-                                fontWeight: FontWeight.w500,
+                                fontWeight: FontWeight.w600,
                                 color: Colors.black,
                               ),
                             ),
@@ -382,24 +397,28 @@ class _AddFundsState extends State<AddFunds> {
                           Obx(() {
                             if (addFundController.allGatewayDataList.isEmpty) {
                               return variableController.loading.value
-                                  ? Center(child:Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Container(
-                                  alignment: Alignment.center,
-                                  height: 50,
-                                  width: 50,
-                                  child: Lottie.asset(
-                                      "assets/lottie/half-circles.json"),
-                                ),
-                              ))
+                                  ? Center(
+                                      child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Container(
+                                        alignment: Alignment.center,
+                                        height: 50,
+                                        width: 50,
+                                        child: Lottie.asset(
+                                            "assets/lottie/half-circles.json"),
+                                      ),
+                                    ))
                                   : NoDataFoundCard(); // Custom no-data widget
                             } else {
                               return ListView.builder(
                                 shrinkWrap: true,
-                                itemCount: addFundController.allGatewayDataList.length,
+                                itemCount:
+                                    addFundController.allGatewayDataList.length,
                                 itemBuilder: (context, index) {
                                   return accountDetailListItem(
-                                      addFundController.allGatewayDataList, index, context);
+                                      addFundController.allGatewayDataList,
+                                      index,
+                                      context);
                                 },
                                 physics: const ScrollPhysics(),
                               );
@@ -436,11 +455,14 @@ class _AddFundsState extends State<AddFunds> {
   Widget accountDetailListItem(
       List<ResAllGateway> allGatewayList, int index, context) {
     ///---------------createdFormatted--------------
-    DateTime dateTime = DateTime.parse(allGatewayList[index].createdOn).toLocal();
+    DateTime dateTime =
+        DateTime.parse(allGatewayList[index].createdOn).toLocal();
     String formattedTime = DateFormat.jm().format(dateTime);
     String formattedDate = DateFormat('dd MMM, yyyy').format(dateTime);
+
     ///-------------UpdateFormatted-----------------
-    DateTime dateTime1 = DateTime.parse(allGatewayList[index].lastUpdated).toLocal();
+    DateTime dateTime1 =
+        DateTime.parse(allGatewayList[index].lastUpdated).toLocal();
     String formattedTime1 = DateFormat.jm().format(dateTime1);
     String formattedDate1 = DateFormat('dd MMM, yyyy').format(dateTime1);
     bool isSelected = index == selectedIndex;
@@ -449,438 +471,399 @@ class _AddFundsState extends State<AddFunds> {
       onTap: () {
         setState(() {
           selectedIndex = index;
-          addFundController.fundsSource.value = allGatewayList[selectedIndex].sId;
+          addFundController.fundsSource.value =
+              allGatewayList[selectedIndex].sId;
         });
       },
-      child: Column(
-        children: [
-          Center(
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                Container(
-                  padding: const EdgeInsets.only(bottom: 10.0),
-                  decoration: BoxDecoration(
-                    color: isSelected
-                        ? AppColors.appWhiteColor
-                        : AppColors.appNeutralColor5,
-                    borderRadius: BorderRadius.circular(30.0),
-                    // Show blue border and label for selected item, grey border for others
-                    border: isSelected
-                        ? Border.all(color: AppColors.appBlueColor, width: 2)
-                        : Border.all(
-                            color: AppColors.appNeutralColor5,
-                            width: 2), // Grey border for other items
-                  ),
-                  child: Container(
-                    margin: const EdgeInsets.only(top: 10),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Theme(
-                          data: Theme.of(context)
-                              .copyWith(dividerColor: Colors.transparent),
-                          child: ExpansionTile(
-                            title: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Flexible(
-                                  child: Text(
-                                    allGatewayList[index].name,
-                                    style: const TextStyle(
-                                      color: AppColors.appBlackColor,
-                                      fontSize: 14,
-                                      fontFamily: 'Sofia Sans',
-                                      fontWeight: FontWeight.w400,
+      child: Padding(
+        padding: const EdgeInsets.only(top: 4),
+        child: Column(
+          children: [
+            Center(
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.only(bottom: 4.0),
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? AppColors.appWhiteColor
+                          : AppColors.appNeutralColor5,
+                      borderRadius: BorderRadius.circular(30.0),
+                      border: isSelected
+                          ? Border.all(color: AppColors.appBlueColor, width: 2)
+                          : Border.all(color: AppColors.appBackgroundGreyColor, width: 2),
+                    ),
+                    child: Container(
+                      margin: const EdgeInsets.only(top: 10),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Theme(
+                            data: Theme.of(context)
+                                .copyWith(dividerColor: Colors.transparent),
+                            child: ExpansionTile(
+                              title: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Flexible(
+                                    child: Text(
+                                      allGatewayList[index].name,
+                                      style: TextStyle(
+                                        color: AppColors.appBlackColor,
+                                        fontSize: 14,
+                                        fontFamily: Constants.Sofiafontfamily,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                      softWrap: true,
+                                      overflow: TextOverflow.visible,
                                     ),
-                                    softWrap: true,
-                                    overflow: TextOverflow.visible,
                                   ),
+                                ],
+                              ),
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 20.0),
+                                      child: Text(
+                                        'The bank account details are as follows :    ',
+                                        style: TextStyle(
+                                          fontFamily: Constants.Sofiafontfamily,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w400,
+                                          color: AppColors.appNeutralColor2,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          right: 20, left: 20),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Name :',
+                                            style: TextStyle(
+                                              color: AppColors.appNeutralColor2,
+                                              fontSize: 12,
+                                              fontFamily:
+                                                  Constants.Sofiafontfamily,
+                                              fontWeight: FontWeight.w400,
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            height: 4.0,
+                                          ),
+                                          Text(
+                                            allGatewayList[index].name,
+                                            style: AppTextStyles.normalRegularText,
+                                            softWrap: true,
+                                            overflow: TextOverflow.visible,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          right: 20, left: 20),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Details',
+                                            style: TextStyle(
+                                              color: AppColors.appNeutralColor2,
+                                              fontSize: 12,
+                                              fontFamily:
+                                                  Constants.Sofiafontfamily,
+                                              fontWeight: FontWeight.w400,
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            height: 4.0,
+                                          ),
+                                          Text(
+                                            allGatewayList[index].details,
+                                            // Long text
+                                            style:  AppTextStyles.normalRegularText,
+                                            softWrap: true,
+                                            overflow: TextOverflow
+                                                .visible,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          right: 20, left: 20),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Created at',
+                                            style: TextStyle(
+                                              color: AppColors.appNeutralColor2,
+                                              fontSize: 12,
+                                              fontFamily:
+                                                  Constants.Sofiafontfamily,
+                                              fontWeight: FontWeight.w400,
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            height: 4.0,
+                                          ),
+                                          Text(
+                                            '$formattedDate, $formattedTime',
+                                            style:  AppTextStyles.normalRegularText,
+                                            softWrap: true,
+                                            overflow: TextOverflow
+                                                .visible,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          right: 20, left: 20),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Update on',
+                                            style: TextStyle(
+                                              color: AppColors.appNeutralColor2,
+                                              fontSize: 12,
+                                              fontFamily:
+                                                  Constants.Sofiafontfamily,
+                                              fontWeight: FontWeight.w400,
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            height: 4.0,
+                                          ),
+                                          Text(
+                                            '$formattedDate1, $formattedTime1',
+                                            style: AppTextStyles.normalRegularText,
+                                            softWrap: true,
+                                            overflow: TextOverflow.visible,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(height: 16),
+                                  ],
                                 ),
                               ],
                             ),
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 20.0),
-                                    child: Text(
-                                      'The bank account details are as follows :    ',
-                                      style: TextStyle(
-                                        fontFamily: Constants.Sofiafontfamily,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w400,
-                                        color: AppColors.appGreyColor,
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        right: 20, left: 20),
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'Name :',
-                                          style: TextStyle(
-                                            color: AppColors.appGreyColor,
-                                            // Replace with AppColors.appBlackColor
-                                            fontSize: 12,
-                                            fontFamily: Constants.Sofiafontfamily,
-                                            fontWeight: FontWeight.w400,
-                                          ),
-                                        ),
-                                        // Expanded(
-                                        //   flex: 1,
-                                        //   child: Text(
-                                        //     ':',
-                                        //     style: TextStyle(
-                                        //       color: AppColors.appGreyColor,
-                                        //       // Replace with AppColors.appBlackColor
-                                        //       fontSize: 12,
-                                        //       fontFamily: Constants.Sofiafontfamily,
-                                        //       fontWeight: FontWeight.w400,
-                                        //     ),
-                                        //   ),
-                                        // ),
-                                        const SizedBox(height: 4.0,),
-                                        Text(
-                                          allGatewayList[index].name,
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 14,
-                                            fontFamily: Constants.Sofiafontfamily,
-                                            fontWeight: FontWeight.w400,
-                                          ),
-                                          softWrap: true,
-                                          overflow: TextOverflow
-                                              .visible,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        right: 20, left: 20),
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'Details',
-                                          style: TextStyle(
-                                            color: AppColors.appGreyColor,
-                                            // Replace with AppColors.appBlackColor
-                                            fontSize: 12,
-                                            fontFamily: Constants.Sofiafontfamily,
-                                            fontWeight: FontWeight.w400,
-                                          ),
-                                        ),
-                                        // Expanded(
-                                        //   flex: 1,
-                                        //   child: Text(
-                                        //     ':',
-                                        //     style: TextStyle(
-                                        //       color: AppColors.appGreyColor,
-                                        //       // Replace with AppColors.appBlackColor
-                                        //       fontSize: 12,
-                                        //       fontFamily: Constants.Sofiafontfamily,
-                                        //       fontWeight: FontWeight.w400,
-                                        //     ),
-                                        //   ),
-                                        // ),
-                                        const SizedBox(height: 4.0,),
-                                        Text(
-                                          allGatewayList[index].details, // Long text
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                            // Replace with AppColors.appGreyColor
-                                            fontSize: 14,
-                                            fontFamily: Constants.Sofiafontfamily,
-                                            fontWeight: FontWeight.w400,
-                                          ),
-                                          softWrap: true,
-                                          // Allows the text to wrap to the next line
-                                          overflow: TextOverflow
-                                              .visible, // Ensure text is visible and not clipped
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Padding(
-                                    padding: const EdgeInsets.only(right: 20,left: 20),
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                                'Created at',
-                                                style: TextStyle(
-                                                  color: AppColors.appGreyColor,
-                                                  // Replace with AppColors.appBlackColor
-                                                  fontSize: 12,
-                                                  fontFamily: Constants.Sofiafontfamily,
-                                                  fontWeight: FontWeight.w400,
-                                                ),
-                                              ),
-                                        // Expanded(
-                                        //   flex: 1,
-                                        //   child:  Text(
-                                        //           ':',
-                                        //           style: TextStyle(
-                                        //             color: AppColors.appGreyColor,
-                                        //             // Replace with AppColors.appBlackColor
-                                        //             fontSize: 12,
-                                        //             fontFamily: Constants.Sofiafontfamily,
-                                        //             fontWeight: FontWeight.w400,
-                                        //           ),
-                                        //         ),
-                                        // ),
-                                        const SizedBox(height: 4.0,),
-                                        Text(
-                                                  '$formattedDate, $formattedTime',
-                                                  style: TextStyle(
-                                                    color: Colors.black,
-                                                    // Replace with AppColors.appGreyColor
-                                                    fontSize: 14,
-                                                    fontFamily: Constants.Sofiafontfamily,
-                                                    fontWeight: FontWeight.w400,
-                                                  ),
-                                                  softWrap: true,
-                                                  // Allows the text to wrap to the next line
-                                                  overflow: TextOverflow
-                                                      .visible, // Ensure text is visible and not clipped
-                                                ),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Padding(
-                                    padding: const EdgeInsets.only(right: 20,left: 20),
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'Update on',
-                                          style: TextStyle(
-                                            color: AppColors.appGreyColor,
-                                            // Replace with AppColors.appBlackColor
-                                            fontSize: 12,
-                                            fontFamily: Constants.Sofiafontfamily,
-                                            fontWeight: FontWeight.w400,
-                                          ),
-                                        ),
-                                        // Expanded(
-                                        //   flex: 1,
-                                        //   child:  Text(
-                                        //     ':',
-                                        //     style: TextStyle(
-                                        //       color: AppColors.appGreyColor,
-                                        //       // Replace with AppColors.appBlackColor
-                                        //       fontSize: 12,
-                                        //       fontFamily: Constants.Sofiafontfamily,
-                                        //       fontWeight: FontWeight.w400,
-                                        //     ),
-                                        //   ),
-                                        // ),
-                                        const SizedBox(height: 4.0,),
-                                        Text(
-                                          '$formattedDate1, $formattedTime1',
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 14,
-                                            fontFamily: Constants.Sofiafontfamily,
-                                            fontWeight: FontWeight.w400,),
-                                          softWrap: true,
-                                          overflow: TextOverflow
-                                              .visible,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(height: 16),
-                                ],
-                              ),
-                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  if (isSelected)
+                    Positioned(
+                      top: -10,
+                      left: 30,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10.0, vertical: 4.0),
+                        decoration: BoxDecoration(
+                          color: AppColors.appBlueColor,
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: const Text(
+                          'Primary Account',
+                          style: TextStyle(
+                            color: AppColors.appWhiteColor,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w400,
                           ),
                         ),
-                      ],
+                      ),
                     ),
-                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 10),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _checkAndRequestStoragePermission() async {
+    if (Platform.isAndroid) {
+      if (await Permission.storage.isGranted) {
+        debugPrint('Storage permission already granted.');
+        return;
+      }
+      // Android 11+ requires special handling due to Scoped Storage
+      if (Platform.operatingSystemVersion.contains('11') ||
+          Platform.operatingSystemVersion.compareTo('11') > 0) {
+        if (await Permission.manageExternalStorage.isGranted) {
+          debugPrint('Manage external storage permission already granted.');
+          return;
+        }
+        await Permission.manageExternalStorage.request();
+      } else {
+        // For Android below version 11
+        await Permission.storage.request();
+      }
+
+      if (!await Permission.storage.isGranted) {
+        debugPrint('Storage permission not granted.');
+        _showError('Storage permission is required to pick files.');
+      }
+    }
+  }
+
+  Future<void> _pickFile() async {
+
+    await _checkAndRequestStoragePermission();
+
+    try {
+      // File Picker for selecting files
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['pdf', 'jpeg', 'jpg', 'png'],
+        allowMultiple: false,
+      );
+
+      if (result != null && result.files.single.path != null) {
+        String? path = result.files.single.path;
+        File selectedFile = File(path!);
+
+        // File size validation (10 MB limit)
+        final int fileSizeInBytes = selectedFile.lengthSync();
+        if (fileSizeInBytes > 10 * 1024 * 1024) {
+          _showError('The selected file exceeds the size limit of 10 MB.');
+        } else {
+          setState(() {
+            addFundController.selectedFile = selectedFile;
+          });
+          debugPrint('Selected file path: $path');
+        }
+      } else {
+        _showError('No file selected or user cancelled the picker.');
+      }
+    } catch (e) {
+      debugPrint('Error picking file: $e');
+      _showError('An error occurred while selecting the file.');
+    }
+  }
+
+
+  Widget _buildFilePreview() {
+    if (addFundController.selectedFile == null) {
+      return const Text('');
+    }
+
+    final int fileSizeInBytes = addFundController.selectedFile!.lengthSync();
+    final String fileSize =
+        '${(fileSizeInBytes / (1024 * 1024)).toStringAsFixed(1)} MB';
+    final String formattedDate =
+    DateFormat('dd/MM/yyyy').format(DateTime.now());
+    final String fileName =
+        addFundController.selectedFile!.path.split('/').last;
+
+    return Container(
+      padding: const EdgeInsets.all(8.0),
+      decoration: BoxDecoration(
+        color: AppColors.appNeutralColor5,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _buildFileThumbnail(),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  fileName,
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontFamily: Constants.Sofiafontfamily,
+                      fontWeight: FontWeight.w600),
+                  overflow: TextOverflow.ellipsis,
                 ),
-                if (isSelected)
-                  Positioned(
-                    top: -13,
-                    left: 30,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10.0, vertical: 4.0),
-                      decoration: const BoxDecoration(
-                        color: AppColors.appBlueColor,
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(15),
-                          topRight: Radius.circular(15),
-                          bottomRight: Radius.circular(15),
-                          bottomLeft: Radius.circular(15),
-                        ),
-                      ),
-                      child: const Text(
-                        'Primary Account',
-                        style: TextStyle(
-                          color: AppColors.appWhiteColor,
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
+                const SizedBox(height: 4),
+                Text(
+                  '$fileSize | $formattedDate',
+                  style: TextStyle(
+                      fontSize: 12,
+                      fontFamily: Constants.Sofiafontfamily,
+                      color: AppColors.appNeutralColor2),
+                ),
               ],
             ),
           ),
-          const SizedBox(height: 10),
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                addFundController.selectedFile = null; // Remove the selected file
+              });
+            },
+            child: const Icon(Icons.highlight_remove,
+                color: AppColors.appNeutralColor2),
+          ),
         ],
       ),
     );
   }
 
-  Future<void> _pickFile() async {
-    // Check storage permissions
-    if (Platform.isAndroid) {
-      var storageStatus = await Permission.storage.status;
-      if (storageStatus.isDenied || !storageStatus.isGranted) {
-        await Permission.storage.request();
-      }
-    }
+  Widget _buildFileThumbnail() {
+    if (addFundController.selectedFile == null) return Container();
 
-    // Let user choose between image picker or file picker
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-
-    if (pickedFile != null) {
-      setState(() {
-        addFundController.selectedFile = File(pickedFile.path);
-      });
-    } else {
-      try {
-        FilePickerResult? result = await FilePicker.platform.pickFiles(
-          type: FileType.any,
-          allowMultiple: false,
-        );
-
-        if (result != null && result.files.isNotEmpty) {
-          String? path = result.files.single.path;
-          if (path != null) {
-            setState(() {
-              addFundController.selectedFile = File(path);
-            });
-            debugPrint('Selected file path: $path');
-            _showError('Selected file path: $path');
-          } else {
-            debugPrint('File path is null');
-            _showError('File path is null');
-          }
-        } else {
-          debugPrint('No file selected or user cancelled the picker');
-          _showError('No file selected or user cancelled the picker');
-        }
-      } catch (e) {
-        debugPrint('Error picking file: $e');
-        _showError('Error picking file: $e');
-      }
-    }
-  }
-
-  Widget _buildFilePreview() {
-    if (addFundController.selectedFile == null) {
-      return const Text('No file selected');
-    } else {
-      final int fileSizeInBytes = addFundController.selectedFile!.lengthSync();
-      final String fileSize =
-          '${(fileSizeInBytes / (1024 * 1024)).toStringAsFixed(1)} MB';
-      final String formattedDate =
-          DateFormat('dd/MM/yyyy').format(DateTime.now());
-      final String fileName = addFundController.selectedFile!.path.split('/').last;
-
-      return Container(
-        padding: const EdgeInsets.all(8.0),
-        decoration: BoxDecoration(
-          color: AppColors.appNeutralColor5,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (addFundController.selectedFile!.path.endsWith('.png') ||
-                addFundController.selectedFile!.path.endsWith('.jpg') ||
-                addFundController.selectedFile!.path.endsWith('.jpeg'))
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8.0),
-                child: Image.file(
-                  addFundController.selectedFile!,
-                  width: 50,
-                  height: 50,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      width: 50,
-                      height: 50,
-                      color: Colors.red,
-                      child: const Center(
-                          child: Text('Error',
-                              style:
-                                  TextStyle(color: AppColors.appWhiteColor))),
-                    );
-                  },
-                ),
-              )
-            else if (addFundController.selectedFile!.path.endsWith('.pdf'))
-              const Icon(Icons.picture_as_pdf, size: 50, color: Colors.red)
-            else
-              const Icon(Icons.insert_drive_file,
-                  size: 50, color: AppColors.appNeutralColor2),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    fileName,
-                    style: const TextStyle(
-                        fontSize: 14,
-                        fontFamily: 'Sofia Sans',
-                        fontWeight: FontWeight.w500),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '$fileSize | $formattedDate',
-                    style: const TextStyle(
-                        fontSize: 12,
-                        fontFamily: 'Sofia Sans',
-                        color: AppColors.appNeutralColor2),
-                  ),
-                ],
+    String filePath = addFundController.selectedFile!.path;
+    if (filePath.endsWith('.png') ||
+        filePath.endsWith('.jpg') ||
+        filePath.endsWith('.jpeg')) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(8.0),
+        child: Image.file(
+          addFundController.selectedFile!,
+          width: 50,
+          height: 50,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            return Container(
+              width: 50,
+              height: 50,
+              color: Colors.red,
+              child: const Center(
+                child: Text('Error', style: TextStyle(color: Colors.white)),
               ),
-            ),
-            GestureDetector(
-              onTap: () {
-                setState(() {
-                  addFundController.selectedFile = null; // Remove the selected file
-                });
-              },
-              child: const Icon(Icons.highlight_remove,
-                  color: AppColors.appNeutralColor2),
-            ),
-          ],
+            );
+          },
         ),
       );
+    } else if (filePath.endsWith('.pdf')) {
+      return const Icon(Icons.picture_as_pdf, size: 50, color: Colors.red);
+    } else {
+      return const Icon(Icons.insert_drive_file,
+          size: 50, color: AppColors.appNeutralColor2);
     }
   }
 

@@ -17,14 +17,14 @@ import 'package:paycron/controller/dashboard/submember_controller/all_submember_
 import 'package:paycron/controller/dashboard/submember_controller/deleteRequest_submember_controller.dart';
 import 'package:paycron/controller/dashboard/submember_controller/delete_submember_controller.dart';
 import 'package:paycron/controller/dashboard/user_main_dashboard_controller.dart';
-import 'package:paycron/controller/drawer_Controller/all_transaction_controller/itemTransactionDetailController.dart';
-import 'package:paycron/controller/drawer_Controller/all_transaction_controller/verified_transaction_controller.dart';
 import 'package:paycron/controller/drawer_Controller/all_transaction_controller/all_transaction_controller.dart';
 import 'package:paycron/controller/drawer_Controller/all_transaction_controller/cancel_transaction_controller.dart';
 import 'package:paycron/controller/drawer_Controller/all_transaction_controller/delete_transaction_controller.dart';
 import 'package:paycron/controller/drawer_Controller/all_transaction_controller/download_transaction_controller.dart';
+import 'package:paycron/controller/drawer_Controller/all_transaction_controller/itemTransactionDetailController.dart';
 import 'package:paycron/controller/drawer_Controller/all_transaction_controller/new_transaction_controller.dart';
 import 'package:paycron/controller/drawer_Controller/all_transaction_controller/reimbursement_transaction_controller.dart';
+import 'package:paycron/controller/drawer_Controller/all_transaction_controller/verified_transaction_controller.dart';
 import 'package:paycron/controller/drawer_Controller/customer_controller/CustomerDetailViewController.dart';
 import 'package:paycron/controller/drawer_Controller/customer_controller/Inactive_controller.dart';
 import 'package:paycron/controller/drawer_Controller/customer_controller/active_controller.dart';
@@ -67,6 +67,8 @@ import 'package:paycron/controller/fund_controller/successful_controller.dart';
 import 'package:paycron/controller/fund_controller/unsuccessful_controller.dart';
 import 'package:paycron/controller/variable_controller.dart';
 
+import '../controller/drawer_Controller/product_controller/update_product_controller.dart';
+
 class InitialBinding extends Bindings {
   @override
   void dependencies() {
@@ -78,6 +80,7 @@ class InitialBinding extends Bindings {
     Get.put(AuthController());
     Get.put(AllBussinessController());
     Get.put(MainDashboardController());
+    Get.put(AllVirtualTerminalController());
     Get.put(CreatePaymentController());
     Get.put(AllTabController());
     Get.put(ActiveController());
@@ -95,7 +98,6 @@ class InitialBinding extends Bindings {
     Get.put(CancelTransationController());
     Get.put(DeleteTransactionController());
     Get.put(ReimbursementTransactionController());
-    Get.put(AllVirtualTerminalController());
     Get.put(CancelVirtualTerminalController());
     Get.put(DeleteVirtualTerminalController());
     Get.put(DownloadVirtualTerminalController());
@@ -138,5 +140,6 @@ class InitialBinding extends Bindings {
     Get.put(MerchantController());
     Get.put(ChangePasswordController());
     Get.put(ForgotPasswordController());
+    Get.put(UpdateProductController());
   }
 }

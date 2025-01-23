@@ -1,7 +1,7 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:paycron/utils/color_constants.dart';
-import 'dart:async';
 import 'package:paycron/utils/image_assets.dart';
 import 'package:paycron/views/auth/login_screen.dart';
 
@@ -83,14 +83,14 @@ class _AppIntroScreenState extends State<AppIntroScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: List.generate(
                     _images.length,
-                        (index) => AnimatedContainer(
+                    (index) => AnimatedContainer(
                       duration: const Duration(milliseconds: 200),
                       margin: const EdgeInsets.symmetric(horizontal: 5.0),
                       height: 10.0,
                       width: _currentPage == index ? 20.0 : 10.0,
                       decoration: BoxDecoration(
                         color: _currentPage == index
-                            ?AppColors.appBlueColor
+                            ? AppColors.appBlueColor
                             : AppColors.appIntroIndicatorColor,
                         borderRadius: BorderRadius.circular(5.0),
                       ),
@@ -110,7 +110,7 @@ class _AppIntroScreenState extends State<AppIntroScreen> {
                     "Users are advised to read the terms and conditions or \nprivacy policy carefully.",
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w600,
                       fontSize: 12,
                       fontFamily: 'Sofia Sans',
                       color: AppColors.appGreyColor,
@@ -122,8 +122,8 @@ class _AppIntroScreenState extends State<AppIntroScreen> {
                       Get.off(const LoginScreen());
                     },
                     style: ElevatedButton.styleFrom(
-                      padding:
-                      const EdgeInsets.symmetric(horizontal: 80.0, vertical: 15.0),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 80.0, vertical: 15.0),
                       backgroundColor: AppColors.appBlueColor,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30.0),

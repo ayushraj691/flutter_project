@@ -7,6 +7,8 @@ import 'package:paycron/utils/common_variable.dart';
 import 'package:paycron/utils/general_methods.dart';
 import 'package:paycron/utils/string_constants.dart';
 
+import '../../../controller/billing_controller/BillingInformationController.dart';
+
 class UpgradePlanScreen extends StatefulWidget {
   const UpgradePlanScreen({super.key});
 
@@ -22,7 +24,8 @@ class _UpgradePlanScreenState extends State<UpgradePlanScreen> {
     super.initState();
     Future.delayed(const Duration(seconds: 0), () async {
       callMethod();
-    });  }
+    });
+  }
 
   void callMethod() async {
     await upgradePlanController.getAllPlan();
@@ -37,6 +40,8 @@ class _UpgradePlanScreenState extends State<UpgradePlanScreen> {
         backgroundColor: AppColors.appTabBackgroundColor,
         elevation: 0,
         leading: IconButton(
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
             Navigator.pop(context);
@@ -53,127 +58,140 @@ class _UpgradePlanScreenState extends State<UpgradePlanScreen> {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.only(left: 16.0,right: 16.0,bottom: 16.0),
+        padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 14.0),
         child: Column(
           children: [
             Expanded(
               child: upgradePlanController.getAllPlanList.isEmpty
                   ? Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    alignment: Alignment.center,
-                    height: 50,
-                    width: 50,
-                    child: Lottie.asset(
-                        "assets/lottie/half-circles.json"),
-                  ),
-                ),
-              )
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          alignment: Alignment.center,
+                          height: 50,
+                          width: 50,
+                          child:
+                              Lottie.asset("assets/lottie/half-circles.json"),
+                        ),
+                      ),
+                    )
                   : ListView.builder(
-                padding: const EdgeInsets.only(bottom: 16.0),
-                itemCount: upgradePlanController.getAllPlanList.length,
-                itemBuilder: (context, index) {
-                  bool isSelected = CommonVariable.planId.value == upgradePlanController.getAllPlanList[index].sId;
-                  bool isTemporarySelected = CommonVariable.temporaryPlanId.value == upgradePlanController.getAllPlanList[index].sId;
-                  return Padding(
-                    padding: const EdgeInsets.only(top: 10.0),
-                    child: Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              CommonVariable.temporaryPlanId.value = upgradePlanController.getAllPlanList[index].sId;
-                            });
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.all(16.0),
-                            decoration: BoxDecoration(
-                              color: isTemporarySelected
-                                  ? Colors.lightBlue.shade50
-                                  : Colors.white,
-                              borderRadius: BorderRadius.circular(20.0),
-                              border: Border.all(
-                                color: isTemporarySelected
-                                    ? Colors.blue
-                                    : Colors.grey.shade300,
-                                width: 2,
-                              ),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  crossAxisAlignment:
-                                  CrossAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      isTemporarySelected
-                                          ? Icons.radio_button_checked
-                                          : Icons.radio_button_off,
-                                      color: isTemporarySelected
+                      padding: const EdgeInsets.only(bottom: 16.0),
+                      itemCount: upgradePlanController.getAllPlanList.length,
+                      itemBuilder: (context, index) {
+                        bool isSelected = CommonVariable.planId.value ==
+                            upgradePlanController.getAllPlanList[index].sId;
+                        bool isTemporarySelected =
+                            CommonVariable.temporaryPlanId.value ==
+                                upgradePlanController.getAllPlanList[index].sId;
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 14.0),
+                          child: Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    CommonVariable.temporaryPlanId.value =
+                                        upgradePlanController
+                                            .getAllPlanList[index].sId;
+                                  });
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(16.0),
+                                  decoration: BoxDecoration(
+                                    color: isTemporarySelected
+                                        ? Colors.lightBlue.shade50
+                                        : Colors.white,
+                                    borderRadius: BorderRadius.circular(20.0),
+                                    border: Border.all(
+                                      color: isSelected
                                           ? Colors.blue
-                                          : Colors.grey,
-                                    ),
-                                    const SizedBox(width: 8.0),
-                                    Text(
-                                      upgradePlanController
-                                          .getAllPlanList[index].name,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 18,
-                                        color: isTemporarySelected
-                                            ? Colors.blue
-                                            : Colors.black,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 8.0),
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 28.0),
-                                  child: Text(
-                                    upgradePlanController
-                                        .getAllPlanList[index].details,
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey.shade600,
+                                          : Colors.grey.shade300,
+                                      width: 2,
                                     ),
                                   ),
-                                ),
-                                const SizedBox(height: 8.0),
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 28.0),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Text(
-                                        'USD ${upgradePlanController.getAllPlanList[index].monthlyPrice} / month',
-                                        style: const TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black,
+                                      Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            isTemporarySelected
+                                                ? Icons.radio_button_checked
+                                                : Icons.radio_button_off,
+                                            color: isTemporarySelected
+                                                ? Colors.blue
+                                                : Colors.grey,
+                                          ),
+                                          const SizedBox(width: 8.0),
+                                          Text(
+                                            upgradePlanController
+                                                .getAllPlanList[index].name,
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 18,
+                                              color: isTemporarySelected
+                                                  ? Colors.blue
+                                                  : Colors.black,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 8.0),
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(left: 28.0),
+                                        child: Text(
+                                          upgradePlanController
+                                              .getAllPlanList[index].details,
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.grey.shade600,
+                                          ),
                                         ),
                                       ),
-                                      InkWell(
-                                        onTap: () {
-                                          showPlanBenefitPopup(context,index);
-                                        },
+                                      const SizedBox(height: 8.0),
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(left: 28.0),
                                         child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
                                           children: [
-                                            Icon(
-                                              Icons.info_outline,
-                                              color: Colors.grey.shade600,
-                                              size: 18,
-                                            ),
-                                            const SizedBox(width: 4.0),
                                             Text(
-                                              "More info.",
-                                              style: TextStyle(
+                                              'USD ${upgradePlanController.getAllPlanList[index].monthlyPrice} / month',
+                                              style: const TextStyle(
                                                 fontSize: 14,
-                                                color: Colors.grey.shade600,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                            InkWell(
+                                              onTap: () {
+                                                showPlanBenefitPopup(
+                                                    context, index);
+                                              },
+                                              child: Row(
+                                                children: [
+                                                  Icon(
+                                                    Icons.info_outline,
+                                                    color: Colors.grey.shade600,
+                                                    size: 18,
+                                                  ),
+                                                  const SizedBox(width: 4.0),
+                                                  Text(
+                                                    "More info.",
+                                                    style: TextStyle(
+                                                      fontSize: 14,
+                                                      color:
+                                                          Colors.grey.shade600,
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
                                             ),
                                           ],
@@ -182,36 +200,33 @@ class _UpgradePlanScreenState extends State<UpgradePlanScreen> {
                                     ],
                                   ),
                                 ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        if (isTemporarySelected)
-                          Positioned(
-                            top: -10,
-                            left: 20,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10.0, vertical: 4.0),
-                              decoration: BoxDecoration(
-                                color: Colors.blue,
-                                borderRadius: BorderRadius.circular(15),
                               ),
-                              child: const Text(
-                                "Active Plan",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
+                              if (isSelected)
+                                Positioned(
+                                  top: -10,
+                                  left: 20,
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10.0, vertical: 4.0),
+                                    decoration: BoxDecoration(
+                                      color: Colors.blue,
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                    child: const Text(
+                                      "Active Plan",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ),
+                            ],
                           ),
-                      ],
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
             ),
             SizedBox(
               width: double.infinity,
@@ -219,6 +234,7 @@ class _UpgradePlanScreenState extends State<UpgradePlanScreen> {
                 onPressed: () {
                   GeneralMethods.loadingDialog(context);
                   upgradePlanController.updatePlane();
+                  Get.back();
                 },
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -243,7 +259,7 @@ class _UpgradePlanScreenState extends State<UpgradePlanScreen> {
     );
   }
 
-  void showPlanBenefitPopup(BuildContext context,int index) {
+  void showPlanBenefitPopup(BuildContext context, int index) {
     final selectedPlan = upgradePlanController.getAllPlanList[index];
     showDialog(
       context: context,
@@ -256,129 +272,135 @@ class _UpgradePlanScreenState extends State<UpgradePlanScreen> {
           child: SizedBox(
             width: screenWidth * 0.9, // Set the width to 80% of screen width
             child: Stack(
-                clipBehavior: Clip.none,
-                alignment: Alignment.topCenter,
-                children: [
-            Padding(
-            padding: const EdgeInsets.only(top: 60, left: 20, right: 20, bottom: 20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
+              clipBehavior: Clip.none,
+              alignment: Alignment.topCenter,
               children: [
-              Text(
-                selectedPlan.name,
-              style: const TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 10),
-            // Price
-            Text(
-              "\$${selectedPlan.monthlyPrice} USD/month",
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: Colors.blue,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 20),
-            // Description
-            Text(
-              selectedPlan.details,
-              style: TextStyle(
-                fontSize: 12,
-                fontFamily: Constants.Sofiafontfamily,
-                fontWeight: FontWeight.w400,
-                color: AppColors.appNeutralColor2,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 20),
-            Card(
-              color: AppColors.appBackgroundColor,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20.0),
-              ),
-              elevation: 0,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Plan Price",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontFamily: Constants.Sofiafontfamily,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.appNeutralColor2,
+                Padding(
+                  padding: const EdgeInsets.only(
+                      top: 60, left: 20, right: 20, bottom: 20),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        selectedPlan.name,
+                        style: const TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
-                      textAlign: TextAlign.start,
-                    ),
-                    const Divider(color: AppColors.appGreyColor),
-                    _buildPlanDetail("SetUp Fee", selectedPlan.setupPrice.toString()),
-                    _buildPlanDetail("Monthly Fee", selectedPlan.monthlyPrice.toString()),
-                    _buildPlanDetail("Processing Fee", selectedPlan.planPrices.processingFees.first),
-                    _buildPlanDetail("Per Swipe Fee", "${selectedPlan.planPrices.perSwipeFee.first}%"),
-                    _buildPlanDetail("Verification Fee", "${selectedPlan.planPrices.verificationFee.first}%"),
-                  ],
+                      const SizedBox(height: 10),
+                      // Price
+                      Text(
+                        "\$${selectedPlan.monthlyPrice} USD/month",
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.blue,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
+                        selectedPlan.details,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontFamily: Constants.Sofiafontfamily,
+                          fontWeight: FontWeight.w400,
+                          color: AppColors.appNeutralColor2,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 20),
+                      Card(
+                        color: AppColors.appBackgroundColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
+                        elevation: 0,
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Plan Price",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontFamily: Constants.Sofiafontfamily,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.appNeutralColor2,
+                                ),
+                                textAlign: TextAlign.start,
+                              ),
+                              const Divider(color: AppColors.appGreyColor),
+                              _buildPlanDetail("SetUp Fee",
+                                  selectedPlan.setupPrice.toString()),
+                              _buildPlanDetail("Monthly Fee",
+                                  selectedPlan.monthlyPrice.toString()),
+                              _buildPlanDetail("Processing Fee",
+                                  selectedPlan.planPrices.processingFees.first),
+                              _buildPlanDetail("Per Swipe Fee",
+                                  "${selectedPlan.planPrices.perSwipeFee.first}%"),
+                              _buildPlanDetail("Verification Fee",
+                                  "${selectedPlan.planPrices.verificationFee.first}%"),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+                Positioned(
+                  top: -10,
+                  right: -10,
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: CircleAvatar(
+                      radius: 15,
+                      backgroundColor: Colors.grey[300],
+                      child: const Icon(Icons.close, color: Colors.black, size: 18),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: -35,
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Container(
+                        color: AppColors.appLightBlueColor,
+                        height: 60,
+                        width: 60,
+                        alignment: Alignment.center,
+                        child: const Icon(Icons.star, color: Colors.blue, size: 30),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-            ],
           ),
-        ),
-        Positioned(
-        top: -10,
-        right: -10,
-        child: GestureDetector(
-        onTap: () {
-        Navigator.of(context).pop();
-        },
-        child: CircleAvatar(
-        radius: 15,
-        backgroundColor: Colors.grey[300],
-        child: Icon(Icons.close, color: Colors.black, size: 18),
-        ),
-        ),
-        ),
-        Positioned(
-        top: -35,
-        child: Container(
-        padding: EdgeInsets.all(8),
-        decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        ),
-        child: ClipRRect(
-        borderRadius: BorderRadius.circular(10),
-        child: Container(
-        color: AppColors.appLightBlueColor,
-        height: 60,
-        width: 60,
-        alignment: Alignment.center,
-        child: Icon(Icons.star, color: Colors.blue, size: 30),
-        ),
-        ),
-        ),
-        ),
-        ],
-        ),
-        ),
         );
       },
     );
   }
+
   Widget _buildPlanDetail(String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
         children: [
           Expanded(
-            flex: 2,
+            flex: 3,
             child: Text(
               label,
               style: const TextStyle(
@@ -393,7 +415,7 @@ class _UpgradePlanScreenState extends State<UpgradePlanScreen> {
             flex: 1,
             child: Text(':',
                 style: TextStyle(
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w600,
                   color: AppColors.appBlackColor,
                   fontSize: 14,
                   fontFamily: 'Sofia Sans',
@@ -401,9 +423,9 @@ class _UpgradePlanScreenState extends State<UpgradePlanScreen> {
           ),
           Expanded(
             flex: 2,
-            child:  Text(value,
+            child: Text(value,
                 style: const TextStyle(
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w600,
                   color: AppColors.appBlackColor,
                   fontSize: 14,
                   fontFamily: 'Sofia Sans',
@@ -414,5 +436,3 @@ class _UpgradePlanScreenState extends State<UpgradePlanScreen> {
     );
   }
 }
-
-

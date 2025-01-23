@@ -7,16 +7,15 @@ import 'package:paycron/network/api_call/url.dart';
 import 'package:paycron/utils/common_variable.dart';
 import 'package:paycron/utils/my_toast.dart';
 
-
-class ProductDetailViewController extends GetxController{
-
+class ProductDetailViewController extends GetxController {
   ///---------------------Product Detail---------------
   RxString productName = "".obs;
   RxString productId = "".obs;
   RxString productDescription = "".obs;
   RxString productImage = "".obs;
   RxString productPrice = "".obs;
-  RxString createdOn =''.obs;
+  RxString createdOn = ''.obs;
+  RxString productIds = ''.obs;
 
   var variableController = Get.find<VariableController>();
 
@@ -29,7 +28,8 @@ class ProductDetailViewController extends GetxController{
     variableController.loading.value = true;
 
     try {
-      var res = await ApiCall.getApiCall(MyUrls.singleProduct, CommonVariable.token.value, id);
+      var res = await ApiCall.getApiCall(
+          MyUrls.singleProduct, CommonVariable.token.value, id);
 
       debugPrint("*************************");
       debugPrint("API Response: $res");
@@ -37,9 +37,7 @@ class ProductDetailViewController extends GetxController{
 
       if (res != null && res is Map<String, dynamic>) {
         variableController.loading.value = false;
-
         allSingleProductDataList.clear();
-
         var singleProductData = ResSingleProductData.fromJson(res);
         allSingleProductDataList.add(singleProductData);
         productName.value = allSingleProductDataList[0].proName;
@@ -48,6 +46,7 @@ class ProductDetailViewController extends GetxController{
         productImage.value = allSingleProductDataList[0].image;
         productPrice.value = allSingleProductDataList[0].price;
         createdOn.value = allSingleProductDataList[0].createdOn;
+        productIds.value = allSingleProductDataList[0].sId;
       } else {
         MyToast.toast("Failed to retrieve product data");
         variableController.loading.value = false;
@@ -58,5 +57,4 @@ class ProductDetailViewController extends GetxController{
       variableController.loading.value = false;
     }
   }
-
 }

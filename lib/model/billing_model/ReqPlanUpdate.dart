@@ -4,7 +4,7 @@ class ReqPlanUpdate {
   ReqPlanUpdate({required this.planId});
 
   ReqPlanUpdate.fromJson(Map<String, dynamic> json) {
-    planId = json['plan_id']??'';
+    planId = json['plan_id'] ?? '';
   }
 
   Map<String, dynamic> toJson() {

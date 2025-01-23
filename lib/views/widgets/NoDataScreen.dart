@@ -46,6 +46,3 @@ class NoDataFoundCard extends StatelessWidget {
     );
   }
 }
-
-
-

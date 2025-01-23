@@ -44,15 +44,15 @@ class Business {
       required this.iV});
 
   Business.fromJson(Map<String, dynamic> json) {
-    sId = json['_id']??"";
-    userId = json['user_id']??"";
+    sId = json['_id'] ?? "";
+    userId = json['user_id'] ?? "";
     accountId = (json['account_id'] != null
         ? new AccountId.fromJson(json['account_id'])
         : null)!;
-    role = json['role']??"";
-    isDeleted = json['is_deleted']??false;
-    lastUpdated = json['last_updated']??"";
-    iV = json['__v']??0;
+    role = json['role'] ?? "";
+    isDeleted = json['is_deleted'] ?? false;
+    lastUpdated = json['last_updated'] ?? "";
+    iV = json['__v'] ?? 0;
   }
 
   Map<String, dynamic> toJson() {
@@ -80,7 +80,7 @@ class AccountId {
     businessDetail = (json['business_detail'] != null
         ? new BusinessDetail.fromJson(json['business_detail'])
         : null)!;
-    sId = json['_id']??"";
+    sId = json['_id'] ?? "";
   }
 
   Map<String, dynamic> toJson() {
@@ -99,7 +99,7 @@ class BusinessDetail {
   BusinessDetail({required this.businessName});
 
   BusinessDetail.fromJson(Map<String, dynamic> json) {
-    businessName = json['business_name']??"";
+    businessName = json['business_name'] ?? "";
   }
 
   Map<String, dynamic> toJson() {
@@ -156,23 +156,23 @@ class Userdetails {
         ? new Location.fromJson(json['location'])
         : null)!;
     ssn = (json['ssn'] != null ? new Ssn.fromJson(json['ssn']) : null)!;
-    sId = json['_id']??"";
-    fullName = json['full_name']??"";
-    email = json['email']??"";
-    isVerfied = json['is_verfied']??false;
-    password = json['password']??"";
-    phone = json['phone']??"";
-    image = json['image']??"";
-    role = json['role']??"";
-    position = json['position']??"";
-    isDeleted = json['is_deleted']??false;
-    isDeletedRequest = json['is_deleted_request']??false;
-    isDeletedSuper = json['is_deleted_super']??false;
-    isAgreed = json['is_agreed']??false;
-    dob = json['dob']??"";
-    lastUpdated = json['last_updated']??"";
-    createdOn = json['created_on']??"";
-    iV = json['__v']??0;
+    sId = json['_id'] ?? "";
+    fullName = json['full_name'] ?? "";
+    email = json['email'] ?? "";
+    isVerfied = json['is_verfied'] ?? false;
+    password = json['password'] ?? "";
+    phone = json['phone'] ?? "";
+    image = json['image'] ?? "";
+    role = json['role'] ?? "";
+    position = json['position'] ?? "";
+    isDeleted = json['is_deleted'] ?? false;
+    isDeletedRequest = json['is_deleted_request'] ?? false;
+    isDeletedSuper = json['is_deleted_super'] ?? false;
+    isAgreed = json['is_agreed'] ?? false;
+    dob = json['dob'] ?? "";
+    lastUpdated = json['last_updated'] ?? "";
+    createdOn = json['created_on'] ?? "";
+    iV = json['__v'] ?? 0;
   }
 
   Map<String, dynamic> toJson() {
@@ -212,14 +212,18 @@ class Location {
   late String postalcode;
 
   Location(
-      {required this.address, required this.country, required this.city, required this.state, required this.postalcode});
+      {required this.address,
+      required this.country,
+      required this.city,
+      required this.state,
+      required this.postalcode});
 
   Location.fromJson(Map<String, dynamic> json) {
-    address = json['address']??"";
-    country = json['country']??"";
-    city = json['city']??"";
-    state = json['state']??"";
-    postalcode = json['postalcode']??"";
+    address = json['address'] ?? "";
+    country = json['country'] ?? "";
+    city = json['city'] ?? "";
+    state = json['state'] ?? "";
+    postalcode = json['postalcode'] ?? "";
   }
 
   Map<String, dynamic> toJson() {
@@ -240,8 +244,8 @@ class Ssn {
   Ssn({required this.ssnNumber, required this.ssnUpload});
 
   Ssn.fromJson(Map<String, dynamic> json) {
-    ssnNumber = json['ssn_number']??"";
-    ssnUpload = json['ssn_upload']??"";
+    ssnNumber = json['ssn_number'] ?? "";
+    ssnUpload = json['ssn_upload'] ?? "";
   }
 
   Map<String, dynamic> toJson() {

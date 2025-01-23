@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:csv/csv.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
@@ -28,10 +28,16 @@ class InActiveController extends GetxController {
   final endDate = ''.obs;
   final selectedIndex = 1.obs;
 
-
   InActiveController() {
     final DateTime now = DateTime.now();
-    final DateTime lastYear = DateTime(now.year - 1);
+    final DateTime last7Days = DateTime.now().subtract(const Duration(days: 7));
+    setDateRange(now, last7Days);
+  }
+  void setDateRange(DateTime end, DateTime start) {
+    endDate.value =  DateFormat.yMMMd().format(end);
+    startDate.value =  DateFormat.yMMMd().format(start);
+    buttonText.value =
+    '${DateFormat('dd MMM, yy').format(start)} - ${DateFormat('dd MMM, yy').format(end)}';
   }
 
   void callMethod() async {
@@ -39,7 +45,7 @@ class InActiveController extends GetxController {
       "": "",
     };
     Map<String, dynamic> argumentMap = {
-    "\"is_deleted\"": true,
+      "\"is_deleted\"": true,
     };
     await getAllCustomerData(
       CommonVariable.businessId.value,
@@ -95,42 +101,51 @@ class InActiveController extends GetxController {
             // Zigzag Button Layout
             Column(
               children: [
-                // First Row
                 Row(
                   children: [
-                    _buildOptionButton("Today", 1,context),
-                    const SizedBox(width: 8),
-                    _buildOptionButton("Yesterday", 2,context),
+                    Expanded(
+                      child: _buildOptionButton("Today", 1, context),
+                    ),
+                    const SizedBox(width: 8), // Spacing between buttons
+                    Expanded(
+                      child: _buildOptionButton("Yesterday", 2, context),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8), // Vertical spacing between rows
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildOptionButton("Last 7 days", 3, context),
+                    ),
+                    const SizedBox(width: 8), // Spacing between buttons
+                    Expanded(
+                      child: _buildOptionButton("Last 30 days", 4, context),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 8),
-
-                // Second Row
                 Row(
                   children: [
-                    const Spacer(flex: 1),
-                    _buildOptionButton("Last 7 days", 3,context),
+                    Expanded(
+                      child: _buildOptionButton("Last Month", 5, context),
+                    ),
                     const SizedBox(width: 8),
-                    _buildOptionButton("Last 30 days", 4,context),
+                    Expanded(
+                      child: _buildOptionButton("Last 2 months", 6, context),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 8),
-                // Third Row
                 Row(
                   children: [
-                    _buildOptionButton("Last Month", 5,context),
+                    Expanded(
+                      child: _buildOptionButton("Last 6 months", 7, context),
+                    ),
                     const SizedBox(width: 8),
-                    _buildOptionButton("Last 2 months", 6,context),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                // Fourth Row
-                Row(
-                  children: [
-                    const Spacer(flex: 1),
-                    _buildOptionButton("Last 6 months", 7,context),
-                    const SizedBox(width: 8),
-                    _buildOptionButton("Last 1 year", 8,context),
+                    Expanded(
+                      child: _buildOptionButton("Last 1 year", 8, context),
+                    ),
                   ],
                 ),
               ],
@@ -139,13 +154,16 @@ class InActiveController extends GetxController {
             ElevatedButton.icon(
               onPressed: () {
                 Navigator.pop(context);
-                Get.to(RangeDatePickerScreen(onSubmit: (DateTime? pickStartDate, DateTime? pickEndDate) {
-                  buttonText.value = '${DateFormat.yMMMd().format(pickStartDate!)} - ${DateFormat.yMMMd().format(pickEndDate!)}';
-                  startDate.value = DateFormat.yMMMd().format(pickStartDate);
-                  endDate.value = DateFormat.yMMMd().format(pickEndDate);
-                  callMethod();
-                  Navigator.pop(context);
-                },));
+                Get.to(RangeDatePickerScreen(
+                  onSubmit: (DateTime? pickStartDate, DateTime? pickEndDate) {
+                    buttonText.value =
+                        '${DateFormat('dd MMM, yy').format(pickStartDate!)} - ${DateFormat('dd MMM, yy').format(pickEndDate!)}';
+                    startDate.value = DateFormat.yMMMd().format(pickStartDate);
+                    endDate.value = DateFormat.yMMMd().format(pickEndDate);
+                    callMethod();
+                    Navigator.pop(context);
+                  },
+                ));
               },
               icon: const Icon(Icons.calendar_today),
               label: const Text("Custom range"),
@@ -168,13 +186,13 @@ class InActiveController extends GetxController {
     );
   }
 
-  Widget _buildOptionButton(String label, int index,BuildContext context) {
+  Widget _buildOptionButton(String label, int index, BuildContext context) {
     return Expanded(
       flex: 4,
       child: GestureDetector(
         onTap: () {
-          selectedIndex.value= index;
-          _handleDateSelection(index,context);
+          selectedIndex.value = index;
+          _handleDateSelection(index, context);
         },
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
@@ -197,15 +215,13 @@ class InActiveController extends GetxController {
     );
   }
 
-  void _handleDateSelection(int index,BuildContext context) {
-
+  void _handleDateSelection(int index, BuildContext context) {
     DateTime now = DateTime.now();
     DateTime yesterday = DateTime.now().subtract(const Duration(days: 1));
     DateTime last7Days = DateTime.now().subtract(const Duration(days: 7));
     DateTime last30Days = DateTime.now().subtract(const Duration(days: 30));
     DateTime last6Months = DateTime.now().subtract(const Duration(days: 180));
     DateTime lastYear = DateTime.now().subtract(const Duration(days: 365));
-
 
     DateTime start, end;
 
@@ -245,7 +261,8 @@ class InActiveController extends GetxController {
         return;
     }
 
-    buttonText.value = '${DateFormat.yMMMd().format(start)} - ${DateFormat.yMMMd().format(end)}';
+    buttonText.value =
+    '${DateFormat('dd MMM, yy').format(start)} - ${DateFormat('dd MMM, yy').format(end)}';
     startDate.value = DateFormat.yMMMd().format(start);
     endDate.value = DateFormat.yMMMd().format(end);
 
@@ -253,7 +270,8 @@ class InActiveController extends GetxController {
     Navigator.pop(context);
   }
 
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
 
   Future<void> downloadCSV() async {
     try {
@@ -276,8 +294,9 @@ class InActiveController extends GetxController {
 
         csvRows.add([
           customer.info.custName,
-          GeneralMethods.maskAccountNumber(
-              customer.bankId.isNotEmpty ? customer.bankId[0].accountNumber : 'N/A'),
+          GeneralMethods.maskAccountNumber(customer.bankId.isNotEmpty
+              ? customer.bankId[0].accountNumber
+              : 'N/A'),
           customer.info.email,
           "$formattedDate | $formattedTime"
         ]);
@@ -289,7 +308,6 @@ class InActiveController extends GetxController {
       if (status.isGranted) {
         Directory? downloadsDirectory = await getExternalStorageDirectory();
         if (downloadsDirectory != null) {
-
           final filePath = "${downloadsDirectory.path}/InactiveCustomers.csv";
           final file = File(filePath);
 
@@ -346,7 +364,8 @@ class InActiveController extends GetxController {
       }
     } catch (e) {
       debugPrint("Exception while opening file: $e");
-      MyToast.toast("An error occurred while opening the file. Please try again.");
+      MyToast.toast(
+          "An error occurred while opening the file. Please try again.");
     }
   }
 
@@ -363,15 +382,14 @@ class InActiveController extends GetxController {
     );
   }
 
-
   getAllCustomerData(
-      String businessId,
-      String query,
-      String argument,
-      String startDate,
-      String endDate,
-      String sort,
-      ) async {
+    String businessId,
+    String query,
+    String argument,
+    String startDate,
+    String endDate,
+    String sort,
+  ) async {
     variableController.loading.value = true;
 
     try {
@@ -398,11 +416,11 @@ class InActiveController extends GetxController {
         variableController.loading.value = false;
 
         List<ResAllFilterCustomerData> customerList =
-        JsonUtils.parseCustomerData(res);
+            JsonUtils.parseCustomerData(res);
         allCustomerDataList.addAll(customerList);
 
         if (allCustomerDataList.isEmpty) {
-          MyToast.toast("No customers found.");
+          // MyToast.toast("No customers found.");
           variableController.loading.value = false;
         }
       } else {
@@ -435,121 +453,5 @@ class JsonUtils {
     }
   }
 }
-// void setDateRange(DateTime end, DateTime start) {
-//   // Swapping parameters
-//   endDate.value = DateFormat.yMMMd().format(end);
-//   startDate.value = DateFormat.yMMMd().format(start);
-//   buttonText.value = '${startDate.value} - ${endDate.value}'; // Changed order
-// }
-//
-// Future<void> showDatePickerDialog(BuildContext context) async {
-//   final DateTime now = DateTime.now();
-//
-//   await showModalBottomSheet(
-//     context: context,
-//     shape: RoundedRectangleBorder(
-//       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-//     ),
-//     builder: (context) {
-//       return Container(
-//         padding: EdgeInsets.all(16),
-//         child: SingleChildScrollView(
-//           child: Column(
-//             crossAxisAlignment: CrossAxisAlignment.start,
-//             children: [
-//               const Text(
-//                 'Select Date',
-//                 style: TextStyle(
-//                   fontSize: 18,
-//                   fontWeight: FontWeight.bold,
-//                   color: Colors.black87,
-//                 ),
-//               ),
-//               SizedBox(height: 20),
-//               ListTile(
-//                 leading: Icon(Icons.today, color: Colors.blue),
-//                 title: Text('Today'),
-//                 onTap: () {
-//                   setDateRange(now, now);
-//                   callMethod();
-//                   Navigator.pop(context);
-//                 },
-//               ),
-//               ListTile(
-//                 leading: Icon(Icons.calendar_today, color: Colors.orange),
-//                 title: Text('Yesterday'),
-//                 onTap: () {
-//                   setDateRange(now.subtract(Duration(days: 1)),
-//                       now.subtract(Duration(days: 1)));
-//                   callMethod();
-//                   Navigator.pop(context);
-//                 },
-//               ),
-//               ListTile(
-//                 leading: Icon(Icons.date_range, color: Colors.green),
-//                 title: Text('Last 7 Days'),
-//                 onTap: () {
-//                   setDateRange(
-//                       now, now.subtract(Duration(days: 7))); // Swapped dates
-//                   callMethod();
-//                   Navigator.pop(context);
-//                 },
-//               ),
-//               ListTile(
-//                 leading: Icon(Icons.date_range, color: Colors.purple),
-//                 title: Text('Last 30 Days'),
-//                 onTap: () {
-//                   setDateRange(
-//                       now, now.subtract(Duration(days: 30))); // Swapped dates
-//                   callMethod();
-//                   Navigator.pop(context);
-//                 },
-//               ),
-//               ListTile(
-//                 leading: Icon(Icons.date_range, color: Colors.deepPurple),
-//                 title: Text('Last 6 Months'),
-//                 onTap: () {
-//                   setDateRange(now,
-//                       DateTime(now.year, now.month - 6)); // Swapped dates
-//                   callMethod();
-//                   Navigator.pop(context);
-//                 },
-//               ),
-//               ListTile(
-//                 leading:
-//                 Icon(Icons.calendar_view_month, color: Colors.indigo),
-//                 title: Text('Last 1 Year'),
-//                 onTap: () {
-//                   final DateTime lastYear = DateTime(now.year - 1);
-//                   setDateRange(now, lastYear); // Swapped dates
-//                   callMethod();
-//                   Navigator.pop(context);
-//                 },
-//               ),
-//               ListTile(
-//                 leading: Icon(Icons.calendar_today, color: Colors.red),
-//                 title: Text('Custom Range'),
-//                 onTap: () async {
-//                   Navigator.pop(context);
-//                   await _pickCustomDateRange(context);
-//                   callMethod();
-//                 },
-//               ),
-//             ],
-//           ),
-//         ),
-//       );
-//     },
-//   );
-// }
-//
-// Future<void> _pickCustomDateRange(BuildContext context) async {
-//   final DateTimeRange? picked = await showDateRangePicker(
-//     context: context,
-//     firstDate: DateTime(2000),
-//     lastDate: DateTime(2100),
-//   );
-//   if (picked != null) {
-//     setDateRange(picked.start, picked.end); // Correct order for swapping
-//   }
-// }
+
+

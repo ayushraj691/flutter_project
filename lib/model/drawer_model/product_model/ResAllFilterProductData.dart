@@ -13,29 +13,29 @@ class ResAllFilterProductData {
 
   ResAllFilterProductData(
       {required this.sId,
-       required this.businessId,
-       required this.proName,
-       required this.proId,
-       required this.description,
-       required this.price,
-       required this.priceValue,
-       required this.image,
-       required this.isDeleted,
-       required this.createdOn,
-       required this.lastUpdated});
+      required this.businessId,
+      required this.proName,
+      required this.proId,
+      required this.description,
+      required this.price,
+      required this.priceValue,
+      required this.image,
+      required this.isDeleted,
+      required this.createdOn,
+      required this.lastUpdated});
 
   ResAllFilterProductData.fromJson(Map<String, dynamic> json) {
-    sId = json['_id']??"";
-    businessId = json['business_id']??'';
-    proName = json['pro_name']??"";
-    proId = json['pro_id']??"";
-    description = json['description']??"";
-    price = json['price']??"";
-    priceValue = json['price_value']??"";
-    image = json['image']??"";
-    isDeleted = json['is_deleted']??"";
-    createdOn = json['created_on']??"";
-    lastUpdated = json['last_updated']??"";
+    sId = json['_id'] ?? "";
+    businessId = json['business_id'] ?? '';
+    proName = json['pro_name'] ?? "";
+    proId = json['pro_id'] ?? "";
+    description = json['description'] ?? "";
+    price = json['price'] ?? "";
+    priceValue = json['price_value'] ?? "";
+    image = json['image'] ?? "";
+    isDeleted = json['is_deleted'] ?? "";
+    createdOn = json['created_on'] ?? "";
+    lastUpdated = json['last_updated'] ?? "";
   }
 
   Map<String, dynamic> toJson() {

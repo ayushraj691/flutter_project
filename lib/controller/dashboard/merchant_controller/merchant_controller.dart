@@ -1,9 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
-import 'package:get/get_rx/get_rx.dart';
-import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:intl/intl.dart';
-import 'package:paycron/controller/dashboard/merchant_controller/change_password_controller.dart';
 import 'package:paycron/controller/variable_controller.dart';
 import 'package:paycron/model/profileModel/ResSingleUser.dart';
 import 'package:paycron/network/api_call/api_call.dart';
@@ -11,28 +8,28 @@ import 'package:paycron/network/api_call/url.dart';
 import 'package:paycron/utils/common_variable.dart';
 import 'package:paycron/utils/my_toast.dart';
 
-class MerchantController extends GetxController{
+class MerchantController extends GetxController {
   var variableController = Get.find<VariableController>();
 
-  RxString Id =''.obs;
+  RxString Id = ''.obs;
   Rx<TextEditingController> fullName = TextEditingController().obs;
   Rx<TextEditingController> email = TextEditingController().obs;
   RxString emailId = ''.obs;
-  RxBool isVerfied=false.obs;
-  RxString password="".obs;
+  RxBool isVerfied = false.obs;
+  RxString password = "".obs;
   Rx<TextEditingController> phone = TextEditingController().obs;
   RxString phoneNo = ''.obs;
-  RxString image="".obs;
-  RxString role="".obs;
-  RxString position="".obs;
-  RxBool isDeleted=false.obs;
-  RxBool isDeletedRequest=false.obs;
-  RxBool isDeletedSuper=false.obs;
-  RxBool isAgreed=false.obs;
+  RxString image = "".obs;
+  RxString role = "".obs;
+  RxString position = "".obs;
+  RxBool isDeleted = false.obs;
+  RxBool isDeletedRequest = false.obs;
+  RxBool isDeletedSuper = false.obs;
+  RxBool isAgreed = false.obs;
   Rx<TextEditingController> dob = TextEditingController().obs;
-  RxString lastUpdated="".obs;
-  RxString createdOn="".obs;
-  RxString ssnUpload=''.obs;
+  RxString lastUpdated = "".obs;
+  RxString createdOn = "".obs;
+  RxString ssnUpload = ''.obs;
   Rx<TextEditingController> country = TextEditingController().obs;
   Rx<TextEditingController> state = TextEditingController().obs;
   Rx<TextEditingController> pinCode = TextEditingController().obs;
@@ -40,13 +37,12 @@ class MerchantController extends GetxController{
   Rx<TextEditingController> streetAddress = TextEditingController().obs;
   Rx<TextEditingController> ssnNumber = TextEditingController().obs;
 
-
-
   getSingleUser(String id) async {
     variableController.loading.value = true;
     debugPrint("************$id*************");
     try {
-      var res = await ApiCall.getApiCall(MyUrls.singleUser, CommonVariable.token.value, id);
+      var res = await ApiCall.getApiCall(
+          MyUrls.singleUser, CommonVariable.token.value, id);
       debugPrint("*************************");
       debugPrint("API Response: $res");
       debugPrint("*************************");
@@ -71,7 +67,7 @@ class MerchantController extends GetxController{
         DateTime dateTime = DateTime.parse(resSingleUser.dob!).toLocal();
         String formattedDate = DateFormat('dd MMM, yyyy').format(dateTime);
         dob.value.text = formattedDate;
-        lastUpdated.value = (resSingleUser.lastUpdated ??  '');
+        lastUpdated.value = (resSingleUser.lastUpdated ?? '');
         createdOn.value = (resSingleUser.createdOn ?? '');
         ssnNumber.value.text = (resSingleUser.ssn.ssnNumber ?? '');
         ssnUpload.value = (resSingleUser.ssn.ssnUpload ?? '');
@@ -90,6 +86,4 @@ class MerchantController extends GetxController{
       variableController.loading.value = false;
     }
   }
-
-
 }

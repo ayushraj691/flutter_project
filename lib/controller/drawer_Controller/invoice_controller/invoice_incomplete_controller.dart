@@ -1,7 +1,13 @@
 import 'dart:convert';
+import 'dart:io';
+
+import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:open_filex/open_filex.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:paycron/controller/variable_controller.dart';
 import 'package:paycron/model/drawer_model/transaction_model/ResAllTransaction.dart';
 import 'package:paycron/model/drawer_model/verifyModel/ReqDeleteTransactionData.dart';
@@ -10,9 +16,9 @@ import 'package:paycron/network/api_call/url.dart';
 import 'package:paycron/utils/common_variable.dart';
 import 'package:paycron/utils/my_toast.dart';
 import 'package:paycron/views/widgets/date_picker_page.dart';
+import 'package:permission_handler/permission_handler.dart';
 
-class IncompleteInvoiceController extends GetxController{
-
+class IncompleteInvoiceController extends GetxController {
   var variableController = Get.find<VariableController>();
   List<ResTransactionDetail> incompleteInvoiceList =
       List<ResTransactionDetail>.empty(growable: true).obs;
@@ -47,6 +53,20 @@ class IncompleteInvoiceController extends GetxController{
 
   final buttonText = 'Select Date'.obs;
   final selectedIndex = 1.obs;
+
+  IncompleteInvoiceController() {
+    final DateTime now = DateTime.now();
+    final DateTime last7Days = DateTime.now().subtract(const Duration(days: 7));
+    setDateRange(now, last7Days);
+  }
+  void setDateRange(DateTime end, DateTime start) {
+    endDate.value =  DateFormat.yMMMd().format(end);
+    startDate.value =  DateFormat.yMMMd().format(start);
+    buttonText.value =
+    '${DateFormat('dd MMM, yy').format(start)} - ${DateFormat('dd MMM, yy').format(end)}';
+  }
+
+
   void showSelectDurationBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -88,45 +108,53 @@ class IncompleteInvoiceController extends GetxController{
               ),
             ),
             const SizedBox(height: 16),
-            // Zigzag Button Layout
             Column(
               children: [
-                // First Row
                 Row(
                   children: [
-                    _buildOptionButton("Today", 1,context),
-                    const SizedBox(width: 8),
-                    _buildOptionButton("Yesterday", 2,context),
+                    Expanded(
+                      child: _buildOptionButton("Today", 1, context),
+                    ),
+                    const SizedBox(width: 8), // Spacing between buttons
+                    Expanded(
+                      child: _buildOptionButton("Yesterday", 2, context),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8), // Vertical spacing between rows
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildOptionButton("Last 7 days", 3, context),
+                    ),
+                    const SizedBox(width: 8), // Spacing between buttons
+                    Expanded(
+                      child: _buildOptionButton("Last 30 days", 4, context),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 8),
-
-                // Second Row
                 Row(
                   children: [
-                    const Spacer(flex: 1),
-                    _buildOptionButton("Last 7 days", 3,context),
+                    Expanded(
+                      child: _buildOptionButton("Last Month", 5, context),
+                    ),
                     const SizedBox(width: 8),
-                    _buildOptionButton("Last 30 days", 4,context),
+                    Expanded(
+                      child: _buildOptionButton("Last 2 months", 6, context),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 8),
-                // Third Row
                 Row(
                   children: [
-                    _buildOptionButton("Last Month", 5,context),
+                    Expanded(
+                      child: _buildOptionButton("Last 6 months", 7, context),
+                    ),
                     const SizedBox(width: 8),
-                    _buildOptionButton("Last 2 months", 6,context),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                // Fourth Row
-                Row(
-                  children: [
-                    const Spacer(flex: 1),
-                    _buildOptionButton("Last 6 months", 7,context),
-                    const SizedBox(width: 8),
-                    _buildOptionButton("Last 1 year", 8,context),
+                    Expanded(
+                      child: _buildOptionButton("Last 1 year", 8, context),
+                    ),
                   ],
                 ),
               ],
@@ -135,13 +163,16 @@ class IncompleteInvoiceController extends GetxController{
             ElevatedButton.icon(
               onPressed: () {
                 Navigator.pop(context);
-                Get.to(RangeDatePickerScreen(onSubmit: (DateTime? pickStartDate, DateTime? pickEndDate) {
-                  buttonText.value = '${DateFormat.yMMMd().format(pickStartDate!)} - ${DateFormat.yMMMd().format(pickEndDate!)}';
-                  startDate.value = DateFormat.yMMMd().format(pickStartDate);
-                  endDate.value = DateFormat.yMMMd().format(pickEndDate);
-                  callMethod();
-                  Navigator.pop(context);
-                },));
+                Get.to(RangeDatePickerScreen(
+                  onSubmit: (DateTime? pickStartDate, DateTime? pickEndDate) {
+                    buttonText.value =
+                        '${DateFormat('dd MMM, yy').format(pickStartDate!)} - ${DateFormat('dd MMM, yy').format(pickEndDate!)}';
+                    startDate.value = DateFormat.yMMMd().format(pickStartDate);
+                    endDate.value = DateFormat.yMMMd().format(pickEndDate);
+                    callMethod();
+                    Navigator.pop(context);
+                  },
+                ));
               },
               icon: const Icon(Icons.calendar_today),
               label: const Text("Custom range"),
@@ -164,13 +195,13 @@ class IncompleteInvoiceController extends GetxController{
     );
   }
 
-  Widget _buildOptionButton(String label, int index,BuildContext context) {
+  Widget _buildOptionButton(String label, int index, BuildContext context) {
     return Expanded(
       flex: 4,
       child: GestureDetector(
         onTap: () {
-          selectedIndex.value= index;
-          _handleDateSelection(index,context);
+          selectedIndex.value = index;
+          _handleDateSelection(index, context);
         },
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
@@ -193,15 +224,13 @@ class IncompleteInvoiceController extends GetxController{
     );
   }
 
-  void _handleDateSelection(int index,BuildContext context) {
-
+  void _handleDateSelection(int index, BuildContext context) {
     DateTime now = DateTime.now();
     DateTime yesterday = DateTime.now().subtract(const Duration(days: 1));
     DateTime last7Days = DateTime.now().subtract(const Duration(days: 7));
     DateTime last30Days = DateTime.now().subtract(const Duration(days: 30));
     DateTime last6Months = DateTime.now().subtract(const Duration(days: 180));
     DateTime lastYear = DateTime.now().subtract(const Duration(days: 365));
-
 
     DateTime start, end;
 
@@ -241,7 +270,8 @@ class IncompleteInvoiceController extends GetxController{
         return;
     }
 
-    buttonText.value = '${DateFormat.yMMMd().format(start)} - ${DateFormat.yMMMd().format(end)}';
+    buttonText.value =
+    '${DateFormat('dd, yyyy').format(start)} - ${DateFormat('dd, yyyy').format(end)}';
     startDate.value = DateFormat.yMMMd().format(start);
     endDate.value = DateFormat.yMMMd().format(end);
 
@@ -249,12 +279,128 @@ class IncompleteInvoiceController extends GetxController{
     Navigator.pop(context);
   }
 
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+
+  Future<void> downloadCSV() async {
+    try {
+      final List<List<String>> csvRows = [
+        ['TransactionId', 'Customer', 'Amount', 'Created On', 'status']
+      ];
+
+      for (var transaction in incompleteInvoiceList) {
+        final createdDate = transaction.createdOn;
+        DateTime dateTime;
+        try {
+          dateTime = DateTime.parse(createdDate).toLocal();
+        } catch (e) {
+          debugPrint("Invalid date format: $createdDate");
+          dateTime = DateTime.now();
+        }
+
+        String formattedTime = DateFormat.jm().format(dateTime);
+        String formattedDate = DateFormat('dd MMM, yyyy').format(dateTime);
+
+        csvRows.add([
+          transaction.txnNumber,
+          transaction.custId!.info.custName,
+          transaction.payTotal.toString(),
+          "$formattedDate | $formattedTime",
+          transaction.payStatus
+        ]);
+      }
+
+      String csvString = const ListToCsvConverter().convert(csvRows);
+
+      var status = await Permission.storage.request();
+      if (status.isGranted) {
+        // Get the appropriate external storage directory
+        Directory? downloadsDirectory = await getExternalStorageDirectory();
+        if (downloadsDirectory != null) {
+          final filePath = "${downloadsDirectory.path}/incompleteInvoice.csv";
+          final file = File(filePath);
+
+          await file.writeAsString(csvString);
+          debugPrint("CSV file saved at: $filePath");
+
+          await flutterLocalNotificationsPlugin.show(
+            0,
+            'Download Complete',
+            'Tap to open the incompleteInvoice CSV file.',
+            const NotificationDetails(
+              android: AndroidNotificationDetails(
+                'download_channel',
+                'Downloads',
+                channelDescription: 'Notifications for file downloads',
+                importance: Importance.high,
+                priority: Priority.high,
+                playSound: true,
+              ),
+            ),
+            payload: filePath,
+          );
+
+          configureNotificationTapHandler(filePath);
+        } else {
+          debugPrint("Downloads directory not found.");
+        }
+      } else {
+        debugPrint("Storage permission denied.");
+      }
+    } catch (e) {
+      debugPrint("Error: $e");
+    }
+  }
+
+  Future<void> handleNotificationTap(String? payload) async {
+    try {
+      if (payload != null && payload.isNotEmpty) {
+        final file = File(payload);
+        if (file.existsSync()) {
+          final result = await OpenFilex.open(payload);
+          if (result.type != ResultType.done) {
+            debugPrint("Error opening file: ${result.message}");
+          } else {
+            debugPrint("File opened successfully: $payload");
+          }
+        } else {
+          debugPrint("File does not exist at the specified path: $payload");
+          MyToast.toast("File does not exist. Please try downloading again.");
+        }
+      } else {
+        debugPrint("Invalid file path: $payload");
+        MyToast.toast("Invalid file path. Unable to open the file.");
+      }
+    } catch (e) {
+      debugPrint("Exception while opening file: $e");
+      MyToast.toast(
+          "An error occurred while opening the file. Please try again.");
+    }
+  }
+
+  void configureNotificationTapHandler(String? payload) {
+    flutterLocalNotificationsPlugin.initialize(
+      const InitializationSettings(
+        android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+      ),
+      onDidReceiveNotificationResponse: (NotificationResponse response) async {
+        if (response.payload != null && response.payload!.isNotEmpty) {
+          handleNotificationTap(response.payload);
+        }
+      },
+    );
+  }
+
   deleteData(List<String> ids) async {
     variableController.loading.value = true;
-    ReqDeleteTransactionData reqDeleteTransactionData = ReqDeleteTransactionData(ids: ids);
+    ReqDeleteTransactionData reqDeleteTransactionData =
+        ReqDeleteTransactionData(ids: ids);
     debugPrint(json.encode(reqDeleteTransactionData.toJson()));
-    var res =
-    await ApiCall.postApiCalltoken(MyUrls.deletePayment, reqDeleteTransactionData,CommonVariable.token.value,CommonVariable.businessId.value);
+    var res = await ApiCall.postApiCalltoken(
+        MyUrls.deletePayment,
+        reqDeleteTransactionData,
+        CommonVariable.token.value,
+        CommonVariable.businessId.value);
     debugPrint("*************************");
     debugPrint("*****$res*******");
     debugPrint("*************************");
@@ -267,13 +413,13 @@ class IncompleteInvoiceController extends GetxController{
   }
 
   getAllInvoiceData(
-      String businessId,
-      String query,
-      String argument,
-      String startDate,
-      String endDate,
-      String sort,
-      ) async {
+    String businessId,
+    String query,
+    String argument,
+    String startDate,
+    String endDate,
+    String sort,
+  ) async {
     variableController.loading.value = true;
 
     try {
@@ -300,11 +446,11 @@ class IncompleteInvoiceController extends GetxController{
         variableController.loading.value = false;
 
         List<ResTransactionDetail> customerList =
-        JsonUtils.parseCustomerData(res);
+            JsonUtils.parseCustomerData(res);
         incompleteInvoiceList.addAll(customerList);
 
         if (incompleteInvoiceList.isEmpty) {
-          MyToast.toast("No Invoice found.");
+          // MyToast.toast("No Invoice found.");
         }
       } else {
         MyToast.toast("Something went wrong. Please try again.");
@@ -320,8 +466,7 @@ class IncompleteInvoiceController extends GetxController{
 }
 
 class JsonUtils {
-  static List<ResTransactionDetail> parseCustomerData(
-      dynamic jsonResponse) {
+  static List<ResTransactionDetail> parseCustomerData(dynamic jsonResponse) {
     if (jsonResponse is String) {
       final parsed = jsonDecode(jsonResponse);
       return (parsed['data'] as List)
@@ -335,5 +480,4 @@ class JsonUtils {
       throw Exception('Unexpected data format');
     }
   }
-
 }

@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:paycron/controller/variable_controller.dart';
@@ -7,8 +8,8 @@ import 'package:paycron/network/api_call/api_call.dart';
 import 'package:paycron/network/api_call/url.dart';
 import 'package:paycron/utils/my_toast.dart';
 
-class ForgotPasswordController extends GetxController{
-  var variableController=Get.find<VariableController>();
+class ForgotPasswordController extends GetxController {
+  var variableController = Get.find<VariableController>();
 
   final Rx<TextEditingController> emailController = TextEditingController().obs;
 
@@ -22,7 +23,8 @@ class ForgotPasswordController extends GetxController{
       emailErrorMessage = 'Email is required';
       FocusScope.of(context).requestFocus(emailFocusNode);
       return false;
-    } else if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(emailController.value.text)) {
+    } else if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+        .hasMatch(emailController.value.text)) {
       emailValid = false.obs;
       emailErrorMessage = 'Invalid Email';
       FocusScope.of(context).requestFocus(emailFocusNode);
@@ -32,7 +34,6 @@ class ForgotPasswordController extends GetxController{
       return true;
     }
   }
-
 
   getForgotPassword() async {
     variableController.loading.value = true;
@@ -64,5 +65,4 @@ class ForgotPasswordController extends GetxController{
       variableController.loading.value = false;
     }
   }
-
 }

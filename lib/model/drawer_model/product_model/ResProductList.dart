@@ -27,18 +27,18 @@ class ResProductList {
       required this.iV});
 
   ResProductList.fromJson(Map<String, dynamic> json) {
-    sId = json['_id']??"";
-    businessId = json['business_id']??"";
-    proName = json['pro_name']??"";
-    proId = json['pro_id']??"";
-    description = json['description']??"";
-    price = json['price']??"";
-    priceValue = json['price_value']??"";
-    image = json['image']??"";
-    isDeleted = json['is_deleted']??false;
-    createdOn = json['created_on']??"";
-    lastUpdated = json['last_updated']??"";
-    iV = json['__v']??"";
+    sId = json['_id'] ?? "";
+    businessId = json['business_id'] ?? "";
+    proName = json['pro_name'] ?? "";
+    proId = json['pro_id'] ?? "";
+    description = json['description'] ?? "";
+    price = json['price'] ?? "";
+    priceValue = json['price_value'] ?? "";
+    image = json['image'] ?? "";
+    isDeleted = json['is_deleted'] ?? false;
+    createdOn = json['created_on'] ?? "";
+    lastUpdated = json['last_updated'] ?? "";
+    iV = json['__v'] ?? "";
   }
 
   Map<String, dynamic> toJson() {

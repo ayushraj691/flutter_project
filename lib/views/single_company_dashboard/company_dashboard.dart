@@ -16,22 +16,25 @@ import 'package:paycron/views/widgets/common_button.dart';
 
 class CompanyDashboard extends StatefulWidget {
   const CompanyDashboard({super.key});
+
   @override
   State<CompanyDashboard> createState() => _CompanyDashboardState();
   final Color lightBlue = AppColors.appBlueLightColor;
   final Color blue = AppColors.appBlueColor;
 }
+
 class _CompanyDashboardState extends State<CompanyDashboard> {
   int _touchedIndex = -1;
   final reportController = Get.find<MainDashboardController>();
   final createPaymentController = Get.find<CreatePaymentController>();
   var allBusinessController = Get.find<AllBussinessController>();
+  bool hasShadow = false;
 
   void callMethod() async {
     allBusinessController.getFunds(CommonVariable.businessId.value);
   }
 
-    @override
+  @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
@@ -41,37 +44,53 @@ class _CompanyDashboardState extends State<CompanyDashboard> {
         backgroundColor: AppColors.appBackgroundColor,
         leading: IconButton(
           color: AppColors.appBlackColor,
-          icon: Icon(Icons.arrow_back),
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pop(context); // Action for back arrow
+            Navigator.pop(context);
           },
         ),
-        titleSpacing: 0, // Removes extra space between arrow and title
-        title: Obx(() => Text(
-          CommonVariable.businessName.value,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: AppColors.appTextColor,
-            fontFamily: 'Sofia Sans',
+        titleSpacing: 0,
+        title: Obx(
+          () => Text(
+            CommonVariable.businessName.value,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: AppColors.appTextColor,
+              fontFamily: Constants.Sofiafontfamily,
+            ),
           ),
-        ),),
+        ),
         actions: [
           Padding(
-            padding: const EdgeInsets.all(4.0),
+            padding: const EdgeInsets.only(left: 4.0,top: 4.0,bottom: 4.0),
             child: InkWell(
-              onTap: () => {
-                Get.to(const BusinessProfileScreen())
+              onTap: () {
+                Get.to(const BusinessProfileScreen());
               },
-              child: CircleAvatar(
-                radius: screenHeight / 45,
-                backgroundImage: AssetImage(ImageAssets.profile),
+              splashColor: Colors.transparent,
+              highlightColor: Colors.transparent,
+              child: Container(
+                width: screenHeight / 20, // Diameter of the circle
+                height: screenHeight / 20,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                    image: AssetImage(ImageAssets.profile),
+                    fit: BoxFit.fill,
+                    alignment: Alignment.center,
+                  ),
+                ),
               ),
             ),
           ),
           Builder(
             builder: (BuildContext context) => IconButton(
-              icon: Image.asset(ImageAssets.closeDrawer), // Your drawer icon
+              icon: Image.asset(ImageAssets.closeDrawer),
+              splashColor: Colors.transparent,
+              highlightColor: Colors.transparent,
               onPressed: () {
                 Scaffold.of(context).openEndDrawer();
               },
@@ -79,22 +98,22 @@ class _CompanyDashboardState extends State<CompanyDashboard> {
           ),
         ],
       ),
-      endDrawer:  const AppDrawer(),
-      body:  RefreshIndicator(
+      endDrawer: const AppDrawer(),
+      body: RefreshIndicator(
         onRefresh: _refreshData,
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
               children: [
-                const Align(
+                Align(
                   alignment: Alignment.topLeft,
                   child: Padding(
-                    padding: EdgeInsets.only(left: 12.0,top: 20,bottom: 10),
+                    padding: const EdgeInsets.only(left: 12.0, bottom: 10),
                     child: Text(
                       "Dashboard",
                       style: TextStyle(
-                        fontFamily: 'Sofia Sans',
+                        fontFamily: Constants.Sofiafontfamily,
                         color: AppColors.appBlackColor,
                         fontWeight: FontWeight.w600,
                         fontSize: 30,
@@ -106,12 +125,12 @@ class _CompanyDashboardState extends State<CompanyDashboard> {
                   padding: const EdgeInsets.only(right: 16.0),
                   child: Row(
                     children: [
-                      const Padding(
-                        padding: EdgeInsets.all(12.0),
+                      Padding(
+                        padding: const EdgeInsets.all(12.0),
                         child: Text(
                           "Reports Overview",
                           style: TextStyle(
-                            fontFamily: 'Sofia Sans',
+                            fontFamily: Constants.Sofiafontfamily,
                             color: AppColors.appBlackColor,
                             fontWeight: FontWeight.w500,
                             fontSize: 16,
@@ -119,10 +138,10 @@ class _CompanyDashboardState extends State<CompanyDashboard> {
                         ),
                       ),
                       const Spacer(),
-                      const Text(
+                      Text(
                         "Filter:",
                         style: TextStyle(
-                          fontFamily: 'Sofia Sans',
+                          fontFamily: Constants.Sofiafontfamily,
                           color: AppColors.appBlackColor,
                           fontWeight: FontWeight.w400,
                           fontSize: 14,
@@ -161,33 +180,31 @@ class _CompanyDashboardState extends State<CompanyDashboard> {
                             ),
                             items: reportController.filterItems
                                 .map((item) => DropdownMenuItem<String>(
-                              value: item,
-                              child: Padding(
-                                padding:
-                                const EdgeInsets.only(left: 10),
-                                child: Text(
-                                  item,
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ),
-                            ))
+                                      value: item,
+                                      child: Padding(
+                                        padding:
+                                            const EdgeInsets.only(left: 10),
+                                        child: Text(
+                                          item,
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                      ),
+                                    ))
                                 .toList(),
                             value: reportController.filterValue.value,
                             onChanged: (value) {
                               setState(() {
                                 reportController.filterValue.value =
-                                value as String;
+                                    value as String;
                               });
 
                               // Get the index of the selected item
-                              final selectedIndex = reportController
-                                  .filterItems
-                                  .indexOf(reportController
-                                  .filterValue.value);
+                              final selectedIndex = reportController.filterItems
+                                  .indexOf(reportController.filterValue.value);
                               if (selectedIndex != -1) {
-                                print('Selected index: ${selectedIndex + 1}');
+                                debugPrint('Selected index: ${selectedIndex + 1}');
                               }
                             },
                             buttonStyleData: const ButtonStyleData(
@@ -198,49 +215,6 @@ class _CompanyDashboardState extends State<CompanyDashboard> {
                             dropdownStyleData: const DropdownStyleData(
                               maxHeight: 100,
                             ),
-                            // dropdownSearchData: DropdownSearchData(
-                            //   searchController:
-                            //       reportController.metricsSearchController.value,
-                            //   searchInnerWidgetHeight: 50,
-                            //   searchInnerWidget: Padding(
-                            //     padding: const EdgeInsets.only(
-                            //       top: 8,
-                            //       bottom: 4,
-                            //       right: 8,
-                            //       left: 8,
-                            //     ),
-                            //     child: TextFormField(
-                            //       controller:
-                            //           reportController.metricsSearchController.value,
-                            //       decoration: InputDecoration(
-                            //         isDense: true,
-                            //         contentPadding: const EdgeInsets.symmetric(
-                            //           horizontal: 10,
-                            //           vertical: 8,
-                            //         ),
-                            //         prefixIcon: const Icon(
-                            //           Icons.search,
-                            //           color: Colors.grey,
-                            //         ),
-                            //         hintText: 'search name here.........',
-                            //         hintStyle: const TextStyle(fontSize: 12),
-                            //         border: OutlineInputBorder(
-                            //           borderRadius: BorderRadius.circular(8),
-                            //         ),
-                            //       ),
-                            //     ),
-                            //   ),
-                            //   searchMatchFn: (item, searchValue) {
-                            //     final itemValue = item.value.toString().toLowerCase();
-                            //     return itemValue.contains(searchValue.toLowerCase());
-                            //   },
-                            // ),
-                            // // This to clear the search value when you close the menu
-                            // onMenuStateChange: (isOpen) {
-                            //   if (!isOpen) {
-                            //     reportController.metricsSearchController.value.clear();
-                            //   }
-                            // },
                           ),
                         ),
                       ),
@@ -252,17 +226,18 @@ class _CompanyDashboardState extends State<CompanyDashboard> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18.0),
                   ),
-                  margin: EdgeInsets.all(10.0),
+                  margin: const EdgeInsets.all(10.0),
                   child: Padding(
-                    padding: const EdgeInsets.only(top: 16.0,right: 16.0,left: 16.0,bottom: 35.0),
+                    padding: const EdgeInsets.only(
+                        top: 16.0, right: 16.0, left: 16.0, bottom: 35.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text(
+                        Text(
                           'Customers',
                           style: TextStyle(
-                            fontFamily: 'Sofia Sans',
+                            fontFamily: Constants.Sofiafontfamily,
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
                             color: Colors.black,
@@ -283,16 +258,20 @@ class _CompanyDashboardState extends State<CompanyDashboard> {
                                     startDegreeOffset: -50,
                                     sections: _buildPieChartCurves(),
                                     pieTouchData: PieTouchData(
-                                      touchCallback: (FlTouchEvent event, pieTouchResponse) {
+                                      touchCallback: (FlTouchEvent event,
+                                          pieTouchResponse) {
                                         setState(() {
-                                          if (!event.isInterestedForInteractions ||
+                                          if (!event
+                                                  .isInterestedForInteractions ||
                                               pieTouchResponse == null ||
-                                              pieTouchResponse.touchedSection == null) {
+                                              pieTouchResponse.touchedSection ==
+                                                  null) {
                                             _touchedIndex = -1;
                                             return;
                                           }
                                           _touchedIndex = pieTouchResponse
-                                              .touchedSection!.touchedSectionIndex;
+                                              .touchedSection!
+                                              .touchedSectionIndex;
                                         });
                                       },
                                     ),
@@ -311,16 +290,16 @@ class _CompanyDashboardState extends State<CompanyDashboard> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18.0),
                   ),
-                  margin: EdgeInsets.all(10.0),
+                  margin: const EdgeInsets.all(10.0),
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
+                        Text(
                           'Verify Transaction',
                           style: TextStyle(
-                            fontFamily: 'Sofia Sans',
+                            fontFamily: Constants.Sofiafontfamily,
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
                             color: Colors.black,
@@ -332,10 +311,11 @@ class _CompanyDashboardState extends State<CompanyDashboard> {
                             Flexible(
                               flex: 2,
                               child: Padding(
-                                padding: const EdgeInsets.only(left: 8.0,right: 8.0,top: 8.0),
+                                padding: const EdgeInsets.only(
+                                    left: 8.0, right: 8.0, top: 8.0),
                                 child: SizedBox(
-                                  width: screenWidth, // Full width of its parent
-                                  height: 250, // Set a specific height
+                                  width: screenWidth,
+                                  height: 250,
                                   child: LineChart(sampleData1()),
                                 ),
                               ),
@@ -351,16 +331,16 @@ class _CompanyDashboardState extends State<CompanyDashboard> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18.0),
                   ),
-                  margin: EdgeInsets.all(10.0),
+                  margin: const EdgeInsets.all(10.0),
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
+                        Text(
                           'Download Transactions',
                           style: TextStyle(
-                            fontFamily: 'Sofia Sans',
+                            fontFamily: Constants.Sofiafontfamily,
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
                             color: Colors.black,
@@ -378,8 +358,10 @@ class _CompanyDashboardState extends State<CompanyDashboard> {
                                     padding: const EdgeInsets.only(top: 16),
                                     child: LayoutBuilder(
                                       builder: (context, constraints) {
-                                        final barsSpace = 4.0 * constraints.maxWidth / 400;
-                                        final barsWidth = 8.0 * constraints.maxWidth / 400;
+                                        final barsSpace =
+                                            4.0 * constraints.maxWidth / 400;
+                                        final barsWidth =
+                                            8.0 * constraints.maxWidth / 400;
                                         return BarChart(
                                           BarChartData(
                                             alignment: BarChartAlignment.center,
@@ -399,16 +381,20 @@ class _CompanyDashboardState extends State<CompanyDashboard> {
                                                 sideTitles: SideTitles(
                                                   showTitles: true,
                                                   reservedSize: 40,
-                                                  getTitlesWidget: (double value, TitleMeta meta) {
+                                                  getTitlesWidget:
+                                                      (double value,
+                                                          TitleMeta meta) {
                                                     // Custom Y-axis labels with dollar sign
-                                                    final text = '${value.toInt()}\$'; // Add $ sign here
+                                                    final text =
+                                                        '${value.toInt()}\$'; // Add $ sign here
                                                     return SideTitleWidget(
                                                       axisSide: meta.axisSide,
                                                       child: Text(
                                                         text,
                                                         style: const TextStyle(
                                                           color: Colors.black,
-                                                          fontWeight: FontWeight.bold,
+                                                          fontWeight:
+                                                              FontWeight.bold,
                                                           fontSize: 12,
                                                         ),
                                                       ),
@@ -417,17 +403,22 @@ class _CompanyDashboardState extends State<CompanyDashboard> {
                                                 ),
                                               ),
                                               topTitles: const AxisTitles(
-                                                sideTitles: SideTitles(showTitles: false),
+                                                sideTitles: SideTitles(
+                                                    showTitles: false),
                                               ),
                                               rightTitles: const AxisTitles(
-                                                sideTitles: SideTitles(showTitles: false),
+                                                sideTitles: SideTitles(
+                                                    showTitles: false),
                                               ),
                                             ),
                                             gridData: FlGridData(
                                               show: true,
-                                              checkToShowHorizontalLine: (value) => value % 10 == 0,
-                                              getDrawingHorizontalLine: (value) => FlLine(
-                                                color: AppColors.appGreyColor.withOpacity(0.1),
+                                              checkToShowHorizontalLine:
+                                                  (value) => value % 10 == 0,
+                                              getDrawingHorizontalLine:
+                                                  (value) => FlLine(
+                                                color: AppColors.appGreyColor
+                                                    .withOpacity(0.1),
                                                 strokeWidth: 1,
                                               ),
                                               drawVerticalLine: false,
@@ -436,17 +427,18 @@ class _CompanyDashboardState extends State<CompanyDashboard> {
                                               show: false,
                                             ),
                                             groupsSpace: barsSpace,
-                                            barGroups: getData(barsWidth, barsSpace),
+                                            barGroups:
+                                                getData(barsWidth, barsSpace),
                                           ),
                                         );
                                       },
                                     ),
                                   ),
-                                )
-                                ,
+                                ),
                               ),
                             ),
-                            SizedBox(width: screenWidth * 0.1), // Reduce spacing between chart and indicators
+                            SizedBox(width: screenWidth * 0.1),
+                            // Reduce spacing between chart and indicators
                           ],
                         ),
                       ],
@@ -454,7 +446,7 @@ class _CompanyDashboardState extends State<CompanyDashboard> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(top: 20.0,bottom: 10.0),
+                  padding: const EdgeInsets.only(top: 20.0, bottom: 10.0),
                   child: Center(
                     child: CommonButton(
                       buttonWidth: screenWidth * 0.9,
@@ -474,6 +466,7 @@ class _CompanyDashboardState extends State<CompanyDashboard> {
       ),
     );
   }
+
   Future<void> _refreshData() async {
     callMethod();
     setState(() {});
@@ -488,7 +481,8 @@ class _CompanyDashboardState extends State<CompanyDashboard> {
           tooltipRoundedRadius: 8,
           tooltipBorder: BorderSide(color: Colors.transparent),
         ),
-        touchCallback: (FlTouchEvent event, LineTouchResponse? touchResponse) {},
+        touchCallback:
+            (FlTouchEvent event, LineTouchResponse? touchResponse) {},
         handleBuiltInTouches: true,
       ),
       gridData: const FlGridData(
@@ -547,13 +541,8 @@ class _CompanyDashboardState extends State<CompanyDashboard> {
               },
             ),
           ),
-          rightTitles: AxisTitles(
-              sideTitles: SideTitles(showTitles: false)
-          ),
-          topTitles: AxisTitles(
-              sideTitles: SideTitles(showTitles: false)
-          )
-      ),
+          rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false))),
       borderData: FlBorderData(
         show: true,
         border: const Border(
@@ -617,7 +606,7 @@ class _CompanyDashboardState extends State<CompanyDashboard> {
       isCurved: true,
       color: AppColors.appBlackColor,
       barWidth: 4,
-      dotData: FlDotData(
+      dotData: const FlDotData(
         show: false,
       ),
       belowBarData: BarAreaData(

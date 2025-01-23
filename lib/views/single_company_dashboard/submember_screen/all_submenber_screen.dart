@@ -4,13 +4,13 @@ import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:paycron/controller/dashboard/submember_controller/all_submember_controller.dart';
 import 'package:paycron/controller/variable_controller.dart';
-import 'package:paycron/model/drawer_model/transaction_model/ResAllTransaction.dart';
 import 'package:paycron/model/profileModel/ResAllSubmemberModel.dart';
 import 'package:paycron/utils/color_constants.dart';
 import 'package:paycron/utils/common_variable.dart';
 import 'package:paycron/utils/string_constants.dart';
-import 'package:paycron/views/funds/transaction_detail.dart';
 import 'package:paycron/views/widgets/NoDataScreen.dart';
+
+import '../../../utils/image_assets.dart';
 
 class AllSubmemberScreen extends StatefulWidget {
   const AllSubmemberScreen({super.key});
@@ -34,13 +34,13 @@ class _AllSubmemberScreenState extends State<AllSubmemberScreen> {
   @override
   void initState() {
     Future.delayed(const Duration(seconds: 0), () async {
-      CallMethod();
+      callMethod();
       searchController.addListener(_filterItems);
     });
     super.initState();
   }
 
-  void CallMethod() async {
+  void callMethod() async {
     await allsubmemberTabController.getAllSubmember(
       CommonVariable.userId.value,
       '',
@@ -80,15 +80,17 @@ class _AllSubmemberScreenState extends State<AllSubmemberScreen> {
                     child: Column(
                       children: [
                         Padding(
-                          padding: const EdgeInsets.all(16.0),
+                          padding: const EdgeInsets.only(top: 16.0,left: 16.0,right: 16.0),
                           child: TextField(
                             controller: searchController,
                             decoration: InputDecoration(
-                              hintText: 'Search by name or email',
                               filled: true,
                               fillColor: AppColors.appNeutralColor5,
+                              hintText: 'Search by Fund source',
+                              hintStyle: const TextStyle(fontSize: 14.0,color: AppColors.appGreyColor
+                              ),
+                              contentPadding: const EdgeInsets.all(8),
                               prefixIcon: const Icon(Icons.search),
-                              contentPadding: const EdgeInsets.all(16),
                               enabledBorder: OutlineInputBorder(
                                 borderSide: const BorderSide(
                                   color: AppColors.appNeutralColor5,
@@ -110,17 +112,17 @@ class _AllSubmemberScreenState extends State<AllSubmemberScreen> {
                           if (allsubmemberTabController
                               .allSubmemberList.isEmpty) {
                             return variableController.loading.value
-                                ?Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Container(
-                                alignment: Alignment.center,
-                                height: 50,
-                                width: 50,
-                                child: Lottie.asset(
-                                    "assets/lottie/half-circles.json"),
-                              ),
-                            )
-                                : NoDataFoundCard(); // Your custom widget
+                                ? Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Container(
+                                      alignment: Alignment.center,
+                                      height: 50,
+                                      width: 50,
+                                      child: Lottie.asset(
+                                          "assets/lottie/half-circles.json"),
+                                    ),
+                                  )
+                                : NoDataFoundCard();
                           } else {
                             return ListView.builder(
                               shrinkWrap: true,
@@ -152,7 +154,7 @@ class _AllSubmemberScreenState extends State<AllSubmemberScreen> {
     final createdDate = submember.userdetails.createdOn;
     DateTime dateTime = DateTime.parse(createdDate).toLocal();
     String formattedTime = DateFormat.jm().format(dateTime);
-    String formattedDate = DateFormat('dd MMM, yyyy').format(dateTime);
+    String formattedDate = DateFormat('dd MMM, yy').format(dateTime);
 
     return Card(
       elevation: 0,
@@ -171,12 +173,12 @@ class _AllSubmemberScreenState extends State<AllSubmemberScreen> {
                     Flexible(
                       flex: 3,
                       child: Text(
-                        "$formattedDate,$formattedTime",
-                        style: const TextStyle(
+                        "$formattedDate  $formattedTime",
+                        style: TextStyle(
                           fontWeight: FontWeight.w600,
                           color: AppColors.appBlackColor,
                           fontSize: 14,
-                          fontFamily: 'Sofia Sans',
+                          fontFamily: Constants.Sofiafontfamily,
                         ),
                       ),
                     ),
@@ -189,71 +191,77 @@ class _AllSubmemberScreenState extends State<AllSubmemberScreen> {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 12, vertical: 4),
                           decoration: BoxDecoration(
-                            color: submember.userdetails.isDeletedRequest == true &&
-                                submember.userdetails.isDeletedSuper ==
-                                    true
+                            color: submember.userdetails.isDeletedRequest ==
+                                        true &&
+                                    submember.userdetails.isDeletedSuper == true
                                 ? AppColors.appLightYellowColor
-                                : (submember.userdetails.isDeletedRequest ==
-                                true &&
-                                submember
-                                    .userdetails.isDeletedSuper ==
-                                    false
-                                ? AppColors.appNeutralColor5
-                                : (submember.userdetails
-                                .isDeletedRequest ==
-                                false &&
-                                submember.userdetails
-                                    .isDeletedSuper ==
-                                    false && submember.userdetails
-                                .isVerfied ==
-                                true
-                                ? AppColors.appMintGreenColor
-                                : AppColors.appRedLightColor)),
+                                : (submember
+                                                .userdetails.isDeletedRequest ==
+                                            true &&
+                                        submember
+                                                .userdetails.isDeletedSuper ==
+                                            false
+                                    ? AppColors.appNeutralColor5
+                                    : (submember.userdetails
+                                                    .isDeletedRequest ==
+                                                false &&
+                                            submember.userdetails
+                                                    .isDeletedSuper ==
+                                                false &&
+                                            submember.userdetails.isVerfied ==
+                                                true
+                                        ? AppColors.appMintGreenColor
+                                        : AppColors.appRedLightColor)),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: FittedBox(
                             child: Text(
                               submember.userdetails.isDeletedRequest == true &&
-                                  submember.userdetails.isDeletedSuper ==
-                                      true
-                                  ? "Delete"
-                                  : (submember.userdetails.isDeletedRequest ==
-                                  true &&
-                                  submember
-                                      .userdetails.isDeletedSuper ==
-                                      false
-                                  ? "Delete Request"
-                                  : (submember.userdetails
-                                  .isDeletedRequest ==
-                                  false &&
-                                  submember.userdetails
-                                      .isDeletedSuper ==
-                                      false && submember.userdetails
-                                  .isVerfied ==
-                                  true
-                                  ? "Active"
-                                  : "Inactive")),
-                              style: TextStyle(
-                                  color: submember.userdetails.isDeletedRequest == true &&
                                       submember.userdetails.isDeletedSuper ==
                                           true
-                                      ? AppColors.appOrangeTextColor
-                                      : (submember.userdetails.isDeletedRequest ==
-                                      true &&
-                                      submember
-                                          .userdetails.isDeletedSuper ==
-                                          false
-                                      ? AppColors.appTextColor2
+                                  ? "Delete"
+                                  : (submember.userdetails.isDeletedRequest ==
+                                              true &&
+                                          submember
+                                                  .userdetails.isDeletedSuper ==
+                                              false
+                                      ? "Delete Request"
                                       : (submember.userdetails
-                                      .isDeletedRequest ==
-                                      false &&
-                                      submember.userdetails
-                                          .isDeletedSuper ==
-                                          false && submember.userdetails
-                                      .isVerfied ==
-                                      true
-                                      ? AppColors.appGreenDarkColor
-                                      : AppColors.appRedColor)),
+                                                      .isDeletedRequest ==
+                                                  false &&
+                                              submember.userdetails
+                                                      .isDeletedSuper ==
+                                                  false &&
+                                              submember.userdetails.isVerfied ==
+                                                  true
+                                          ? "Active"
+                                          : "Inactive")),
+                              style: TextStyle(
+                                  color: submember.userdetails
+                                                  .isDeletedRequest ==
+                                              true &&
+                                          submember
+                                                  .userdetails.isDeletedSuper ==
+                                              true
+                                      ? AppColors.appOrangeTextColor
+                                      : (submember.userdetails
+                                                      .isDeletedRequest ==
+                                                  true &&
+                                              submember.userdetails
+                                                      .isDeletedSuper ==
+                                                  false
+                                          ? AppColors.appTextColor2
+                                          : (submember.userdetails
+                                                          .isDeletedRequest ==
+                                                      false &&
+                                                  submember.userdetails
+                                                          .isDeletedSuper ==
+                                                      false &&
+                                                  submember.userdetails
+                                                          .isVerfied ==
+                                                      true
+                                              ? AppColors.appGreenDarkColor
+                                              : AppColors.appRedColor)),
                                   fontSize: 12),
                             ),
                           ),
@@ -270,11 +278,11 @@ class _AllSubmemberScreenState extends State<AllSubmemberScreen> {
                       flex: 3,
                       child: Text(
                         "Business: ${submember.business.accountId.businessDetail.businessName}",
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.w400,
                           color: AppColors.appHeadingText,
                           fontSize: 14,
-                          fontFamily: 'Sofia Sans',
+                          fontFamily: Constants.Sofiafontfamily,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -284,11 +292,11 @@ class _AllSubmemberScreenState extends State<AllSubmemberScreen> {
                 const SizedBox(height: 4),
                 Text(
                   "Submember: ${submember.userdetails.fullName}",
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.w400,
                     color: AppColors.appHeadingText,
                     fontSize: 14,
-                    fontFamily: 'Sofia Sans',
+                    fontFamily: Constants.Sofiafontfamily,
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -306,44 +314,65 @@ class _AllSubmemberScreenState extends State<AllSubmemberScreen> {
               ],
             ),
           ),
-          // Positioned PopupMenuButton in the top-right corner
           Positioned(
             top: 8,
             right: 8,
             child: PopupMenuButton<String>(
-              icon: const Icon(Icons.more_vert),
+              icon: const Icon(
+                Icons.more_vert,
+                color: AppColors.appBlackColor,
+              ),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
               ),
               onSelected: (value) {
-                // Handle menu selection
                 if (value == 'edit') {
-                  // Handle edit action
-                } else if (value == 'delete') {
-                  // Handle delete action
+                } else if (value == 'remove') {
                 }
               },
               itemBuilder: (BuildContext context) {
                 return [
-                  const PopupMenuItem<String>(
+                  PopupMenuItem<String>(
                     value: 'edit',
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
                     child: Row(
                       children: [
-                        Icon(Icons.edit_outlined,
-                            color: AppColors.appBlackColor),
-                        SizedBox(width: 8),
-                        Text('Edit'),
+                        Material(
+                          color: Colors.transparent,
+                          child: Image(
+                            image: AssetImage(ImageAssets.EditIcon),
+                            width: 16,
+                            height: 16,
+                            color: AppColors.appBlackColor,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        const Material(
+                          color: Colors.transparent,
+                          child: Text('Edit'),
+                        ),
                       ],
                     ),
                   ),
-                  const PopupMenuItem<String>(
+                  PopupMenuItem<String>(
                     value: 'remove',
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
                     child: Row(
                       children: [
-                        Icon(Icons.delete_outline_outlined,
-                            color: AppColors.appBlackColor),
-                        SizedBox(width: 8),
-                        Text('Remove'),
+                        Material(
+                          color: Colors.transparent,
+                          child: Image(
+                            image: AssetImage(ImageAssets.removeImage),
+                            width: 16,
+                            height: 16,
+                            color: AppColors.appBlackColor,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        const Material(
+                          color: Colors.transparent,
+                          child: Text('Remove'),
+                        ),
                       ],
                     ),
                   ),
@@ -355,5 +384,4 @@ class _AllSubmemberScreenState extends State<AllSubmemberScreen> {
       ),
     );
   }
-
 }

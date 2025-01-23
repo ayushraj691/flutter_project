@@ -3,7 +3,10 @@ class ResCustomerBilling {
   late List<CustomerList> customerList;
   late TotalData totalData;
 
-  ResCustomerBilling({required this.meta, required this.customerList, required this.totalData});
+  ResCustomerBilling(
+      {required this.meta,
+      required this.customerList,
+      required this.totalData});
 
   ResCustomerBilling.fromJson(Map<String, dynamic> json) {
     meta = (json['meta'] != null ? new Meta.fromJson(json['meta']) : null)!;
@@ -47,10 +50,10 @@ class Meta {
       required this.totalPayment});
 
   Meta.fromJson(Map<String, dynamic> json) {
-    totalCustomer = json['total_customer']??0;
-    totalTransaction = json['total_transaction']??0;
-    cancelTransaction = json['cancel_transaction']??0;
-    totalPayment = json['total_payment']??0;
+    totalCustomer = json['total_customer'] ?? 0;
+    totalTransaction = json['total_transaction'] ?? 0;
+    cancelTransaction = json['cancel_transaction'] ?? 0;
+    totalPayment = json['total_payment'] ?? 0;
   }
 
   Map<String, dynamic> toJson() {
@@ -72,17 +75,17 @@ class CustomerList {
 
   CustomerList(
       {required this.custName,
-     required this.totalPayments,
-     required this.totalAmount,
-     required this.totalCanceledChecks,
-     required this.totalSuccesfulChecks});
+      required this.totalPayments,
+      required this.totalAmount,
+      required this.totalCanceledChecks,
+      required this.totalSuccesfulChecks});
 
   CustomerList.fromJson(Map<String, dynamic> json) {
-    custName = json['cust_name']??"";
-    totalPayments = json['total_payments']??0;
-    totalAmount = json['total_amount']??0;
-    totalCanceledChecks = json['total_canceled_checks']??0;
-    totalSuccesfulChecks = json['total_succesful_checks']??0;
+    custName = json['cust_name'] ?? "";
+    totalPayments = json['total_payments'] ?? 0;
+    totalAmount = json['total_amount'] ?? 0;
+    totalCanceledChecks = json['total_canceled_checks'] ?? 0;
+    totalSuccesfulChecks = json['total_succesful_checks'] ?? 0;
   }
 
   Map<String, dynamic> toJson() {
@@ -97,18 +100,22 @@ class CustomerList {
 }
 
 class TotalData {
- late var pageNumber;
- late var pageSize;
- late var totalData;
- late var totalPages;
+  late var pageNumber;
+  late var pageSize;
+  late var totalData;
+  late var totalPages;
 
-  TotalData({required this.pageNumber, required this.pageSize, required this.totalData, required this.totalPages});
+  TotalData(
+      {required this.pageNumber,
+      required this.pageSize,
+      required this.totalData,
+      required this.totalPages});
 
   TotalData.fromJson(Map<String, dynamic> json) {
-    pageNumber = json['page_number']??0;
-    pageSize = json['page_size']??0;
-    totalData = json['total_data']??0;
-    totalPages = json['total_pages']??0;
+    pageNumber = json['page_number'] ?? 0;
+    pageSize = json['page_size'] ?? 0;
+    totalData = json['total_data'] ?? 0;
+    totalPages = json['total_pages'] ?? 0;
   }
 
   Map<String, dynamic> toJson() {

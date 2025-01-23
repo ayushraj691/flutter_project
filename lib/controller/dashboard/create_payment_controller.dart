@@ -10,42 +10,47 @@ import 'package:paycron/network/api_call/api_call.dart';
 import 'package:paycron/network/api_call/url.dart';
 import 'package:paycron/utils/common_variable.dart';
 import 'package:paycron/utils/my_toast.dart';
-import 'package:paycron/views/single_company_dashboard/company_dashboard.dart';
+import '../drawer_Controller/virtual_terminal_comtroller/all_virtual_terminal_controller.dart';
 
-class CreatePaymentController extends GetxController{
 
+class CreatePaymentController extends GetxController {
   var variableController = Get.find<VariableController>();
+  var allVirtualTerminalTabController = Get.find<AllVirtualTerminalController>();
 
-  Rx<TextEditingController> customerListTextController = TextEditingController().obs;
-  Rx<TextEditingController> productQuantityTextController = TextEditingController(text: "1").obs;
-  Rx<TextEditingController> productPricingTextController = TextEditingController().obs;
-  Rx<TextEditingController> checkNumberTextController = TextEditingController().obs;
+  Rx<TextEditingController> customerListTextController =
+      TextEditingController().obs;
+  Rx<TextEditingController> productQuantityTextController =
+      TextEditingController(text: "1").obs;
+  Rx<TextEditingController> productPricingTextController =
+      TextEditingController().obs;
+  Rx<TextEditingController> checkNumberTextController =
+      TextEditingController().obs;
   Rx<TextEditingController> memoTextController = TextEditingController().obs;
-  Rx<TextEditingController> accountNumberTextController = TextEditingController().obs;
-
+  Rx<TextEditingController> accountNumberTextController =
+      TextEditingController().obs;
   TextEditingController searchController = TextEditingController();
   TextEditingController productSearchController = TextEditingController();
-  List<ResCustomerList> filteredCustomers =  <ResCustomerList>[].obs;
-  List<ResProductList> filteredProduct =  <ResProductList>[].obs;
-
+  List<ResCustomerList> filteredCustomers = <ResCustomerList>[].obs;
+  List<ResProductList> filteredProduct = <ResProductList>[].obs;
 
   Rx<bool> checkNoValid = true.obs;
   Rx<bool> memoValid = true.obs;
-  // Rx<bool> productValid = true.obs;
-  //
+
   var checkNoErrorMessage = null;
   var memoErrorMessage = null;
-  // var productErrorMessage = null;
-  //
+
   final FocusNode checkNoFocusNode = FocusNode();
   final FocusNode memoFocusNode = FocusNode();
-  // final FocusNode productFocusNode = FocusNode();
-
 
   bool customerValidation(BuildContext context) {
     if (checkNumberTextController.value.text.isEmpty) {
       checkNoValid = false.obs;
       checkNoErrorMessage = 'CheckNo is required';
+      FocusScope.of(context).requestFocus(checkNoFocusNode);
+      return false;
+    } else if (checkNumberTextController.value.text.length!=4) {
+      checkNoValid = false.obs;
+      checkNoErrorMessage = '';
       FocusScope.of(context).requestFocus(checkNoFocusNode);
       return false;
     }else if (memoTextController.value.text.isEmpty) {
@@ -67,7 +72,7 @@ class CreatePaymentController extends GetxController{
   String selectedProduct = "Select Product";
   int selectedCount = 0;
   RxInt productSelectedCount = 0.obs;
-  var productTotalAmount =0.0.obs;
+  var productTotalAmount = 0.0.obs;
   var totalAmount = 0.0.obs;
   String customerId = '';
   String productId = '';
@@ -79,14 +84,12 @@ class CreatePaymentController extends GetxController{
   List<ResProductList> productList =
       List<ResProductList>.empty(growable: true).obs;
 
-  final List<BankId> allBankList =
-      <BankId>[].obs;
+  final List<BankId> allBankList = <BankId>[].obs;
 
   List<AddProductModel> addProductList =
       List<AddProductModel>.empty(growable: true).obs;
 
-  List<Items> finalProductList =
-      List<Items>.empty(growable: true).obs;
+  List<Items> finalProductList = List<Items>.empty(growable: true).obs;
 
   void calculateTotalAmount() {
     double total = 0.0;
@@ -96,7 +99,7 @@ class CreatePaymentController extends GetxController{
     totalAmount.value = total; // Reactive update
   }
 
-  void addProductDetail(){
+  void addProductDetail() {
     addProductList.add(AddProductModel(
         productName: selectedProduct,
         qantity: productQuantityTextController.value.text,
@@ -111,7 +114,7 @@ class CreatePaymentController extends GetxController{
     }
   }
 
-  void clearAllCustomer(){
+  void clearAllCustomer() {
     selectedCustomer = "Select Customer";
     memoTextController.value.clear();
     customerListTextController.value.clear();
@@ -127,18 +130,17 @@ class CreatePaymentController extends GetxController{
   void clearAllProduct() {
     productPricingTextController.value.clear();
     selectedProduct = "Select Product";
-    productTotalAmount =0.0.obs;
+    productTotalAmount = 0.0.obs;
     isVisibilityAccount = false.obs;
     isDropdownOpen = false;
   }
-
-
 
   Future<void> getCustomerList(String id) async {
     variableController.loading.value = true;
     debugPrint("************$id*************");
     try {
-      var res = await ApiCall.getApiCall(MyUrls.customerList, CommonVariable.token.value, id);
+      var res = await ApiCall.getApiCall(
+          MyUrls.customerList, CommonVariable.token.value, id);
       debugPrint("*************************");
       debugPrint("API Response: $res");
       debugPrint("*************************");
@@ -162,7 +164,6 @@ class CreatePaymentController extends GetxController{
         MyToast.toast("Failed to retrieve customer data");
         variableController.loading.value = false;
       }
-
     } catch (e) {
       debugPrint("Error occurred: $e");
       MyToast.toast("Something Went Wrong: ${e.toString()}");
@@ -183,12 +184,12 @@ class CreatePaymentController extends GetxController{
     }
   }
 
-
   Future<void> getProductList(String id) async {
     variableController.loading.value = true;
     debugPrint("************$id*************");
     try {
-      var res = await ApiCall.getApiCall(MyUrls.productList, CommonVariable.token.value, id);
+      var res = await ApiCall.getApiCall(
+          MyUrls.productList, CommonVariable.token.value, id);
 
       debugPrint("*************************");
       debugPrint("API Response: $res");
@@ -202,7 +203,6 @@ class CreatePaymentController extends GetxController{
           for (var item in res) {
             var productListData = ResProductList.fromJson(item);
             productList.add(productListData);
-
           }
         } else if (res is Map<String, dynamic>) {
           var productListData = ResProductList.fromJson(res);
@@ -221,7 +221,6 @@ class CreatePaymentController extends GetxController{
     }
   }
 
-
   insertCustomerPaymentData() async {
     variableController.loading.value = true;
     ReqCreatePayment reqCreatePayment = ReqCreatePayment(
@@ -232,20 +231,23 @@ class CreatePaymentController extends GetxController{
         memo: memoTextController.value.text,
         items: finalProductList);
     debugPrint(json.encode(reqCreatePayment.toJson()));
-    var res =
-    await ApiCall.postApiCalltoken(MyUrls.addPayment, reqCreatePayment,CommonVariable.token.value,CommonVariable.businessId.value);
+    var res = await ApiCall.postApiCalltoken(
+        MyUrls.addPayment,
+        reqCreatePayment,
+        CommonVariable.token.value,
+        CommonVariable.businessId.value);
     debugPrint("*************************");
     debugPrint("*****$res*******");
     debugPrint("*************************");
     if (res != null) {
-        variableController.loading.value = false;
-        clearAllCustomer();
-        Get.off(const CompanyDashboard());
+      variableController.loading.value = false;
+      clearAllCustomer();
+      Get.back();
+      allVirtualTerminalTabController.callMethod();
     } else {
       MyToast.toast("Something Went Wrong");
       variableController.loading.value = false;
       Get.back();
     }
   }
-
 }

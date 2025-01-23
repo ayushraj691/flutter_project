@@ -8,26 +8,26 @@ class ResLogin {
   late int businesscheck;
   late String token;
 
-  ResLogin(
-      {required this.email,
-      required this.verified,
-      required this.userid,
-      required this.username,
-      required this.role,
-      required this.position,
-      required this.businesscheck,
-      required this.token,
-      });
+  ResLogin({
+    required this.email,
+    required this.verified,
+    required this.userid,
+    required this.username,
+    required this.role,
+    required this.position,
+    required this.businesscheck,
+    required this.token,
+  });
 
   ResLogin.fromJson(Map<String, dynamic> json) {
-    email = json['email']??"";
-    verified = json['verified']??false;
-    userid = json['userid']??"";
-    username = json['username']??"";
-    role = json['role']??"";
-    position = json['position']??"";
-    businesscheck = json['businesscheck']??0;
-    token = json['token']??"";
+    email = json['email'] ?? "";
+    verified = json['verified'] ?? false;
+    userid = json['userid'] ?? "";
+    username = json['username'] ?? "";
+    role = json['role'] ?? "";
+    position = json['position'] ?? "";
+    businesscheck = json['businesscheck'] ?? 0;
+    token = json['token'] ?? "";
   }
 
   Map<String, dynamic> toJson() {

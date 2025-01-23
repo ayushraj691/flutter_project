@@ -16,12 +16,15 @@ class DeleteRequestSubmemberScreen extends StatefulWidget {
   const DeleteRequestSubmemberScreen({super.key});
 
   @override
-  State<DeleteRequestSubmemberScreen> createState() => _DeleteRequestSubmemberScreenState();
+  State<DeleteRequestSubmemberScreen> createState() =>
+      _DeleteRequestSubmemberScreenState();
 }
 
-class _DeleteRequestSubmemberScreenState extends State<DeleteRequestSubmemberScreen> {
+class _DeleteRequestSubmemberScreenState
+    extends State<DeleteRequestSubmemberScreen> {
   TextEditingController searchController = TextEditingController();
-  var deleteRequestSubmemberTabController = Get.find<DeleteRequestSubmemberController>();
+  var deleteRequestSubmemberTabController =
+      Get.find<DeleteRequestSubmemberController>();
   var variableController = Get.find<VariableController>();
   List<ResAllSubmemberModel> filteredItems = <ResAllSubmemberModel>[].obs;
   Map<String, dynamic> sortMap = {
@@ -34,14 +37,14 @@ class _DeleteRequestSubmemberScreenState extends State<DeleteRequestSubmemberScr
 
   @override
   void initState() {
-    Future.delayed(const Duration(seconds: 0),()async {
-      CallMethod();
+    Future.delayed(const Duration(seconds: 0), () async {
+      callMethod();
       searchController.addListener(_filterItems);
     });
     super.initState();
   }
 
-  void CallMethod() async{
+  void callMethod() async {
     await deleteRequestSubmemberTabController.getDeleteRequestSubmember(
       CommonVariable.userId.value,
       '',
@@ -49,19 +52,20 @@ class _DeleteRequestSubmemberScreenState extends State<DeleteRequestSubmemberScr
       "$sortMap",
     );
 
-    filteredItems = deleteRequestSubmemberTabController.deleteRequestSubmemberList;
+    filteredItems =
+        deleteRequestSubmemberTabController.deleteRequestSubmemberList;
   }
 
   void _filterItems() {
     String query = searchController.text.toLowerCase();
     setState(() {
-      filteredItems = deleteRequestSubmemberTabController.deleteRequestSubmemberList
+      filteredItems = deleteRequestSubmemberTabController
+          .deleteRequestSubmemberList
           .where(
               (item) => item.userdetails.fullName.toLowerCase().contains(query))
           .toList();
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -86,11 +90,13 @@ class _DeleteRequestSubmemberScreenState extends State<DeleteRequestSubmemberScr
                           child: TextField(
                             controller: searchController,
                             decoration: InputDecoration(
-                              hintText: 'Search by name or email',
                               filled: true,
                               fillColor: AppColors.appNeutralColor5,
                               prefixIcon: const Icon(Icons.search),
-                              contentPadding: const EdgeInsets.all(16),
+                              hintText: 'Search by Fund source',
+                              hintStyle: const TextStyle(fontSize: 14.0,color: AppColors.appGreyColor
+                              ),
+                              contentPadding: const EdgeInsets.all(8),
                               enabledBorder: OutlineInputBorder(
                                 borderSide: const BorderSide(
                                   color: AppColors.appNeutralColor5,
@@ -112,16 +118,16 @@ class _DeleteRequestSubmemberScreenState extends State<DeleteRequestSubmemberScr
                           if (deleteRequestSubmemberTabController
                               .deleteRequestSubmemberList.isEmpty) {
                             return variableController.loading.value
-                                ?Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Container(
-                                alignment: Alignment.center,
-                                height: 50,
-                                width: 50,
-                                child: Lottie.asset(
-                                    "assets/lottie/half-circles.json"),
-                              ),
-                            )
+                                ? Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Container(
+                                      alignment: Alignment.center,
+                                      height: 50,
+                                      width: 50,
+                                      child: Lottie.asset(
+                                          "assets/lottie/half-circles.json"),
+                                    ),
+                                  )
                                 : NoDataFoundCard(); // Your custom widget
                           } else {
                             return ListView.builder(
@@ -129,7 +135,8 @@ class _DeleteRequestSubmemberScreenState extends State<DeleteRequestSubmemberScr
                               physics: const NeverScrollableScrollPhysics(),
                               itemCount: filteredItems.length,
                               itemBuilder: (context, index) {
-                                return listMemberCard(filteredItems, index, context);
+                                return listMemberCard(
+                                    filteredItems, index, context);
                               },
                             );
                           }
@@ -153,7 +160,7 @@ class _DeleteRequestSubmemberScreenState extends State<DeleteRequestSubmemberScr
     final createdDate = submember.userdetails.createdOn;
     DateTime dateTime = DateTime.parse(createdDate).toLocal();
     String formattedTime = DateFormat.jm().format(dateTime);
-    String formattedDate = DateFormat('dd MMM, yyyy').format(dateTime);
+    String formattedDate = DateFormat('dd MMM, yy').format(dateTime);
 
     return Card(
       elevation: 0,
@@ -172,12 +179,12 @@ class _DeleteRequestSubmemberScreenState extends State<DeleteRequestSubmemberScr
                     Flexible(
                       flex: 3,
                       child: Text(
-                        "$formattedDate,$formattedTime",
-                        style: const TextStyle(
+                        "$formattedDate  $formattedTime",
+                        style: TextStyle(
                           fontWeight: FontWeight.w600,
                           color: AppColors.appBlackColor,
                           fontSize: 14,
-                          fontFamily: 'Sofia Sans',
+                          fontFamily: Constants.Sofiafontfamily,
                         ),
                       ),
                     ),
@@ -190,71 +197,77 @@ class _DeleteRequestSubmemberScreenState extends State<DeleteRequestSubmemberScr
                           padding: const EdgeInsets.symmetric(
                               horizontal: 12, vertical: 4),
                           decoration: BoxDecoration(
-                            color: submember.userdetails.isDeletedRequest == true &&
-                                submember.userdetails.isDeletedSuper ==
-                                    true
+                            color: submember.userdetails.isDeletedRequest ==
+                                        true &&
+                                    submember.userdetails.isDeletedSuper == true
                                 ? AppColors.appLightYellowColor
-                                : (submember.userdetails.isDeletedRequest ==
-                                true &&
-                                submember
-                                    .userdetails.isDeletedSuper ==
-                                    false
-                                ? AppColors.appNeutralColor5
-                                : (submember.userdetails
-                                .isDeletedRequest ==
-                                false &&
-                                submember.userdetails
-                                    .isDeletedSuper ==
-                                    false && submember.userdetails
-                                .isVerfied ==
-                                true
-                                ? AppColors.appMintGreenColor
-                                : AppColors.appRedLightColor)),
+                                : (submember
+                                                .userdetails.isDeletedRequest ==
+                                            true &&
+                                        submember
+                                                .userdetails.isDeletedSuper ==
+                                            false
+                                    ? AppColors.appNeutralColor5
+                                    : (submember.userdetails
+                                                    .isDeletedRequest ==
+                                                false &&
+                                            submember.userdetails
+                                                    .isDeletedSuper ==
+                                                false &&
+                                            submember.userdetails.isVerfied ==
+                                                true
+                                        ? AppColors.appMintGreenColor
+                                        : AppColors.appRedLightColor)),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: FittedBox(
                             child: Text(
                               submember.userdetails.isDeletedRequest == true &&
-                                  submember.userdetails.isDeletedSuper ==
-                                      true
-                                  ? "Delete"
-                                  : (submember.userdetails.isDeletedRequest ==
-                                  true &&
-                                  submember
-                                      .userdetails.isDeletedSuper ==
-                                      false
-                                  ? "Delete Request"
-                                  : (submember.userdetails
-                                  .isDeletedRequest ==
-                                  false &&
-                                  submember.userdetails
-                                      .isDeletedSuper ==
-                                      false && submember.userdetails
-                                  .isVerfied ==
-                                  true
-                                  ? "Active"
-                                  : "Inactive")),
-                              style: TextStyle(
-                                  color: submember.userdetails.isDeletedRequest == true &&
                                       submember.userdetails.isDeletedSuper ==
                                           true
-                                      ? AppColors.appOrangeTextColor
-                                      : (submember.userdetails.isDeletedRequest ==
-                                      true &&
-                                      submember
-                                          .userdetails.isDeletedSuper ==
-                                          false
-                                      ? AppColors.appTextColor2
+                                  ? "Delete"
+                                  : (submember.userdetails.isDeletedRequest ==
+                                              true &&
+                                          submember
+                                                  .userdetails.isDeletedSuper ==
+                                              false
+                                      ? "Delete Request"
                                       : (submember.userdetails
-                                      .isDeletedRequest ==
-                                      false &&
-                                      submember.userdetails
-                                          .isDeletedSuper ==
-                                          false && submember.userdetails
-                                      .isVerfied ==
-                                      true
-                                      ? AppColors.appGreenDarkColor
-                                      : AppColors.appRedColor)),
+                                                      .isDeletedRequest ==
+                                                  false &&
+                                              submember.userdetails
+                                                      .isDeletedSuper ==
+                                                  false &&
+                                              submember.userdetails.isVerfied ==
+                                                  true
+                                          ? "Active"
+                                          : "Inactive")),
+                              style: TextStyle(
+                                  color: submember.userdetails
+                                                  .isDeletedRequest ==
+                                              true &&
+                                          submember
+                                                  .userdetails.isDeletedSuper ==
+                                              true
+                                      ? AppColors.appOrangeTextColor
+                                      : (submember.userdetails
+                                                      .isDeletedRequest ==
+                                                  true &&
+                                              submember.userdetails
+                                                      .isDeletedSuper ==
+                                                  false
+                                          ? AppColors.appTextColor2
+                                          : (submember.userdetails
+                                                          .isDeletedRequest ==
+                                                      false &&
+                                                  submember.userdetails
+                                                          .isDeletedSuper ==
+                                                      false &&
+                                                  submember.userdetails
+                                                          .isVerfied ==
+                                                      true
+                                              ? AppColors.appGreenDarkColor
+                                              : AppColors.appRedColor)),
                                   fontSize: 12),
                             ),
                           ),
@@ -271,11 +284,11 @@ class _DeleteRequestSubmemberScreenState extends State<DeleteRequestSubmemberScr
                       flex: 3,
                       child: Text(
                         "Business: ${submember.business.accountId.businessDetail.businessName}",
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.w400,
                           color: AppColors.appHeadingText,
                           fontSize: 14,
-                          fontFamily: 'Sofia Sans',
+                          fontFamily: Constants.Sofiafontfamily,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -285,11 +298,11 @@ class _DeleteRequestSubmemberScreenState extends State<DeleteRequestSubmemberScr
                 const SizedBox(height: 4),
                 Text(
                   "Submember: ${submember.userdetails.fullName}",
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.w400,
                     color: AppColors.appHeadingText,
                     fontSize: 14,
-                    fontFamily: 'Sofia Sans',
+                    fontFamily: Constants.Sofiafontfamily,
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -356,6 +369,4 @@ class _DeleteRequestSubmemberScreenState extends State<DeleteRequestSubmemberScr
       ),
     );
   }
-
-
 }

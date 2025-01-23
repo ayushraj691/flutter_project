@@ -5,8 +5,8 @@ class ResAddCustomer {
   ResAddCustomer({required this.code, required this.lastid});
 
   ResAddCustomer.fromJson(Map<String, dynamic> json) {
-    code = json['code']??0;
-    lastid = json['lastid']??"";
+    code = json['code'] ?? 0;
+    lastid = json['lastid'] ?? "";
   }
 
   Map<String, dynamic> toJson() {

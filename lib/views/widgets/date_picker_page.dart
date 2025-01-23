@@ -1,6 +1,8 @@
 import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:paycron/utils/color_constants.dart';
+import '../../utils/style.dart';
 
 class RangeDatePickerScreen extends StatefulWidget {
   final void Function(DateTime? pickStartDate, DateTime? pickEndDate) onSubmit;
@@ -16,21 +18,16 @@ class RangeDatePickerScreenState extends State<RangeDatePickerScreen> {
   DateTime? _endDate;
 
   late DateTime _currentMonth;
-  late DateTime _previousYearStart;
-  late DateTime _previousYearEnd;
-
-  int _selectedYear = DateTime.now().year;
+  late DateTime _previousMonthStart;
+  late DateTime _previousMonthEnd;
 
   @override
   void initState() {
     super.initState();
-    _updatePreviousYear(_selectedYear);
     _currentMonth = DateTime.now();
-  }
-
-  void _updatePreviousYear(int selectedYear) {
-    _previousYearStart = DateTime(selectedYear - 1, 1, 1); // Start of previous year
-    _previousYearEnd = DateTime(selectedYear - 1, 12, 31); // End of previous year
+    // Calculate the previous month
+    _previousMonthStart = DateTime(_currentMonth.year, _currentMonth.month - 1, 1);
+    _previousMonthEnd = DateTime(_currentMonth.year, _currentMonth.month, 0);
   }
 
   String _formatDate(DateTime? date) {
@@ -40,8 +37,20 @@ class RangeDatePickerScreenState extends State<RangeDatePickerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.appBackgroundColor,
       appBar: AppBar(
-        title: const Text('Select custom range'),
+        backgroundColor: AppColors.appBackgroundColor,
+        leading: IconButton(
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+          color: AppColors.appBlackColor,
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        titleSpacing: 0,
+        title: Text('Select custom range',style: AppTextStyles.boldText,),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -58,7 +67,7 @@ class RangeDatePickerScreenState extends State<RangeDatePickerScreen> {
                 ],
               ),
               const SizedBox(height: 12),
-              // First calendar: Previous year of the selected year
+              // First calendar: Previous month of the current month
               Card(
                 elevation: 1,
                 shape: RoundedRectangleBorder(
@@ -67,25 +76,24 @@ class RangeDatePickerScreenState extends State<RangeDatePickerScreen> {
                 child: CalendarDatePicker2(
                   config: CalendarDatePicker2Config(
                     calendarType: CalendarDatePicker2Type.single,
-                    firstDate: _previousYearStart, // Start of previous year
-                    lastDate: _previousYearEnd, // End of previous year
-                    currentDate: _previousYearStart, // Default to January of the previous year
+                    firstDate:  DateTime(1900), // Start of the previous month
+                    lastDate: _previousMonthEnd, // End of the previous month
+                    currentDate: _previousMonthStart, // Default to the start of the previous month
                   ),
                   value: _startDate != null ? [_startDate!] : [],
                   onValueChanged: (values) {
                     setState(() {
                       _startDate = values.isNotEmpty ? values[0] : null;
-                      if (_startDate != null &&
-                          _endDate != null &&
-                          _startDate!.isAfter(_endDate!)) {
-                        _endDate = null;
+                      // If a start date is selected, ensure the end date is after the start date
+                      if (_startDate != null && _endDate != null && _startDate!.isAfter(_endDate!)) {
+                        _endDate = null;  // Clear the end date if it's before the start date
                       }
                     });
                   },
                 ),
               ),
               const SizedBox(height: 8),
-              // Second calendar: Current year
+              // Second calendar: Current month
               Card(
                 elevation: 1,
                 shape: RoundedRectangleBorder(
@@ -94,18 +102,18 @@ class RangeDatePickerScreenState extends State<RangeDatePickerScreen> {
                 child: CalendarDatePicker2(
                   config: CalendarDatePicker2Config(
                     calendarType: CalendarDatePicker2Type.single,
-                    firstDate: DateTime(2020),
+                    firstDate: DateTime(1900),
                     lastDate: DateTime(2030),
-                    currentDate: _currentMonth,
+                    currentDate: _currentMonth, // Current month for the second calendar
                   ),
                   value: _endDate != null ? [_endDate!] : [],
                   onValueChanged: (values) {
                     setState(() {
+                      // Set the end date to the second calendar's selected date
                       _endDate = values.isNotEmpty ? values[0] : null;
-                      if (_startDate != null &&
-                          _endDate != null &&
-                          _startDate!.isAfter(_endDate!)) {
-                        _startDate = null;
+                      // If start date is set, ensure the end date is after the start date
+                      if (_startDate != null && _endDate != null && _startDate!.isAfter(_endDate!)) {
+                        _startDate = null;  // Reset start date if the end date is before
                       }
                     });
                   },

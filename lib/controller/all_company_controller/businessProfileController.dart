@@ -65,34 +65,45 @@ class BusinessProfileController extends GetxController {
         employerIdentificationNumber.value =
             (businessData.record?.businessDetail?.ein?.number ?? '');
         industry.value = (businessData.record?.businessDetail?.industry ?? '');
-        businessWebsite.value = (businessData.record?.businessDetail?.website ?? '');
+        businessWebsite.value =
+            (businessData.record?.businessDetail?.website ?? '');
         productDescription.value =
             (businessData.record?.businessDetail?.description ?? '');
 
         ///---------------------Principal Owner---------------
         planName.value = (businessData.planDetials?.name ?? '');
         planDescription.value = (businessData.planDetials?.details ?? '');
-        monthlyFees.value = (businessData.planDetials?.monthlyPrice.toString() ?? '');
-          perSwipeFees.value =
-              (businessData.planDetials?.planPrices?.perSwipeFee?.join(' ') ?? '');
-        setupFees.value = (businessData.planDetials?.setupPrice.toString() ?? '');
-          verificationFees.value =
-              (businessData.planDetials?.planPrices?.verificationFee?.join(' ') ?? '');
-          processingFee.value =
-              (businessData.planDetials?.planPrices?.processingFees?.join(' ') ?? '');
+        monthlyFees.value =
+            (businessData.planDetials?.monthlyPrice.toString() ?? '');
+        perSwipeFees.value =
+            (businessData.planDetials?.planPrices?.perSwipeFee?.join(' ') ??
+                '');
+        setupFees.value =
+            (businessData.planDetials?.setupPrice.toString() ?? '');
+        verificationFees.value =
+            (businessData.planDetials?.planPrices?.verificationFee?.join(' ') ??
+                '');
+        processingFee.value =
+            (businessData.planDetials?.planPrices?.processingFees?.join(' ') ??
+                '');
 
         ///---------------------Bank Details---------------
-        accountHolderName.value = (businessData.record?.bankDetails?.accountName ?? '');
-        accountNumber.value = (businessData.record?.bankDetails?.accountNumber ?? '');
-        routingNumber.value = (businessData.record?.bankDetails?.routingNumber ?? '');
+        accountHolderName.value =
+            (businessData.record?.bankDetails?.accountName ?? '');
+        accountNumber.value =
+            (businessData.record?.bankDetails?.accountNumber ?? '');
+        routingNumber.value =
+            (businessData.record?.bankDetails?.routingNumber ?? '');
 
         ///---------------------Support Information---------------
         officialBusinessEmail.value =
             (businessData.record?.businessDetail?.businessEmail ?? '');
         officialBusinessPhone.value =
-           ( businessData.record?.businessDetail?.businessPhone ?? '');
-        customerSupportEmail.value =( businessData.record?.support?.supportEmail ?? '');
-        customerSupportPhone.value = (businessData.record?.support?.phone ?? '');
+            (businessData.record?.businessDetail?.businessPhone ?? '');
+        customerSupportEmail.value =
+            (businessData.record?.support?.supportEmail ?? '');
+        customerSupportPhone.value =
+            (businessData.record?.support?.phone ?? '');
       } else {
         variableController.loading.value = false;
         MyToast.toast("Failed to retrieve Business data");

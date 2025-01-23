@@ -95,7 +95,8 @@ class ResTransactionDetail {
     isSchedule = json['is_schedule'] ?? false;
     scheduleStart = json['schedule_start'] ?? false;
     subscriptionIsInvoice = json['subscription_is_invoice'] ?? false;
-    subscriptionInvoicePreapproved = json['subscription_invoice_preapproved'] ?? false;
+    subscriptionInvoicePreapproved =
+        json['subscription_invoice_preapproved'] ?? false;
     verificationStatus = json['verification_status'] ?? false;
     verifyToken = json['verify_token'] ?? "";
     subscriptionType = json['subscription_type'] ?? "";
@@ -163,7 +164,8 @@ class SubscriptionInfo {
   late String start;
   late String end;
 
-  SubscriptionInfo({required this.subsCycle, required this.start, required this.end});
+  SubscriptionInfo(
+      {required this.subsCycle, required this.start, required this.end});
 
   SubscriptionInfo.fromJson(Map<String, dynamic> json) {
     subsCycle = json['subs_cycle'] ?? "";
@@ -187,7 +189,9 @@ class CustId {
   CustId({required this.info, required this.sId});
 
   CustId.fromJson(Map<String, dynamic> json) {
-    info = json['info'] != null ? Info.fromJson(json['info']) : Info(custName: '', email: '');
+    info = json['info'] != null
+        ? Info.fromJson(json['info'])
+        : Info(custName: '', email: '');
     sId = json['_id'] ?? "";
   }
 

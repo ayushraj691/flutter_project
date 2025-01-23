@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:paycron/utils/my_toast.dart';
 
 class CommonController extends GetxController {
-    var imagePath="".obs;
+  var imagePath = "".obs;
 
   String myDateAndTime(String toBeParsed, String formatThen, formatNow) {
     DateTime tempDate = DateFormat(formatThen).parse(toBeParsed);
@@ -31,8 +31,10 @@ class CommonController extends GetxController {
     }
   }
 
-
-  Future showSelectionDialog(BuildContext context, Function(ImageSource) onTapCallback, ) {
+  Future showSelectionDialog(
+    BuildContext context,
+    Function(ImageSource) onTapCallback,
+  ) {
     return showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -40,26 +42,27 @@ class CommonController extends GetxController {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20.0),
             ),
-            child: Container(
+            child: SizedBox(
               height: 200,
               child: Padding(
                 padding: const EdgeInsets.all(12.0),
                 child: Column(
                   children: [
-                    Text('Select Image From',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold
-                      ),
+                    const Text(
+                      'Select Image From',
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
-                    SizedBox(height: 20.0,),
+                    const SizedBox(
+                      height: 20.0,
+                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         GestureDetector(
                           onTap: () async {
                             onTapCallback = await SeleImagefromGallery();
-
                             imagePath.value = onTapCallback as String;
-
                             // print('Image_path :-');
                             // print("**************");
                             // print(imagePath.value);
@@ -77,9 +80,11 @@ class CommonController extends GetxController {
                               child: Column(
                                 children: [
                                   Image.asset(
-                                    'assets/images/gallery.png', height: 60,
-                                    width: 60,),
-                                  Text("Gallery")
+                                    'assets/images/gallery.png',
+                                    height: 60,
+                                    width: 60,
+                                  ),
+                                  const Text("Gallery")
                                 ],
                               ),
                             ),
@@ -103,9 +108,11 @@ class CommonController extends GetxController {
                               child: Column(
                                 children: [
                                   Image.asset(
-                                    'assets/images/camera.png', height: 60,
-                                    width: 60,),
-                                  Text("Camera")
+                                    'assets/images/camera.png',
+                                    height: 60,
+                                    width: 60,
+                                  ),
+                                  const Text("Camera")
                                 ],
                               ),
                             ),
@@ -122,8 +129,8 @@ class CommonController extends GetxController {
   }
 
   SeleImagefromGallery() async {
-    var picture = await ImagePicker().pickImage(
-        source: ImageSource.gallery, imageQuality: 10);
+    var picture = await ImagePicker()
+        .pickImage(source: ImageSource.gallery, imageQuality: 10);
     if (picture != null) {
       return picture;
     } else {
@@ -132,15 +139,12 @@ class CommonController extends GetxController {
   }
 
   SeleImagefromcamera() async {
-    var picture = await ImagePicker().pickImage(
-        source: ImageSource.camera, imageQuality: 10);
+    var picture = await ImagePicker()
+        .pickImage(source: ImageSource.camera, imageQuality: 10);
     if (picture != null) {
       return picture;
     } else {
       return "";
     }
   }
-
-
-
 }

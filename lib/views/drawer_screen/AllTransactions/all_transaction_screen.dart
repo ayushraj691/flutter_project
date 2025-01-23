@@ -70,7 +70,7 @@ class _AllTransactionTabState extends State<AllTransactionTab> {
     return RefreshIndicator(
       onRefresh: _refreshData,
       child: Padding(
-        padding: const EdgeInsets.only(top: 10.0),
+        padding: const EdgeInsets.only(top: 8.0),
         child: Column(
           children: [
             Expanded(
@@ -81,10 +81,12 @@ class _AllTransactionTabState extends State<AllTransactionTab> {
                       children: [
                         Expanded(
                           child: Padding(
-                            padding: const EdgeInsets.all(8.0),
+                            padding: const EdgeInsets.only(
+                                left: 4.0, right: 8.0, bottom: 8.0, top: 8.0),
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.appBackgroundGreyColor,
+                                backgroundColor: AppColors
+                                    .appBackgroundGreyColor,
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 15, vertical: 10),
                                 shape: RoundedRectangleBorder(
@@ -132,11 +134,14 @@ class _AllTransactionTabState extends State<AllTransactionTab> {
                               ),
                               child: ElevatedButton(
                                 onPressed: () async {
-                                  await allTransactionTabController.downloadCSV();
+                                  await allTransactionTabController
+                                      .downloadCSV();
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.transparent,
                                   shadowColor: Colors.transparent,
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 10),
                                 ),
                                 child: const Text(
                                   'Download',
@@ -144,7 +149,8 @@ class _AllTransactionTabState extends State<AllTransactionTab> {
                                     fontFamily: 'Sofia Sans',
                                     fontWeight: FontWeight.w400,
                                     fontSize: 14,
-                                    color: AppColors.appWhiteColor, // Text color
+                                    color: AppColors
+                                        .appWhiteColor, // Text color
                                   ),
                                 ),
                               ),
@@ -161,15 +167,18 @@ class _AllTransactionTabState extends State<AllTransactionTab> {
                       child: Column(
                         children: [
                           Padding(
-                            padding: const EdgeInsets.all(8.0),
+                            padding: const EdgeInsets.all(16.0),
                             child: TextField(
                               controller: searchController,
                               decoration: InputDecoration(
-                                hintText: 'Search by name or email',
                                 filled: true,
                                 fillColor: AppColors.appNeutralColor5,
                                 prefixIcon: const Icon(Icons.search),
-                                contentPadding: const EdgeInsets.all(16),
+                                hintText: 'Search by Id',
+                                hintStyle: const TextStyle(fontSize: 14.0,color: AppColors.appGreyColor
+                                    ,fontWeight: FontWeight.w400
+                                ),
+                                contentPadding: const EdgeInsets.all(8),
                                 enabledBorder: OutlineInputBorder(
                                   borderSide: const BorderSide(
                                     color: AppColors.appNeutralColor5,
@@ -191,8 +200,8 @@ class _AllTransactionTabState extends State<AllTransactionTab> {
                             if (allTransactionTabController
                                 .allTransactionList.isEmpty) {
                               return variableController.loading.value
-                                  ?Padding(
-                                padding: EdgeInsets.all(8.0),
+                                  ? Padding(
+                                padding: const EdgeInsets.all(8.0),
                                 child: Container(
                                   alignment: Alignment.center,
                                   height: 50,
@@ -226,7 +235,6 @@ class _AllTransactionTabState extends State<AllTransactionTab> {
         ),
       ),
     );
-
   }
 
   Future<void> _refreshData() async {
@@ -240,63 +248,126 @@ class _AllTransactionTabState extends State<AllTransactionTab> {
     final customer = allRecentTransaction[index];
     final createdDate = subscription.createdOn;
     DateTime dateTime = DateTime.parse(createdDate).toLocal();
-    String formattedDate = DateFormat('dd MMM, yyyy').format(dateTime);
+    String formattedDate = DateFormat('dd MMM, yy').format(dateTime);
     return InkWell(
       onTap: () {
-          Get.to(TransactionsDetails(id:subscription.sId));
+        Get.to(TransactionsDetails(id: subscription.sId));
       },
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
       child: Card(
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.only(left: 16.0,right: 16.0,top: 8.0,bottom: 8.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Date and Status Row
               Row(
                 children: [
-                  Expanded(
-                    flex: 3,
-                    child: Text(
-                      formattedDate,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.appBlackColor,
-                        fontSize: 14,
-                        fontFamily: 'Sofia Sans',
-                      ),
+                  Text(
+                    formattedDate,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.appBlackColor,
+                      fontSize: 14,
+                      fontFamily: 'Sofia Sans',
                     ),
                   ),
                   SizedBox(width: MediaQuery
                       .of(context)
                       .size
                       .width * 0.03),
-                  Expanded(
-                    flex: 1,
-                    child: Align(
-                      alignment: Alignment.centerRight,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: subscription.isDeleted == false &&
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: subscription.isDeleted == false &&
+                            subscription.isDeletedRequest == true &&
+                            ![5, 6, 7].contains(subscription.payStatus)
+                            ? AppColors.appTextGreyColor
+                            : (subscription.isDeletedRequest == true &&
+                            subscription.isDeleted == true
+                            ? AppColors.appMistyRoseColor
+                            : (subscription.isDeletedRequest == false &&
+                            subscription.isDeleted == true
+                            ? AppColors.appMistyRoseColor
+                            : (subscription.payStatus == '5' &&
+                            subscription.isDeletedRequest ==
+                                false &&
+                            subscription.isDeleted == false
+                            ? AppColors.appRedLightColor
+                            : (subscription.payStatus == '6' &&
+                            subscription.isDeletedRequest ==
+                                false &&
+                            subscription.isDeleted ==
+                                false &&
+                            subscription.downloadBymerchant ==
+                                true
+                            ? AppColors.appMintGreenColor
+                            : (subscription.payStatus == '7' &&
+                            subscription.isDeletedRequest == false &&
+                            subscription.isDeleted == false &&
+                            subscription.downloadBymerchant == true
+                            ? AppColors.appRedLightColor
+                            : (subscription.isDeleted == false &&
+                            subscription.isDeletedRequest ==
+                                false &&
+                            subscription.downloadBymerchant ==
+                                true &&
+                            ![5, 6, 7].contains(subscription.payStatus)
+                            ? AppColors
+                            .appLightBlueColor
+                            : (subscription.verificationStatus == true &&
+                            subscription.isDeleted == false &&
+                            subscription.isDeletedRequest == false &&
+                            subscription.downloadBymerchant == false &&
+                            subscription.payStatus != '5'
+                            ? AppColors
+                            .appGreenLightColor
+                            : (subscription.payStatus == '0' &&
+                            subscription.verificationStatus ==
+                                false &&
+                            subscription.isDeleted == false &&
+                            subscription.isDeletedRequest == false &&
+                            subscription.downloadBymerchant == false
+                            ? AppColors.appSoftSkyBlueColor
+                            : (subscription.payStatus == '4' &&
+                            subscription.verificationStatus == false &&
+                            subscription.isDeleted == false &&
+                            subscription.isDeletedRequest == false &&
+                            subscription.downloadBymerchant == false
+                            ? AppColors.appLightYellowColor
+                            : (subscription.payStatus == '3' &&
+                            subscription.verificationStatus == false &&
+                            subscription.isDeleted == false &&
+                            subscription.isDeletedRequest == false &&
+                            subscription.downloadBymerchant == false
+                            ? AppColors.appMintGreenColor
+                            : AppColors.appLightBlueColor)))))))))),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: FittedBox(
+                        child: Text(
+                          subscription.isDeleted == false &&
                               subscription.isDeletedRequest == true &&
                               ![5, 6, 7].contains(subscription.payStatus)
-                              ? AppColors.appTextGreyColor
+                              ? 'Delete request'
                               : (subscription.isDeletedRequest == true &&
                               subscription.isDeleted == true
-                              ? AppColors.appMistyRoseColor
+                              ? 'Reimbursement'
                               : (subscription.isDeletedRequest == false &&
                               subscription.isDeleted == true
-                              ? AppColors.appMistyRoseColor
+                              ? 'Reimbursement'
                               : (subscription.payStatus == '5' &&
                               subscription.isDeletedRequest ==
                                   false &&
                               subscription.isDeleted == false
-                              ? AppColors.appRedLightColor
+                              ? 'Cancelled'
                               : (subscription.payStatus == '6' &&
                               subscription.isDeletedRequest ==
                                   false &&
@@ -304,172 +375,104 @@ class _AllTransactionTabState extends State<AllTransactionTab> {
                                   false &&
                               subscription.downloadBymerchant ==
                                   true
-                              ? AppColors.appMintGreenColor
+                              ? 'Successful'
                               : (subscription.payStatus == '7' &&
                               subscription.isDeletedRequest == false &&
                               subscription.isDeleted == false &&
                               subscription.downloadBymerchant == true
-                              ? AppColors.appRedLightColor
+                              ? 'Unsuccessful'
                               : (subscription.isDeleted == false &&
-                              subscription.isDeletedRequest ==
-                                  false &&
-                              subscription.downloadBymerchant ==
-                                  true &&
+                              subscription.isDeletedRequest == false &&
+                              subscription.downloadBymerchant == true &&
                               ![5, 6, 7].contains(subscription.payStatus)
-                              ? AppColors
-                              .appLightBlueColor
+                              ? 'Downloaded'
                               : (subscription.verificationStatus == true &&
                               subscription.isDeleted == false &&
                               subscription.isDeletedRequest == false &&
                               subscription.downloadBymerchant == false &&
                               subscription.payStatus != '5'
-                              ? AppColors
-                              .appGreenLightColor
+                              ? 'Verified'
                               : (subscription.payStatus == '0' &&
-                              subscription.verificationStatus ==
-                                  false &&
+                              subscription.verificationStatus == false &&
                               subscription.isDeleted == false &&
                               subscription.isDeletedRequest == false &&
-                              subscription.downloadBymerchant == false
-                              ? AppColors.appSoftSkyBlueColor
+                              subscription.downloadBymerchant == false ? 'New'
                               : (subscription.payStatus == '4' &&
                               subscription.verificationStatus == false &&
                               subscription.isDeleted == false &&
                               subscription.isDeletedRequest == false &&
                               subscription.downloadBymerchant == false
-                              ? AppColors.appLightYellowColor
+                              ? 'Incomplete'
                               : (subscription.payStatus == '3' &&
                               subscription.verificationStatus == false &&
                               subscription.isDeleted == false &&
                               subscription.isDeletedRequest == false &&
                               subscription.downloadBymerchant == false
-                              ? AppColors.appMintGreenColor
-                              : AppColors.appLightBlueColor)))))))))),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: FittedBox(
-                          child: Text(
-                            subscription.isDeleted == false &&
-                                subscription.isDeletedRequest == true &&
-                                ![5, 6, 7].contains(subscription.payStatus)
-                                ? 'Delete request'
-                                : (subscription.isDeletedRequest == true &&
-                                subscription.isDeleted == true
-                                ? 'Reimbursement'
-                                : (subscription.isDeletedRequest == false &&
-                                subscription.isDeleted == true
-                                ? 'Reimbursement'
-                                : (subscription.payStatus == '5' &&
-                                subscription.isDeletedRequest ==
-                                    false &&
-                                subscription.isDeleted == false
-                                ? 'Cancelled'
-                                : (subscription.payStatus == '6' &&
-                                subscription.isDeletedRequest ==
-                                    false &&
-                                subscription.isDeleted ==
-                                    false &&
-                                subscription.downloadBymerchant ==
-                                    true
-                                ? 'Successful'
-                                : (subscription.payStatus == '7' &&
-                                subscription.isDeletedRequest == false &&
-                                subscription.isDeleted == false &&
-                                subscription.downloadBymerchant == true
-                                ? 'Unsuccessful'
-                                : (subscription.isDeleted == false &&
-                                subscription.isDeletedRequest == false &&
-                                subscription.downloadBymerchant == true &&
-                                ![5, 6, 7].contains(subscription.payStatus)
-                                ? 'Downloaded'
-                                : (subscription.verificationStatus == true &&
-                                subscription.isDeleted == false &&
-                                subscription.isDeletedRequest == false &&
-                                subscription.downloadBymerchant == false &&
-                                subscription.payStatus != '5'
-                                ? 'Verified'
-                                : (subscription.payStatus == '0' &&
-                                subscription.verificationStatus == false &&
-                                subscription.isDeleted == false &&
-                                subscription.isDeletedRequest == false &&
-                                subscription.downloadBymerchant == false ? 'New'
-                                : (subscription.payStatus == '4' &&
-                                subscription.verificationStatus == false &&
-                                subscription.isDeleted == false &&
-                                subscription.isDeletedRequest == false &&
-                                subscription.downloadBymerchant == false
-                                ? 'Incomplete'
-                                : (subscription.payStatus == '3' &&
-                                subscription.verificationStatus == false &&
-                                subscription.isDeleted == false &&
-                                subscription.isDeletedRequest == false &&
-                                subscription.downloadBymerchant == false
-                                ? 'Complete'
-                                : 'Unknown')))))))))),
-                            style: TextStyle(
-                                color: subscription.isDeleted == false &&
-                                    subscription.isDeletedRequest == true &&
-                                    ![5, 6, 7]
-                                        .contains(subscription.payStatus)
-                                    ? AppColors.appTextColor2
-                                    : (subscription.isDeletedRequest == true &&
-                                    subscription.isDeleted == true
-                                    ? AppColors.appPurpleColor
-                                    : (subscription.isDeletedRequest == false &&
-                                    subscription.isDeleted == true
-                                    ? AppColors.appPurpleColor
-                                    : (subscription.payStatus == '5' &&
-                                    subscription.isDeletedRequest ==
-                                        false &&
-                                    subscription.isDeleted == false
-                                    ? AppColors.appRedColor
-                                    : (subscription.payStatus == '6' &&
-                                    subscription.isDeletedRequest ==
-                                        false &&
-                                    subscription.isDeleted ==
-                                        false &&
-                                    subscription.downloadBymerchant ==
-                                        true
-                                    ? AppColors.appGreenColor
-                                    : (subscription.payStatus == '7' &&
-                                    subscription.isDeletedRequest == false &&
-                                    subscription.isDeleted == false &&
-                                    subscription.downloadBymerchant == true
-                                    ? AppColors.appRedColor
-                                    : (subscription.isDeleted == false &&
-                                    subscription.isDeletedRequest == false &&
-                                    subscription.downloadBymerchant == true &&
-                                    ![5, 6, 7].contains(subscription.payStatus)
-                                    ? AppColors
-                                    .appTextBlueColor
-                                    : (subscription.verificationStatus ==
-                                    true && subscription.isDeleted == false &&
-                                    subscription.isDeletedRequest == false &&
-                                    subscription.downloadBymerchant == false &&
-                                    subscription.payStatus != '5'
-                                    ? AppColors
-                                    .appTextGreenColor
-                                    : (subscription.payStatus == '0' &&
-                                    subscription.verificationStatus == false &&
-                                    subscription.isDeleted == false &&
-                                    subscription.isDeletedRequest == false &&
-                                    subscription.downloadBymerchant == false
-                                    ? AppColors.appSkyBlueText
-                                    : (subscription.payStatus == '4' &&
-                                    subscription.verificationStatus == false &&
-                                    subscription.isDeleted == false &&
-                                    subscription.isDeletedRequest == false &&
-                                    subscription.downloadBymerchant == false
-                                    ? AppColors.appOrangeTextColor
-                                    : (subscription.payStatus == '3' &&
-                                    subscription.verificationStatus == false &&
-                                    subscription.isDeleted == false &&
-                                    subscription.isDeletedRequest == false &&
-                                    subscription.downloadBymerchant == false
-                                    ? AppColors.appGreenTextColor
-                                    : AppColors.appTextBlueColor)))))))))),
-                                fontSize: 12),
-                          ),
+                              ? 'Complete'
+                              : 'Unknown')))))))))),
+                          style: TextStyle(
+                              color: subscription.isDeleted == false &&
+                                  subscription.isDeletedRequest == true &&
+                                  ![5, 6, 7]
+                                      .contains(subscription.payStatus)
+                                  ? AppColors.appTextColor2
+                                  : (subscription.isDeletedRequest == true &&
+                                  subscription.isDeleted == true
+                                  ? AppColors.appPurpleColor
+                                  : (subscription.isDeletedRequest == false &&
+                                  subscription.isDeleted == true
+                                  ? AppColors.appPurpleColor
+                                  : (subscription.payStatus == '5' &&
+                                  subscription.isDeletedRequest ==
+                                      false &&
+                                  subscription.isDeleted == false
+                                  ? AppColors.appRedColor
+                                  : (subscription.payStatus == '6' &&
+                                  subscription.isDeletedRequest ==
+                                      false &&
+                                  subscription.isDeleted ==
+                                      false &&
+                                  subscription.downloadBymerchant ==
+                                      true
+                                  ? AppColors.appGreenColor
+                                  : (subscription.payStatus == '7' &&
+                                  subscription.isDeletedRequest == false &&
+                                  subscription.isDeleted == false &&
+                                  subscription.downloadBymerchant == true
+                                  ? AppColors.appRedColor
+                                  : (subscription.isDeleted == false &&
+                                  subscription.isDeletedRequest == false &&
+                                  subscription.downloadBymerchant == true &&
+                                  ![5, 6, 7].contains(subscription.payStatus)
+                                  ? AppColors
+                                  .appTextBlueColor
+                                  : (subscription.verificationStatus ==
+                                  true && subscription.isDeleted == false &&
+                                  subscription.isDeletedRequest == false &&
+                                  subscription.downloadBymerchant == false &&
+                                  subscription.payStatus != '5'
+                                  ? AppColors
+                                  .appTextGreenColor
+                                  : (subscription.payStatus == '0' &&
+                                  subscription.verificationStatus == false &&
+                                  subscription.isDeleted == false &&
+                                  subscription.isDeletedRequest == false &&
+                                  subscription.downloadBymerchant == false
+                                  ? AppColors.appSkyBlueText
+                                  : (subscription.payStatus == '4' &&
+                                  subscription.verificationStatus == false &&
+                                  subscription.isDeleted == false &&
+                                  subscription.isDeletedRequest == false &&
+                                  subscription.downloadBymerchant == false
+                                  ? AppColors.appOrangeTextColor
+                                  : (subscription.payStatus == '3' &&
+                                  subscription.verificationStatus == false &&
+                                  subscription.isDeleted == false &&
+                                  subscription.isDeletedRequest == false &&
+                                  subscription.downloadBymerchant == false
+                                  ? AppColors.appGreenTextColor
+                                  : AppColors.appTextBlueColor)))))))))),
+                              fontSize: 12),
                         ),
                       ),
                     ),
@@ -501,7 +504,7 @@ class _AllTransactionTabState extends State<AllTransactionTab> {
                         "\$${subscription.payTotal}",
                         style: const TextStyle(
                           fontWeight: FontWeight.w600,
-                          color: AppColors.appHeadingText,
+                          color: AppColors.appBlackColor,
                           fontSize: 16,
                           fontFamily: 'Sofia Sans',
                         ),

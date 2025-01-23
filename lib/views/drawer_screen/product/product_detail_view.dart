@@ -48,6 +48,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           backgroundColor: AppColors.appBackgroundColor,
           leading: IconButton(
             color: AppColors.appBlackColor,
+            splashColor: Colors.transparent,
+            highlightColor: Colors.transparent,
             icon: const Icon(Icons.arrow_back),
             onPressed: () {
               Navigator.pop(context);
@@ -74,52 +76,54 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               Padding(
                 padding: EdgeInsets.symmetric(
                   horizontal: MediaQuery.of(context).size.width *
-                      0.05, // Dynamic horizontal padding
+                      0.05,
                   vertical: MediaQuery.of(context).size.height *
-                      0.02, // Dynamic vertical padding
+                      0.02,
                 ),
                 child: ListView(
-                  children: [ if (productDetailViewController.allSingleProductDataList.isEmpty &&
-                      !variableController.loading.value)
-                    NoDataFoundCard() // Show "No Data" widget when the list is empty and not loading
-                  else ...[
-                    _buildProductDetailCollapsibleSection(
-                      title: "Product Detail",
-                      isExpanded: isProductDetailsExpanded,
-                      onToggle: () {
-                        setState(() {
-                          isProductDetailsExpanded = !isProductDetailsExpanded;
-                        });
-                      },
-                      child: _buildProductDetailsCard(),
-                    ),
-                    // SizedBox(height: MediaQuery.of(context).size.height * 0.02),
-                    // _buildAccountDetailCollapsibleSection(
-                    //   title: "Account Details",
-                    //   isExpanded: isAccountDetailsExpanded,
-                    //   onToggle: () {
-                    //     setState(() {
-                    //       isAccountDetailsExpanded = !isAccountDetailsExpanded;
-                    //     });
-                    //   },
-                    //   child: _buildAccountDetailsSection(),
-                    // ),
-                    // SizedBox(height: MediaQuery.of(context).size.height * 0.02),
-                    // _buildRecentTransactionsSection(),
+                  children: [
+                    if (productDetailViewController
+                            .allSingleProductDataList.isEmpty &&
+                        !variableController.loading.value)
+                      NoDataFoundCard()
+                    else ...[
+                      _buildProductDetailCollapsibleSection(
+                        title: "Product Detail",
+                        isExpanded: isProductDetailsExpanded,
+                        onToggle: () {
+                          setState(() {
+                            isProductDetailsExpanded =
+                                !isProductDetailsExpanded;
+                          });
+                        },
+                        child: _buildProductDetailsCard(),
+                      ),
+                      // SizedBox(height: MediaQuery.of(context).size.height * 0.02),
+                      // _buildAccountDetailCollapsibleSection(
+                      //   title: "Account Details",
+                      //   isExpanded: isAccountDetailsExpanded,
+                      //   onToggle: () {
+                      //     setState(() {
+                      //       isAccountDetailsExpanded = !isAccountDetailsExpanded;
+                      //     });
+                      //   },
+                      //   child: _buildAccountDetailsSection(),
+                      // ),
+                      // SizedBox(height: MediaQuery.of(context).size.height * 0.02),
+                      // _buildRecentTransactionsSection(),
                     ]
                   ],
                 ),
               ),
               if (variableController.loading.value)
                 Container(
-                  color: Colors.black.withOpacity(0.6), // Semi-transparent overlay
+                  color: Colors.black.withOpacity(0.6),
                   child: Center(
                     child: Container(
                       alignment: Alignment.center,
-                      height: 150,
-                      width: 150,
-                      child: Lottie.asset(
-                          "assets/lottie/half-circles.json"),
+                      height: 50,
+                      width: 50,
+                      child: Lottie.asset("assets/lottie/half-circles.json"),
                     ),
                   ),
                 ),
@@ -129,6 +133,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       );
     });
   }
+
   Future<void> _refreshData() async {
     callMethod();
     setState(() {});
@@ -158,54 +163,83 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 Material(
                   shape: RoundedRectangleBorder(
                     borderRadius:
-                        BorderRadius.circular(20), // Make the popup circular
+                        BorderRadius.circular(20),
                   ),
                   color: Colors.transparent,
                   child: PopupMenuButton<String>(
                     icon: const Icon(Icons.more_vert),
                     shape: RoundedRectangleBorder(
                       borderRadius:
-                          BorderRadius.circular(20), // Circular dialog shape
+                          BorderRadius.circular(20),
                     ),
                     onSelected: (value) {
-                      // Handle menu selection
                       if (value == 'edit') {
-                        Get.to(const UpdateProcductScreen());
+                        Get.to(UpdateProcductScreen(id: widget.id,));
                       } else if (value == 'delete') {
-                        // Handle delete action
                       }
                     },
+
+                    // itemBuilder: (BuildContext context) {
+                    //   return [
+                    //     PopupMenuItem<String>(
+                    //       value: 'edit',
+                    //       padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0),
+                    //       child: Row(
+                    //         children: [
+                    //           Image(
+                    //             image: AssetImage( ImageAssets.EditIcon),
+                    //             width: 16,
+                    //             height: 16,
+                    //             color: AppColors.appBlackColor,
+                    //           ),
+                    //           const SizedBox(width: 4),
+                    //           const Text('Edit'),
+                    //         ],
+                    //       ),
+                    //     ),
+                    //   ];
+                    // },
+
                     itemBuilder: (BuildContext context) {
                       return [
-                        const PopupMenuItem<String>(
+                        PopupMenuItem<String>(
                           value: 'edit',
+                          padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0),
                           child: Row(
                             children: [
-                              Icon(Icons.edit_outlined,
-                                  color: AppColors.appBlackColor),
-                              // Icon for edit
-                              SizedBox(width: 8),
-                              Text('Edit'),
+                              Image(
+                                image: AssetImage(ImageAssets.EditIcon),
+                                width: 16,
+                                height: 16,
+                                color: AppColors.appBlackColor,
+                              ),
+                              const SizedBox(width: 4),
+                              const Text('Edit'),
                             ],
                           ),
                         ),
-                        const PopupMenuItem<String>(
-                          value: 'remove',
-                          child: Row(
-                            children: [
-                              Icon(Icons.delete_outline_outlined,
-                                  color: AppColors.appBlackColor),
-                              // Icon for remove
-                              SizedBox(width: 8),
-                              Text('Remove'),
-                            ],
-                          ),
-                        ),
+                        // PopupMenuItem<String>(
+                        //   value: 'remove',
+                        //   padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0),
+                        //   child: Row(
+                        //     children: [
+                        //       Image(
+                        //         image: AssetImage(ImageAssets.removeImage),
+                        //         width: 16,
+                        //         height: 16,
+                        //         color: AppColors.appBlackColor,
+                        //       ),
+                        //       const SizedBox(width: 4),
+                        //       const Text('Remove'),
+                        //     ],
+                        //   ),
+                        // ),
                       ];
                     },
                   ),
                 ),
-                Icon(isExpanded ? Icons.arrow_drop_up : Icons.arrow_drop_down,color: AppColors.appBlackColor),
+                Icon(isExpanded ? Icons.arrow_drop_up : Icons.arrow_drop_down,
+                    color: AppColors.appBlackColor),
               ],
             ),
             onTap: onToggle,
@@ -222,8 +256,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Obx(() => _buildDetailRow(
-          //     "Name", customerDetailViewController.personName.value)),
           const Align(
             alignment: Alignment.topLeft,
             child: Text(
@@ -236,6 +268,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               ),
             ),
           ),
+          const SizedBox(height: 4.0,),
           Align(
               alignment: Alignment.topLeft,
               child: Obx(
@@ -264,6 +297,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               ),
             ),
           ),
+          const SizedBox(height: 4.0,),
           Align(
               alignment: Alignment.topLeft,
               child: Obx(
@@ -277,10 +311,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   ),
                 ),
               )),
-          // Obx(
-          //   () => _buildDetailRow(
-          //       "Email", customerDetailViewController.personEmail.value),
-          // ),
           const SizedBox(
             height: 8.0,
           ),
@@ -296,6 +326,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               ),
             ),
           ),
+          const SizedBox(height: 4.0,),
           Align(
             alignment: Alignment.topLeft,
             child: Obx(
@@ -310,10 +341,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               ),
             ),
           ),
-          // Obx(
-          //   () => _buildDetailRow("Description",
-          //       customerDetailViewController.personDescription.value),
-          // )
           const SizedBox(
             height: 8.0,
           ),
@@ -329,6 +356,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               ),
             ),
           ),
+          const SizedBox(height: 4.0,),
           Align(
               alignment: Alignment.topLeft,
               child: Obx(
@@ -377,7 +405,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             ),
           ),
           const SizedBox(height: 10),
-
           _buildFilePreview(),
         ],
       ),
@@ -385,97 +412,84 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   }
 
   Widget _buildFilePreview() {
-      final int fileSizeInBytes = _selectedFileSize ?? 0;
-      String createdOnValue = productDetailViewController.createdOn.value;
+    final int fileSizeInBytes = _selectedFileSize ?? 0;
+    String createdOnValue = productDetailViewController.createdOn.value;
 
-      DateTime fileDate;
+    DateTime fileDate;
 
-      if (createdOnValue == null || createdOnValue.isEmpty) {
-        debugPrint('CreatedOn value is null or empty');
+    if (createdOnValue == null || createdOnValue.isEmpty) {
+      debugPrint('CreatedOn value is null or empty');
+      fileDate = DateTime.now(); // Fallback to current date
+    } else {
+      try {
+        fileDate = DateTime.parse(createdOnValue).toLocal();
+      } catch (e) {
+        debugPrint('Error parsing date: $createdOnValue');
         fileDate = DateTime.now(); // Fallback to current date
-      } else {
-        try {
-          fileDate = DateTime.parse(createdOnValue).toLocal();
-        } catch (e) {
-          debugPrint('Error parsing date: $createdOnValue');
-          fileDate = DateTime.now(); // Fallback to current date
-        }
       }
+    }
 
-      final String fileSize =
-          '${(fileSizeInBytes / (1024 * 1024)).toStringAsFixed(1)} MB';
-      String formattedDate = DateFormat('dd/MM/yyyy').format(fileDate);
+    final String fileSize =
+        '${(fileSizeInBytes / (1024 * 1024)).toStringAsFixed(1)} MB';
+    String formattedDate = DateFormat('dd/MM/yyyy').format(fileDate);
 
-      return Container(
-        padding: const EdgeInsets.all(7.0),
-        decoration: BoxDecoration(
-          color: AppColors.appNeutralColor5,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ClipRRect(
+    return Container(
+      padding: const EdgeInsets.all(7.0),
+      decoration: BoxDecoration(
+        color: AppColors.appNeutralColor5,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ClipRRect(
               borderRadius: BorderRadius.circular(8.0),
-              child:
-              CircleAvatar(
+              child: CircleAvatar(
                 backgroundColor: Colors.white,
                 child: productDetailViewController.productImage.isNotEmpty
                     ? Image.network(
-                  '${ImageAssets.imageUrl}/${productDetailViewController.productImage}',
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Image.asset(ImageAssets.productImage);
-                  },
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return const CircularProgressIndicator();
-                  },
-                ): Image.asset(ImageAssets.productImage),
-              )
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Obx(
-                    () => Text(
-                      productDetailViewController.productImage.value ?? '',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontFamily: 'Sofia Sans',
-                        fontWeight: FontWeight.w500,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '$fileSize | $formattedDate',
+                        '${ImageAssets.imageUrl}/${productDetailViewController.productImage}',
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Image.asset(ImageAssets.productImage);
+                        },
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return const CircularProgressIndicator();
+                        },
+                      )
+                    : Image.asset(ImageAssets.productImage),
+              )),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Obx(
+                  () => Text(
+                    productDetailViewController.productImage.value ?? '',
                     style: const TextStyle(
                       fontSize: 12,
                       fontFamily: 'Sofia Sans',
-                      color: AppColors.appNeutralColor2,
+                      fontWeight: FontWeight.w500,
                     ),
+                    overflow: TextOverflow.ellipsis,
                   ),
-                ],
-              ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '$fileSize | $formattedDate',
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontFamily: 'Sofia Sans',
+                    color: AppColors.appNeutralColor2,
+                  ),
+                ),
+              ],
             ),
-            // GestureDetector(
-            //   onTap: () {
-            //     setState(() {
-            //       imageUrl = null;
-            //       _selectedFileSize = null;
-            //     });
-            //   },
-            //   child: const Icon(
-            //     Icons.highlight_remove,
-            //     color: Colors.grey,
-            //   ),
-            // ),
-          ],
-        ),
-      );
+          ),
+        ],
+      ),
+    );
   }
 }

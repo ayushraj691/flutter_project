@@ -6,8 +6,9 @@ import 'package:paycron/utils/color_constants.dart';
 import 'package:paycron/views/widgets/common_button.dart';
 import 'package:paycron/views/widgets/common_textform_field.dart';
 
-class AddressDetailsScreen extends StatefulWidget {
+import '../../../utils/string_constants.dart';
 
+class AddressDetailsScreen extends StatefulWidget {
   const AddressDetailsScreen({super.key});
 
   @override
@@ -28,13 +29,15 @@ class _AddressDetailsScreenState extends State<AddressDetailsScreen> {
         backgroundColor: AppColors.appBackgroundColor,
         leading: IconButton(
           color: AppColors.appBlackColor,
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
         titleSpacing: 0,
-        title: const FittedBox(
+        title: FittedBox(
           fit: BoxFit.scaleDown,
           child: Text(
             "Your Address",
@@ -42,7 +45,7 @@ class _AddressDetailsScreenState extends State<AddressDetailsScreen> {
               fontSize: 16, // Dynamic font size
               fontWeight: FontWeight.w600,
               color: AppColors.appTextColor,
-              fontFamily: 'Sofia Sans',
+              fontFamily: Constants.Sofiafontfamily,
             ),
           ),
         ),
@@ -71,17 +74,17 @@ class _AddressDetailsScreenState extends State<AddressDetailsScreen> {
                               children: [
                                 SizedBox(
                                   width:
-                                  MediaQuery.of(context).size.width / 1.24,
+                                      MediaQuery.of(context).size.width / 1.24,
                                   child: RichText(
-                                    text: const TextSpan(
+                                    text: TextSpan(
                                       text: 'Country ',
                                       style: TextStyle(
-                                        fontFamily: 'Sofia Sans',
+                                        fontFamily: Constants.Sofiafontfamily,
                                         fontSize: 12.0,
                                         fontWeight: FontWeight.w400,
                                         color: Colors.black,
                                       ),
-                                      children: [
+                                      children: const [
                                         TextSpan(
                                           text: '*',
                                           style: TextStyle(
@@ -110,17 +113,17 @@ class _AddressDetailsScreenState extends State<AddressDetailsScreen> {
                                 ),
                                 SizedBox(
                                   width:
-                                  MediaQuery.of(context).size.width / 1.24,
+                                      MediaQuery.of(context).size.width / 1.24,
                                   child: RichText(
-                                    text: const TextSpan(
+                                    text: TextSpan(
                                       text: 'State ',
                                       style: TextStyle(
-                                        fontFamily: 'Sofia Sans',
+                                        fontFamily: Constants.Sofiafontfamily,
                                         fontSize: 12.0,
                                         fontWeight: FontWeight.w400,
                                         color: Colors.black,
                                       ),
-                                      children: [
+                                      children: const [
                                         TextSpan(
                                           text: '*',
                                           style: TextStyle(
@@ -152,26 +155,29 @@ class _AddressDetailsScreenState extends State<AddressDetailsScreen> {
                                   children: [
                                     Expanded(
                                       child: Padding(
-                                        padding: const EdgeInsets.only(bottom: 10.0),
+                                        padding:
+                                            const EdgeInsets.only(bottom: 10.0),
                                         child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
                                             RichText(
-                                              text: const TextSpan(
-                                                text: 'pin Code ',
+                                              text: TextSpan(
+                                                text: 'Zip Code ',
                                                 style: TextStyle(
-                                                  fontFamily: 'Sofia Sans',
+                                                  fontFamily: Constants.Sofiafontfamily,
                                                   fontSize: 12.0,
                                                   fontWeight: FontWeight.w400,
                                                   color: Colors.black,
                                                 ),
-                                                children: [
+                                                children: const [
                                                   TextSpan(
                                                     text: '*',
                                                     style: TextStyle(
                                                       color: Colors.red,
                                                       fontSize: 12.0,
-                                                      fontWeight: FontWeight.w400,
+                                                      fontWeight:
+                                                          FontWeight.w400,
                                                     ),
                                                   ),
                                                 ],
@@ -179,9 +185,10 @@ class _AddressDetailsScreenState extends State<AddressDetailsScreen> {
                                             ),
                                             const SizedBox(height: 4.0),
                                             CommonTextField(
-                                              controller: merchantController.pinCode.value,
-                                              hintText: "pin Code",
-                                              labelText: "pin Code",
+                                              controller: merchantController
+                                                  .pinCode.value,
+                                              hintText: "Zip Code",
+                                              labelText: "Zip Code",
                                               keyboardType: TextInputType.text,
                                               enable: false,
                                             )
@@ -192,26 +199,29 @@ class _AddressDetailsScreenState extends State<AddressDetailsScreen> {
                                     SizedBox(width: screenWidth * 0.02),
                                     Expanded(
                                       child: Padding(
-                                        padding: const EdgeInsets.only(bottom: 10.0),
+                                        padding:
+                                            const EdgeInsets.only(bottom: 10.0),
                                         child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
                                             RichText(
-                                              text: const TextSpan(
+                                              text: TextSpan(
                                                 text: 'City ',
                                                 style: TextStyle(
-                                                  fontFamily: 'Sofia Sans',
+                                                  fontFamily: Constants.Sofiafontfamily,
                                                   fontSize: 12.0,
                                                   fontWeight: FontWeight.w400,
                                                   color: Colors.black,
                                                 ),
-                                                children: [
+                                                children: const [
                                                   TextSpan(
                                                     text: '*',
                                                     style: TextStyle(
                                                       color: Colors.red,
                                                       fontSize: 12.0,
-                                                      fontWeight: FontWeight.w400,
+                                                      fontWeight:
+                                                          FontWeight.w400,
                                                     ),
                                                   ),
                                                 ],
@@ -219,7 +229,8 @@ class _AddressDetailsScreenState extends State<AddressDetailsScreen> {
                                             ),
                                             const SizedBox(height: 4.0),
                                             CommonTextField(
-                                              controller: merchantController.city.value,
+                                              controller:
+                                                  merchantController.city.value,
                                               labelText: "City",
                                               hintText: "City",
                                               keyboardType: TextInputType.text,
@@ -231,24 +242,23 @@ class _AddressDetailsScreenState extends State<AddressDetailsScreen> {
                                     ),
                                   ],
                                 ),
-
                                 const SizedBox(
                                   width: 10,
                                   height: 12.0,
                                 ),
                                 SizedBox(
                                   width:
-                                  MediaQuery.of(context).size.width / 1.24,
+                                      MediaQuery.of(context).size.width / 1.24,
                                   child: RichText(
-                                    text: const TextSpan(
+                                    text: TextSpan(
                                       text: 'Street Address ',
                                       style: TextStyle(
-                                        fontFamily: 'Sofia Sans',
+                                        fontFamily: Constants.Sofiafontfamily,
                                         fontSize: 12.0,
                                         fontWeight: FontWeight.w400,
                                         color: Colors.black,
                                       ),
-                                      children: [
+                                      children: const [
                                         TextSpan(
                                           text: '*',
                                           style: TextStyle(
@@ -269,7 +279,8 @@ class _AddressDetailsScreenState extends State<AddressDetailsScreen> {
                                 ),
                                 CommonTextField(
                                   hintText: "Street Address",
-                                  controller: merchantController.streetAddress.value,
+                                  controller:
+                                      merchantController.streetAddress.value,
                                   labelText: "Street Address",
                                   enable: false,
                                 ),

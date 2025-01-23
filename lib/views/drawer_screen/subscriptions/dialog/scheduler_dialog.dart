@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 class ScheduleController extends GetxController {
   var selectedStartOption = "immediately".obs;
@@ -49,20 +49,24 @@ class ScheduleController extends GetxController {
     if (selectedStartOption.value == "immediately") {
       customStartDate.value = DateTime.now();
     } else if (selectedStartOption.value == "next_month") {
-      customStartDate.value = DateTime(DateTime.now().year, DateTime.now().month + 1, 1);
+      customStartDate.value =
+          DateTime(DateTime.now().year, DateTime.now().month + 1, 1);
     }
   }
 
   void _updateEndDate() {
     if (selectedEndOption.value == "custom_day_offset") {
-      customEndDate.value = customStartDate.value.add(Duration(days: customDayOffset.value));
+      customEndDate.value =
+          customStartDate.value.add(Duration(days: customDayOffset.value));
     } else if (selectedEndOption.value == "monthly_cycle") {
       switch (selectedFrequency.value) {
         case "Weekly":
-          customEndDate.value = customStartDate.value.add(Duration(days: 7 * cycleCount.value));
+          customEndDate.value =
+              customStartDate.value.add(Duration(days: 7 * cycleCount.value));
           break;
         case "Biweekly":
-          customEndDate.value = customStartDate.value.add(Duration(days: 14 * cycleCount.value));
+          customEndDate.value =
+              customStartDate.value.add(Duration(days: 14 * cycleCount.value));
           break;
         case "Monthly":
           final tentativeEndDate = DateTime(
@@ -70,8 +74,8 @@ class ScheduleController extends GetxController {
             customStartDate.value.month + cycleCount.value,
             customStartDate.value.day,
           );
-          // Adjust by subtracting one day to get the correct end date
-          customEndDate.value = tentativeEndDate.subtract(const Duration(days: 1));
+          customEndDate.value =
+              tentativeEndDate.subtract(const Duration(days: 1));
           break;
         case "Quarterly":
           final tentativeEndDate = DateTime(
@@ -79,7 +83,8 @@ class ScheduleController extends GetxController {
             customStartDate.value.month + (3 * cycleCount.value),
             customStartDate.value.day,
           );
-          customEndDate.value = tentativeEndDate.subtract(const Duration(days: 1));
+          customEndDate.value =
+              tentativeEndDate.subtract(const Duration(days: 1));
           break;
         case "Half yearly":
           final tentativeEndDate = DateTime(
@@ -87,15 +92,16 @@ class ScheduleController extends GetxController {
             customStartDate.value.month + (6 * cycleCount.value),
             customStartDate.value.day,
           );
-          customEndDate.value = tentativeEndDate.subtract(const Duration(days: 1));
+          customEndDate.value =
+              tentativeEndDate.subtract(const Duration(days: 1));
           break;
         case "Yearly":
           final tentativeEndDate = DateTime(
             customStartDate.value.year + cycleCount.value,
             customStartDate.value.month,
-            customStartDate.value.day,
-          );
-          customEndDate.value = tentativeEndDate.subtract(const Duration(days: 1));
+            customStartDate.value.day,);
+          customEndDate.value =
+              tentativeEndDate.subtract(const Duration(days: 1));
           break;
       }
     }
@@ -130,14 +136,21 @@ void showScheduleSubscriptionDialog(BuildContext context) {
                     value: controller.selectedFrequency.value,
                     underline: const SizedBox(),
                     dropdownColor: Colors.blue[50],
-                    items: ["Weekly", "Biweekly", "Monthly", "Quarterly", "Half yearly", "Yearly"]
+                    items: [
+                      "Weekly",
+                      "Biweekly",
+                      "Monthly",
+                      "Quarterly",
+                      "Half yearly",
+                      "Yearly"
+                    ]
                         .map((e) => DropdownMenuItem(
-                      value: e,
-                      child: Text(
-                        e,
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                    ))
+                              value: e,
+                              child: Text(
+                                e,
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                            ))
                         .toList(),
                     onChanged: (value) {
                       controller.setFrequency(value!);
@@ -156,7 +169,10 @@ void showScheduleSubscriptionDialog(BuildContext context) {
                 DateFormat("dd-MM-yyyy").format(DateTime.now()),
                 value: "immediately",
                 groupValue: controller.selectedStartOption.value,
-                activeColor: controller.selectedStartOption.value == "immediately" ? Colors.blue : Colors.grey,
+                activeColor:
+                    controller.selectedStartOption.value == "immediately"
+                        ? Colors.blue
+                        : Colors.grey,
                 onSelect: () {
                   controller.setStartOption("immediately");
                 },
@@ -165,10 +181,14 @@ void showScheduleSubscriptionDialog(BuildContext context) {
             Obx(() {
               return _buildRadioOption(
                 "On the 1st of Next Month",
-                DateFormat("dd-MM-yyyy").format(DateTime(DateTime.now().year, DateTime.now().month + 1, 1)),
+                DateFormat("dd-MM-yyyy").format(
+                    DateTime(DateTime.now().year, DateTime.now().month + 1, 1)),
                 value: "next_month",
                 groupValue: controller.selectedStartOption.value,
-                activeColor: controller.selectedStartOption.value == "next_month" ? Colors.blue : Colors.grey,
+                activeColor:
+                    controller.selectedStartOption.value == "next_month"
+                        ? Colors.blue
+                        : Colors.grey,
                 onSelect: () {
                   controller.setStartOption("next_month");
                 },
@@ -179,11 +199,14 @@ void showScheduleSubscriptionDialog(BuildContext context) {
                 context,
                 "On a Custom Date",
                 controller.customStartDate.value != null
-                    ? DateFormat("dd-MM-yyyy").format(controller.customStartDate.value)
+                    ? DateFormat("dd-MM-yyyy")
+                        .format(controller.customStartDate.value)
                     : "Select",
                 value: "custom",
                 groupValue: controller.selectedStartOption.value,
-                activeColor: controller.selectedStartOption.value == "custom" ? Colors.blue : Colors.grey,
+                activeColor: controller.selectedStartOption.value == "custom"
+                    ? Colors.blue
+                    : Colors.grey,
                 onSelect: () {
                   _pickDate(context, (pickedDate) {
                     controller.setCustomStartDate(pickedDate);
@@ -200,7 +223,10 @@ void showScheduleSubscriptionDialog(BuildContext context) {
                 "Monthly Cycle",
                 value: "monthly_cycle",
                 groupValue: controller.selectedEndOption.value,
-                activeColor: controller.selectedEndOption.value == "monthly_cycle" ? Colors.blue : Colors.grey,
+                activeColor:
+                    controller.selectedEndOption.value == "monthly_cycle"
+                        ? Colors.blue
+                        : Colors.grey,
                 onSelect: () {
                   controller.selectedEndOption.value = "monthly_cycle";
                   controller._updateEndDate();
@@ -213,11 +239,14 @@ void showScheduleSubscriptionDialog(BuildContext context) {
                 context,
                 "On A Custom Date",
                 controller.customEndDate.value != null
-                    ? DateFormat("dd-MM-yyyy").format(controller.customEndDate.value)
+                    ? DateFormat("dd-MM-yyyy")
+                        .format(controller.customEndDate.value)
                     : "Select",
                 value: "custom",
                 groupValue: controller.selectedEndOption.value,
-                activeColor: controller.selectedEndOption.value == "custom" ? Colors.blue : Colors.grey,
+                activeColor: controller.selectedEndOption.value == "custom"
+                    ? Colors.blue
+                    : Colors.grey,
                 onSelect: () {
                   _pickDate(context, (pickedDate) {
                     controller.setCustomEndDate(pickedDate);
@@ -242,11 +271,13 @@ void showScheduleSubscriptionDialog(BuildContext context) {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
               ),
               onPressed: () {
-                final ScheduleController controller = Get.find<ScheduleController>();
+                final ScheduleController controller =
+                    Get.find<ScheduleController>();
                 debugPrint("Start Date: ${controller.customStartDate.value}");
                 debugPrint("End Date: ${controller.customEndDate.value}");
                 debugPrint("Frequency: ${controller.selectedFrequency.value}");
-                debugPrint("Monthly Cycle: ${controller.selectedEndOption.value}");
+                debugPrint(
+                    "Monthly Cycle: ${controller.selectedEndOption.value}");
                 Navigator.of(context).pop();
               },
             ),
@@ -268,13 +299,13 @@ Widget _buildSectionTitle(String title) {
 }
 
 Widget _buildRadioOption(
-    String title,
-    String subtitle, {
-      required String value,
-      required String groupValue,
-      required VoidCallback onSelect,
-      required Color activeColor,
-    }) {
+  String title,
+  String subtitle, {
+  required String value,
+  required String groupValue,
+  required VoidCallback onSelect,
+  required Color activeColor,
+}) {
   return InkWell(
     onTap: onSelect,
     child: Row(
@@ -301,14 +332,14 @@ Widget _buildRadioOption(
 }
 
 Widget _buildRadioOptionWithInput(
-    BuildContext context,
-    String title, {
-      required String value,
-      required String groupValue,
-      required VoidCallback onSelect,
-      required Color activeColor,
-      required ScheduleController controller,
-    }) {
+  BuildContext context,
+  String title, {
+  required String value,
+  required String groupValue,
+  required VoidCallback onSelect,
+  required Color activeColor,
+  required ScheduleController controller,
+}) {
   return Row(
     children: [
       Radio<String>(
@@ -341,14 +372,14 @@ Widget _buildRadioOptionWithInput(
 }
 
 Widget _buildCustomDateFieldOption(
-    BuildContext context,
-    String title,
-    String dateText, {
-      required String value,
-      required String groupValue,
-      required VoidCallback onSelect,
-      required Color activeColor,
-    }) {
+  BuildContext context,
+  String title,
+  String dateText, {
+  required String value,
+  required String groupValue,
+  required VoidCallback onSelect,
+  required Color activeColor,
+}) {
   return InkWell(
     onTap: onSelect,
     child: Row(
@@ -373,7 +404,9 @@ Widget _buildCustomDateFieldOption(
             padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
             child: Text(
               dateText,
-              style: TextStyle(fontSize: 14, color: dateText == "Select" ? Colors.grey : Colors.black),
+              style: TextStyle(
+                  fontSize: 14,
+                  color: dateText == "Select" ? Colors.grey : Colors.black),
             ),
           ),
         ),
@@ -382,7 +415,8 @@ Widget _buildCustomDateFieldOption(
   );
 }
 
-void _pickDate(BuildContext context, ValueChanged<DateTime?> onDateSelected) async {
+void _pickDate(
+    BuildContext context, ValueChanged<DateTime?> onDateSelected) async {
   DateTime? pickedDate = await showDatePicker(
     context: context,
     initialDate: DateTime.now(),
@@ -393,5 +427,3 @@ void _pickDate(BuildContext context, ValueChanged<DateTime?> onDateSelected) asy
     onDateSelected(pickedDate);
   }
 }
-
-

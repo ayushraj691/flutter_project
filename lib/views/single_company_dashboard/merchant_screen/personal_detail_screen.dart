@@ -5,9 +5,9 @@ import 'package:paycron/controller/variable_controller.dart';
 import 'package:paycron/utils/color_constants.dart';
 import 'package:paycron/views/widgets/common_button.dart';
 import 'package:paycron/views/widgets/common_textform_field.dart';
+import '../../../utils/string_constants.dart';
 
 class PersonDetailsScreen extends StatefulWidget {
-
   const PersonDetailsScreen({super.key});
 
   @override
@@ -18,8 +18,6 @@ class _PersonDetailsScreenState extends State<PersonDetailsScreen> {
   var merchantController = Get.find<MerchantController>();
   var variableController = Get.find<VariableController>();
 
-
-
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -29,6 +27,8 @@ class _PersonDetailsScreenState extends State<PersonDetailsScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.appBackgroundColor,
         leading: IconButton(
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
           color: AppColors.appBlackColor,
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
@@ -36,7 +36,7 @@ class _PersonDetailsScreenState extends State<PersonDetailsScreen> {
           },
         ),
         titleSpacing: 0,
-        title: const FittedBox(
+        title: FittedBox(
           fit: BoxFit.scaleDown,
           child: Text(
             "Person Detail",
@@ -44,7 +44,7 @@ class _PersonDetailsScreenState extends State<PersonDetailsScreen> {
               fontSize: 16,
               fontWeight: FontWeight.w600,
               color: AppColors.appTextColor,
-              fontFamily: 'Sofia Sans',
+              fontFamily: Constants.Sofiafontfamily,
             ),
           ),
         ),
@@ -73,17 +73,17 @@ class _PersonDetailsScreenState extends State<PersonDetailsScreen> {
                               children: [
                                 SizedBox(
                                   width:
-                                  MediaQuery.of(context).size.width / 1.24,
+                                      MediaQuery.of(context).size.width / 1.24,
                                   child: RichText(
-                                    text: const TextSpan(
+                                    text: TextSpan(
                                       text: 'Full Name ',
                                       style: TextStyle(
-                                        fontFamily: 'Sofia Sans',
+                                        fontFamily: Constants.Sofiafontfamily,
                                         fontSize: 12.0,
                                         fontWeight: FontWeight.w400,
                                         color: Colors.black,
                                       ),
-                                      children: [
+                                      children: const [
                                         TextSpan(
                                           text: '*',
                                           style: TextStyle(
@@ -112,17 +112,17 @@ class _PersonDetailsScreenState extends State<PersonDetailsScreen> {
                                 ),
                                 SizedBox(
                                   width:
-                                  MediaQuery.of(context).size.width / 1.24,
+                                      MediaQuery.of(context).size.width / 1.24,
                                   child: RichText(
-                                    text: const TextSpan(
+                                    text: TextSpan(
                                       text: 'Email address ',
                                       style: TextStyle(
-                                        fontFamily: 'Sofia Sans',
+                                        fontFamily: Constants.Sofiafontfamily,
                                         fontSize: 12.0,
                                         fontWeight: FontWeight.w400,
                                         color: Colors.black,
                                       ),
-                                      children: [
+                                      children: const [
                                         TextSpan(
                                           text: '*',
                                           style: TextStyle(
@@ -151,17 +151,17 @@ class _PersonDetailsScreenState extends State<PersonDetailsScreen> {
                                 ),
                                 SizedBox(
                                   width:
-                                  MediaQuery.of(context).size.width / 1.24,
+                                      MediaQuery.of(context).size.width / 1.24,
                                   child: RichText(
-                                    text: const TextSpan(
+                                    text: TextSpan(
                                       text: 'Mobile number ',
                                       style: TextStyle(
-                                        fontFamily: 'Sofia Sans',
+                                        fontFamily: Constants.Sofiafontfamily,
                                         fontSize: 12.0,
                                         fontWeight: FontWeight.w400,
                                         color: Colors.black,
                                       ),
-                                      children: [
+                                      children: const [
                                         TextSpan(
                                           text: '*',
                                           style: TextStyle(
@@ -192,17 +192,17 @@ class _PersonDetailsScreenState extends State<PersonDetailsScreen> {
                                 ),
                                 SizedBox(
                                   width:
-                                  MediaQuery.of(context).size.width / 1.24,
+                                      MediaQuery.of(context).size.width / 1.24,
                                   child: RichText(
-                                    text: const TextSpan(
+                                    text: TextSpan(
                                       text: 'Date of Birth ',
                                       style: TextStyle(
-                                        fontFamily: 'Sofia Sans',
+                                        fontFamily: Constants.Sofiafontfamily,
                                         fontSize: 12.0,
                                         fontWeight: FontWeight.w400,
                                         color: Colors.black,
                                       ),
-                                      children: [
+                                      children: const [
                                         TextSpan(
                                           text: '*',
                                           style: TextStyle(

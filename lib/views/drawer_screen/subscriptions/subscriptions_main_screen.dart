@@ -7,15 +7,17 @@ import 'package:paycron/utils/image_assets.dart';
 import 'package:paycron/views/app_drawer/app_drawer.dart';
 import 'package:paycron/views/dashboard/business_profile_screen.dart';
 import 'package:paycron/views/drawer_screen/subscriptions/add_subscription_screen.dart';
-import 'package:paycron/views/drawer_screen/subscriptions/subscriptions_Scheduled_screen.dart';
 import 'package:paycron/views/drawer_screen/subscriptions/all_subscriptions_screen.dart';
 import 'package:paycron/views/drawer_screen/subscriptions/cancelled_subscriptions_screen.dart';
 import 'package:paycron/views/drawer_screen/subscriptions/deleted_subscriptions_screen.dart';
 import 'package:paycron/views/drawer_screen/subscriptions/downloaded_subscriptions_screen.dart';
 import 'package:paycron/views/drawer_screen/subscriptions/new_subscriptions_screen.dart';
 import 'package:paycron/views/drawer_screen/subscriptions/reimbursement_subscriptions_screen.dart';
+import 'package:paycron/views/drawer_screen/subscriptions/subscriptions_Scheduled_screen.dart';
 import 'package:paycron/views/drawer_screen/subscriptions/verified_subscriptions_screen.dart';
 import 'package:paycron/views/widgets/common_button.dart';
+
+import '../../../utils/string_constants.dart';
 
 class SubscriptionsScreen extends StatefulWidget {
   const SubscriptionsScreen({super.key});
@@ -24,15 +26,28 @@ class SubscriptionsScreen extends StatefulWidget {
   State<SubscriptionsScreen> createState() => _SubscriptionsScreenState();
 }
 
-class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
+class _SubscriptionsScreenState extends State<SubscriptionsScreen>
+    with SingleTickerProviderStateMixin {
   final addSubscriptionController = Get.find<AddSubscriptionController>();
   final ScrollController _scrollController = ScrollController();
+  late TabController _tabController;
+
+  final double tabWidth = 100.0;
+  late double screenWidth;
+
   bool _showLeftArrow = false;
   bool _showRightArrow = true;
 
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 8, vsync: this);
+
+    _tabController.addListener(() {
+      if (!_tabController.indexIsChanging) {
+        _scrollToSelectedTab(_tabController.index);
+      }
+    });
     _scrollController.addListener(_scrollListener);
   }
 
@@ -44,63 +59,94 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
     });
   }
 
-  void _scrollLeft() {
-    _scrollController.animateTo(
-      _scrollController.position.pixels - 100,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeOut,
-    );
+  void _scrollToSelectedTab(int index) {
+    if (_scrollController.hasClients) {
+      final targetScrollOffset =
+          (index * tabWidth) - (screenWidth / 2) + (tabWidth / 2);
+
+      final clampedOffset = targetScrollOffset.clamp(
+        0.0,
+        _scrollController.position.maxScrollExtent,
+      );
+
+      _scrollController.animateTo(
+        clampedOffset,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
   }
 
-  void _scrollRight() {
-    _scrollController.animateTo(
-      _scrollController.position.pixels + 100,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeOut,
-    );
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    screenWidth = MediaQuery.of(context).size.width;
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    _tabController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
-
     return Scaffold(
       backgroundColor: AppColors.appBackgroundColor,
       appBar: AppBar(
         backgroundColor: AppColors.appBackgroundColor,
         leading: IconButton(
           color: AppColors.appBlackColor,
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
         titleSpacing: 0,
-        title: Obx(() => Text(
-          CommonVariable.businessName.value,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: AppColors.appTextColor,
-            fontFamily: 'Sofia Sans',
+        title: Obx(
+              () => Text(
+            CommonVariable.businessName.value,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: AppColors.appTextColor,
+              fontFamily: 'Sofia Sans',
+            ),
           ),
-        ),),
+        ),
         actions: [
           Padding(
             padding: const EdgeInsets.all(4.0),
             child: InkWell(
-              onTap: () => {
-                Get.to(const BusinessProfileScreen())
+              onTap: () {
+                Get.to(const BusinessProfileScreen());
               },
-              child: CircleAvatar(
-                radius: screenHeight / 45,
-                backgroundImage: AssetImage(ImageAssets.profile),
+              splashColor: Colors.transparent,
+              highlightColor: Colors.transparent,
+              child:  Container(
+                width: screenHeight / 20,
+                height: screenHeight / 20,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                    image: AssetImage(ImageAssets.profile),
+                    fit: BoxFit.fill,
+                    alignment: Alignment.center,
+                  ),
+                ),
               ),
             ),
           ),
           Builder(
             builder: (BuildContext context) => IconButton(
               icon: Image.asset(ImageAssets.closeDrawer),
+              splashColor: Colors.transparent,
+              highlightColor: Colors.transparent,
               onPressed: () {
                 Scaffold.of(context).openEndDrawer();
               },
@@ -108,9 +154,9 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
           ),
         ],
       ),
-      endDrawer: AppDrawer(),
+      endDrawer: const AppDrawer(),
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.only(left: 8.0, right: 8.0),
         child: Column(
           children: [
             const Align(
@@ -129,77 +175,74 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
               ),
             ),
             Expanded(
-              child: DefaultTabController(
-                length: 8,
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        // Left Arrow
-                        Visibility(
-                          visible: _showLeftArrow,
-                          child: IconButton(
-                            icon: const SizedBox(
-                              width: 24,
-                              height: 24,
-                              child: Icon(Icons.arrow_back_ios,
-                                  color: AppColors.appBlueColor, size: 18),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          controller: _scrollController,
+                          child: TabBar(
+                            controller: _tabController,
+                            isScrollable: true,
+                            labelColor: AppColors.appBlueColor,
+                            unselectedLabelColor: Colors.grey,
+                            indicatorPadding: EdgeInsets.zero,
+                            labelStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w600,fontFamily: Constants.Sofiafontfamily),
+                            indicator: const BoxDecoration(
+                              border: Border(
+                                bottom: BorderSide(
+                                  color: AppColors.appBlueColor,
+                                  width: 1.0,
+                                ),
+                              ),
                             ),
-                            onPressed: _showLeftArrow ? _scrollLeft : null,
+                            tabs: const [
+                              Tab(text: 'All'),
+                              Tab(text: 'Scheduled'),
+                              Tab(text: 'New'),
+                              Tab(text: 'Verified'),
+                              Tab(text: 'Downloaded'),
+                              Tab(text: 'Cancelled'),
+                              Tab(text: 'Deleted'),
+                              Tab(text: 'Reimbursement'),
+                            ],
                           ),
                         ),
-                        Expanded(
-                          child: SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            controller: _scrollController,
-                            child: const TabBar(
-                              isScrollable: true,
-                              labelColor: AppColors.appBlueColor,
-                              unselectedLabelColor: Colors.grey,
-                              indicatorColor: AppColors.appBlueColor,
-                              tabs: [
-                                Tab(text: 'All'),
-                                Tab(text: 'Scheduled'),
-                                Tab(text: 'New'),
-                                Tab(text: 'Verified'),
-                                Tab(text: 'Downloaded'),
-                                Tab(text: 'Cancelled'),
-                                Tab(text: 'Deleted'),
-                                Tab(text: 'Reimbursement'),
-                              ],
-                            ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 1.0,
+                    child: Row(
+                      children: List.generate(8, (index) {
+                        return Expanded(
+                          child: Container(
+                            color: index == _tabController.index
+                                ? Colors.grey
+                                : Colors.grey,
                           ),
-                        ),
-                        Visibility(
-                          visible: _showRightArrow,
-                          child: IconButton(
-                            icon: const SizedBox(
-                              width: 24, // Small width
-                              height: 24, // Small height
-                              child: Icon(Icons.arrow_forward_ios,
-                                  color: AppColors.appBlueColor, size: 18),
-                            ),
-                            onPressed: _showRightArrow ? _scrollRight : null,
-                          ),
-                        ),
+                        );
+                      }),
+                    ),
+                  ),
+                  Expanded(
+                    child: TabBarView(
+                      controller: _tabController,
+                      children: const [
+                        AllSubscriptionsTab(),
+                        SubscriptionsScheduledTab(),
+                        SubscriptionsNewTab(),
+                        SubscriptionsVerifiedTab(),
+                        SubscriptionsDownloadedTab(),
+                        SubscriptionsCancelledTab(),
+                        SubscriptionsDeletedTab(),
+                        SubscriptionsReimbursementTab(),
                       ],
                     ),
-                    const Expanded(
-                      child: TabBarView(
-                        children: [
-                          AllSubscriptionsTab(),
-                          SubscriptionsScheduledTab(),
-                          SubscriptionsNewTab(),
-                          SubscriptionsVerifiedTab(),
-                          SubscriptionsDownloadedTab(),
-                          SubscriptionsCancelledTab(),
-                          SubscriptionsDeletedTab(),
-                          SubscriptionsReimbursementTab(),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -209,7 +252,7 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
         padding: const EdgeInsets.only(
           left: 12.0,
           right: 12.0,
-          bottom : 12.0,
+          bottom: 12.0,
         ),
         child: CommonButton(
           buttonWidth: MediaQuery.of(context).size.width * 0.9,
@@ -221,12 +264,6 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
           },
         ),
       ),
-
     );
-  }
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
   }
 }

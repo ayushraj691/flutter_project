@@ -8,6 +8,7 @@ import 'package:paycron/model/drawer_model/product_model/ResAllFilterProductData
 import 'package:paycron/utils/color_constants.dart';
 import 'package:paycron/utils/common_variable.dart';
 import 'package:paycron/utils/image_assets.dart';
+import 'package:paycron/utils/string_constants.dart';
 import 'package:paycron/views/drawer_screen/product/product_detail_view.dart';
 import 'package:paycron/views/widgets/NoDataScreen.dart';
 
@@ -24,17 +25,16 @@ class _InactiveTabProductState extends State<InactiveTabProduct> {
   var variableController = Get.find<VariableController>();
   List<ResAllFilterProductData> filteredItems = <ResAllFilterProductData>[].obs;
 
-
   @override
   void initState() {
-    Future.delayed(const Duration(seconds: 0),(){
+    Future.delayed(const Duration(seconds: 0), () {
       callMethod();
       searchController.addListener(_filterItems);
     });
     super.initState();
   }
 
-  void callMethod() async{
+  void callMethod() async {
     Map<String, dynamic> sortMap = {
       "": "",
     };
@@ -56,8 +56,7 @@ class _InactiveTabProductState extends State<InactiveTabProduct> {
     String query = searchController.text.toLowerCase();
     setState(() {
       filteredItems = inActiveTabProductController.allProductDataList
-          .where(
-              (item) => item.proName.toLowerCase().contains(query))
+          .where((item) => item.proName.toLowerCase().contains(query))
           .toList();
     });
   }
@@ -68,164 +67,177 @@ class _InactiveTabProductState extends State<InactiveTabProduct> {
     return RefreshIndicator(
       onRefresh: _refreshData,
       child: Padding(
-        padding: const EdgeInsets.only(top: 10.0,bottom: 30),
+        padding: const EdgeInsets.only( bottom: 20),
         child: Column(
           children: [
             Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.appBackgroundGreyColor,
-                                // Button color
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 15, vertical: 10),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(
-                                      30), // Rounded corners
-                                ),
-                                elevation: 0,
-                                shadowColor: Colors.black45,
-                              ),
-                              onPressed: () =>
-                                  inActiveTabProductController.showSelectDurationBottomSheet(context),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Obx(() => Text(
-                                        inActiveTabProductController.buttonText.value,
-                                        // Display the selected date on the button
-                                        style: const TextStyle(
-                                          fontSize: 12,
-                                          color: AppColors.appBlackColor,
-                                          fontWeight: FontWeight.w400,
-                                          fontFamily: 'Sofia Sans',
-                                        ),
-                                      )),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: Container(
-                              width: screenWidth / 4,
-                              decoration: BoxDecoration(
-                                color: AppColors.appBlackColor,
-                                // Button background color
-                                borderRadius: BorderRadius.circular(30),
-                                // Rounded corners
-                                border: Border.all(
-                                  color: AppColors.appBlackColor,
-                                  // Button border color
-                                  width: 0, // Border thickness
-                                ),
-                              ),
-                              height: 36,
+              child: ListView(
+                children: [
+                  Column(
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 4.0, right: 8.0, bottom: 8.0, top: 8.0),
                               child: ElevatedButton(
-                                onPressed: () async {
-                                  await inActiveTabProductController.downloadCSV();
-                                }, // Button press callback
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.transparent,
-                                  // Transparent to show container color
-                                  shadowColor: Colors.transparent,
-                                  // Remove button shadow
+                                  backgroundColor:
+                                      AppColors.appBackgroundGreyColor,
                                   padding: const EdgeInsets.symmetric(
-                                      vertical: 10), // Button height padding
+                                      horizontal: 15, vertical: 10),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                  elevation: 0,
+                                  shadowColor: Colors.black45,
                                 ),
-                                child: const Text(
-                                  'Download',
-                                  style: TextStyle(
-                                    fontFamily: 'Sofia Sans',
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 14,
-                                    color: AppColors.appWhiteColor, // Text color
+                                onPressed: () => inActiveTabProductController
+                                    .showSelectDurationBottomSheet(context),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Obx(() => Text(
+                                          inActiveTabProductController
+                                              .buttonText.value,
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: AppColors.appBlackColor,
+                                            fontWeight: FontWeight.w400,
+                                            fontFamily:
+                                                Constants.Sofiafontfamily,
+                                          ),
+                                        )),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Container(
+                                width: screenWidth / 4,
+                                decoration: BoxDecoration(
+                                  color: AppColors.appBlackColor,
+                                  // Button background color
+                                  borderRadius: BorderRadius.circular(30),
+                                  // Rounded corners
+                                  border: Border.all(
+                                    color: AppColors.appBlackColor,
+                                    // Button border color
+                                    width: 0, // Border thickness
+                                  ),
+                                ),
+                                height: 36,
+                                child: ElevatedButton(
+                                  onPressed: () async {
+                                    await inActiveTabProductController
+                                        .downloadCSV();
+                                  }, // Button press callback
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.transparent,
+                                    // Transparent to show container color
+                                    shadowColor: Colors.transparent,
+                                    // Remove button shadow
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 10), // Button height padding
+                                  ),
+                                  child: Text(
+                                    'Download',
+                                    style: TextStyle(
+                                      fontFamily: Constants.Sofiafontfamily,
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 14,
+                                      color:
+                                          AppColors.appWhiteColor, // Text color
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Card(
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25.0),
-                        ),
-                        child: Column(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: TextField(
-                                controller: searchController,
-                                decoration: InputDecoration(
-                                  hintText: 'Search by name or email',
-                                  filled: true,
-                                  fillColor: AppColors.appNeutralColor5,
-                                  prefixIcon: const Icon(Icons.search),
-                                  contentPadding: const EdgeInsets.all(16),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide: const BorderSide(
-                                      color: AppColors.appNeutralColor5,
-                                      width: 0,
+                        ],
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            bottom: 8.0),
+                        child: Card(
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(25.0),
+                          ),
+                          child: Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: TextField(
+                                  controller: searchController,
+                                  decoration: InputDecoration(
+                                    hintText: 'Search by name',
+                                    filled: true,
+                                    fillColor: AppColors.appNeutralColor5,
+                                    prefixIcon: const Icon(Icons.search),
+                                    hintStyle: const TextStyle(fontSize: 14.0,color: AppColors.appGreyColor
+                                        ,fontWeight: FontWeight.w400
                                     ),
-                                    borderRadius: BorderRadius.circular(30),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide: const BorderSide(
-                                      color: AppColors.appNeutralColor5,
-                                      width: 0,
+                                    contentPadding: const EdgeInsets.all(8),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: const BorderSide(
+                                        color: AppColors.appNeutralColor5,
+                                        width: 0,
+                                      ),
+                                      borderRadius: BorderRadius.circular(30),
                                     ),
-                                    borderRadius: BorderRadius.circular(30),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: const BorderSide(
+                                        color: AppColors.appNeutralColor5,
+                                        width: 0,
+                                      ),
+                                      borderRadius: BorderRadius.circular(30),
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                            Obx(() {
-                              if (inActiveTabProductController.allProductDataList.isEmpty) {
-                                return variableController.loading.value
-                                    ? Padding(
-                                  padding: EdgeInsets.all(8.0),
-                                  child: Container(
-                                    alignment: Alignment.center,
-                                    height: 50,
-                                    width: 50,
-                                    child: Lottie.asset(
-                                        "assets/lottie/half-circles.json"),
-                                  ),
-                                )
-                                    : NoDataFoundCard(); // Your custom widget
-                              } else {
-                                return  ListView.builder(
-                                  shrinkWrap: true,
-                                  physics: const NeverScrollableScrollPhysics(), // Disable scrolling inside ListView
-                                  itemCount:  filteredItems.length,
-                                  itemBuilder: (context, index) {
-                                    return listItem( filteredItems,index, context);
-                                  },
-                                );
-                              }
-                            }),
-                          ],
+                              Obx(() {
+                                if (inActiveTabProductController
+                                    .allProductDataList.isEmpty) {
+                                  return variableController.loading.value
+                                      ? Padding(
+                                          padding: EdgeInsets.all(8.0),
+                                          child: Container(
+                                            alignment: Alignment.center,
+                                            height: 50,
+                                            width: 50,
+                                            child: Lottie.asset(
+                                                "assets/lottie/half-circles.json"),
+                                          ),
+                                        )
+                                      : NoDataFoundCard(); // Your custom widget
+                                } else {
+                                  return ListView.builder(
+                                    shrinkWrap: true,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    // Disable scrolling inside ListView
+                                    itemCount: filteredItems.length,
+                                    itemBuilder: (context, index) {
+                                      return listItem(
+                                          filteredItems, index, context);
+                                    },
+                                  );
+                                }
+                              }),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                    SizedBox(height: 10),
-                    // Add extra space to avoid button overlap with content
-                  ],
-                ),
+                      SizedBox(height: 10),
+                      // Add extra space to avoid button overlap with content
+                    ],
+                  )
+                ],
               ),
             ),
             // Padding(
@@ -246,13 +258,15 @@ class _InactiveTabProductState extends State<InactiveTabProduct> {
       ),
     );
   }
+
   Future<void> _refreshData() async {
     callMethod();
     setState(() {});
   }
 }
 
-Widget listItem(List<ResAllFilterProductData> allProductDataList, int index, context) {
+Widget listItem(
+    List<ResAllFilterProductData> allProductDataList, int index, context) {
   final product = allProductDataList[index];
   final productName = product.proName;
   final productId = product.proId;
@@ -266,11 +280,17 @@ Widget listItem(List<ResAllFilterProductData> allProductDataList, int index, con
   String formattedDate = DateFormat('dd MMM, yyyy').format(dateTime);
 
   return InkWell(
-      onTap: productstatus ? null : () async {  // Disable onTap if productstatus is true
-        Get.to(ProductDetailsScreen(id: product.sId,));
-      },
-      child: Opacity( // Apply opacity based on productstatus
-        opacity: productstatus ? 0.5 : 1.0, // Make item transparent if productstatus is true
+      onTap: productstatus
+          ? null
+          : () async {
+              Get.to(ProductDetailsScreen(
+                id: product.sId,
+              ));
+            },
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      child: Opacity(
+        opacity: productstatus ? 0.5 : 1.0,
         child: Padding(
           padding: const EdgeInsets.all(0.0),
           child: Card(
@@ -306,11 +326,11 @@ Widget listItem(List<ResAllFilterProductData> allProductDataList, int index, con
                           children: [
                             Text(
                               productName,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontWeight: FontWeight.w600,
                                 color: AppColors.appBlackColor,
                                 fontSize: 14,
-                                fontFamily: 'Sofia Sans',
+                                fontFamily: Constants.Sofiafontfamily,
                               ),
                             ),
                             // Text(
@@ -319,16 +339,16 @@ Widget listItem(List<ResAllFilterProductData> allProductDataList, int index, con
                             //     fontWeight: FontWeight.w500,
                             //     color: AppColors.appGreyColor,
                             //     fontSize: 14,
-                            //     fontFamily: 'Sofia Sans',
+                            //     fontFamily: Constants.Sofiafontfamily,
                             //   ),
                             // ),
                             Text(
                               "ID :$productId",
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontWeight: FontWeight.w500,
                                 color: AppColors.appGreyColor,
                                 fontSize: 14,
-                                fontFamily: 'Sofia Sans',
+                                fontFamily: Constants.Sofiafontfamily,
                               ),
                             ),
                           ],
@@ -340,20 +360,20 @@ Widget listItem(List<ResAllFilterProductData> allProductDataList, int index, con
                           children: [
                             Text(
                               "\$$productPrice",
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontWeight: FontWeight.w600,
                                 color: AppColors.appBlackColor,
                                 fontSize: 12,
-                                fontFamily: 'Sofia Sans',
+                                fontFamily: Constants.Sofiafontfamily,
                               ),
                             ),
                             Text(
                               formattedDate,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontWeight: FontWeight.w400,
                                 color: AppColors.appGreyColor,
                                 fontSize: 12,
-                                fontFamily: 'Sofia Sans',
+                                fontFamily: Constants.Sofiafontfamily,
                               ),
                             ),
                           ],

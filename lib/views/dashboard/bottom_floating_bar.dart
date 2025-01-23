@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:paycron/utils/color_constants.dart';
@@ -185,7 +184,6 @@ class _PaycronFloatingBottomBarState extends State<PaycronFloatingBottomBar>
     super.dispose();
   }
 }
-
 
 //
 //

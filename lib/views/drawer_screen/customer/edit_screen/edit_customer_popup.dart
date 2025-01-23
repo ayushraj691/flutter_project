@@ -1,14 +1,13 @@
-import 'dart:async';
-
-import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:paycron/controller/drawer_Controller/customer_controller/CustomerDetailViewController.dart';
 import 'package:paycron/controller/drawer_Controller/customer_controller/add_customer_controller.dart';
 import 'package:paycron/utils/color_constants.dart';
 import 'package:paycron/utils/general_methods.dart';
 import 'package:paycron/views/widgets/common_textform_field.dart';
+import '../../../../utils/string_constants.dart';
 
 class EditCustomerPopup extends StatefulWidget {
   final id;
@@ -55,7 +54,15 @@ class _EditCustomerPopupState extends State<EditCustomerPopup> {
 
     return Container(
       padding: EdgeInsets.all(screenWidth * 0.05),
-      height: screenHeight * 0.7,
+      height: screenHeight * 0.68,
+      decoration: BoxDecoration(
+        color: AppColors.appWhiteColor,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(30.0),
+            topRight: Radius.circular(30.0),
+          ),
+        border: Border.all(color: Colors.grey, width: 0.2),
+      ),
       child: Form(
         key: _formKey,
         child: Column(
@@ -64,7 +71,7 @@ class _EditCustomerPopupState extends State<EditCustomerPopup> {
             Center(
               child: Container(
                 width: 60,
-                padding: EdgeInsets.all(2.0),
+                padding: const EdgeInsets.all(2.0),
                 decoration: BoxDecoration(
                   color: Colors.grey,
                   borderRadius: BorderRadius.circular(30.0),
@@ -91,7 +98,7 @@ class _EditCustomerPopupState extends State<EditCustomerPopup> {
               style: TextStyle(
                 fontFamily: 'Sofia Sans',
                 fontSize: 16.0,
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w600,
                 color: Colors.black,
               ),
             ),
@@ -105,7 +112,6 @@ class _EditCustomerPopupState extends State<EditCustomerPopup> {
               child: SingleChildScrollView(
                 child: SizedBox(
                   width: screenWidth * 0.9,
-                  // Limit width to avoid infinite constraints
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -137,12 +143,14 @@ class _EditCustomerPopupState extends State<EditCustomerPopup> {
                             ),
                             const SizedBox(height: 4.0),
                             CommonTextField(
-                              controller: addCustomerController.nameController.value,
+                              controller:
+                                  addCustomerController.nameController.value,
                               labelText: "Customer Name",
                               focusNode: addCustomerController.nameFocusNode,
                               keyboardType: TextInputType.text,
                               inputFormatters: [
-                                FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z\s]*$')),
+                                FilteringTextInputFormatter.allow(
+                                    RegExp(r'^[a-zA-Z\s]*$')),
                               ],
                               onChanged: (value) {
                                 String pattern = r'^[a-zA-Z\s]*$';
@@ -158,27 +166,30 @@ class _EditCustomerPopupState extends State<EditCustomerPopup> {
                                 });
                               },
                               decoration: InputDecoration(
-                                labelStyle: const TextStyle(color: AppColors.appBlueColor),
-                                contentPadding: const EdgeInsets.all(18),
+                                labelStyle: const TextStyle(
+                                    color: AppColors.appBlueColor),
+                                isDense: true,
+                                contentPadding: const EdgeInsets.only(
+                                    right: 16, left: 16,top: 12,bottom: 12),
                                 focusedBorder: UnderlineInputBorder(
                                   borderSide: BorderSide(
                                     color: addCustomerController.nameValid.value
                                         ? AppColors.appNeutralColor5
                                         : AppColors.appRedColor,
-                                    width: 2,
+                                    width: 1,
                                   ),
                                 ),
-                                enabledBorder: const UnderlineInputBorder(
-                                  borderSide: BorderSide(
+                                enabledBorder: UnderlineInputBorder(
+                                  borderSide: const BorderSide(
                                     color: AppColors.appNeutralColor5,
                                     width: 1,
                                   ),
+                                  borderRadius: BorderRadius.circular(8),
                                 ),
                                 errorBorder: const UnderlineInputBorder(
                                   borderSide: BorderSide(
                                     color: AppColors.appRedColor,
-                                    // Error border for invalid input
-                                    width: 2,
+                                    width: 1,
                                   ),
                                 ),
                                 errorText: addCustomerController.nameValid.value
@@ -192,170 +203,97 @@ class _EditCustomerPopupState extends State<EditCustomerPopup> {
                           ],
                         ),
                       ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          RichText(
-                            text: const TextSpan(
-                              text: 'Mobile Number ',
-                              style: TextStyle(
-                                fontFamily: 'Sofia Sans',
-                                fontSize: 12.0,
-                                fontWeight: FontWeight.w400,
-                                color: Colors.black,
-                              ),
-                              children: [
-                                TextSpan(
-                                  text: '*',
-                                  style: TextStyle(
-                                    color: Colors.red,
-                                    fontSize: 12.0,
-                                    fontWeight: FontWeight.w400,
-                                  ),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 10.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            RichText(
+                              text: TextSpan(
+                                text: 'Mobile Number ',
+                                style: TextStyle(
+                                  fontFamily: Constants.Sofiafontfamily,
+                                  fontSize: 12.0,
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.black,
                                 ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 4.0),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            // Align everything to the start
-                            children: [
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey.shade200,
-                                      borderRadius: BorderRadius.circular(8),
-                                      border: Border.all(
-                                          color: Colors.grey.shade200,
-                                          width: 0),
-                                    ),
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 8),
-                                    child: CountryCodePicker(
-                                      onChanged: (countryCode) {
-                                        setState(() {
-                                          addCustomerController.selectedCountryCode =
-                                          countryCode.dialCode!;
-                                        });
-                                      },
-                                      initialSelection: 'US',
-                                      showCountryOnly: false,
-                                      showOnlyCountryWhenClosed: false,
-                                      textStyle: const TextStyle(
-                                        fontFamily: 'Sofia Sans',
-                                        fontSize: 16,
-                                        color: Colors.black,
-                                      ),
-                                      padding: const EdgeInsets.all(0),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  // Space between country code and phone number input
-
-                                  // Expanded widget for the phone number input field
-                                  Expanded(
-                                    child: TextFormField(
-                                      controller: addCustomerController
-                                          .mobileController.value,
-                                      keyboardType: TextInputType.number,
-                                      maxLength: 10,
-                                      focusNode: addCustomerController
-                                          .mobileFocusNode,
-                                      inputFormatters: [
-                                        FilteringTextInputFormatter.digitsOnly
-                                      ],
-                                      validator: (value) {
-                                        if (value == null ||
-                                            value.trim().isEmpty) {
-                                          return 'Mobile number is required';
-                                        } else if (value.trim().length < 10) {
-                                          return 'Mobile number must be 10 digits';
-                                        }
-                                        return null;
-                                      },
-                                      style: const TextStyle(
-                                        fontFamily: 'Sofia Sans',
-                                        fontSize: 16,
-                                        color: Colors.black,
-                                      ),
-                                      decoration: InputDecoration(
-                                        counterText: '',
-                                        hintText: 'Enter Mobile Number',
-                                        hintStyle: const TextStyle(
-                                            color: Colors.grey),
-                                        filled: true,
-                                        fillColor: AppColors.appNeutralColor5,
-                                        contentPadding: const EdgeInsets.only(right: 16,left: 16),
-                                        focusedBorder: UnderlineInputBorder(
-                                          borderSide: BorderSide(
-                                            color: addCustomerController
-                                                .mobileValid.value
-                                                ? AppColors.appNeutralColor5
-                                                : AppColors.appRedColor,
-                                            // Change color based on validation
-                                            width: 1,
-                                          ),
-                                        ),
-                                        enabledBorder:
-                                        const UnderlineInputBorder(
-                                          borderSide: BorderSide(
-                                            color: AppColors.appNeutralColor5,
-                                            // Default color for enabled but not focused
-                                            width: 1,
-                                          ),
-                                        ),
-                                        errorBorder:
-                                        const UnderlineInputBorder(
-                                          borderSide: BorderSide(
-                                            color: AppColors.appRedColor,
-                                            width: 1,
-                                          ),
-                                        ),
-                                        errorText: addCustomerController
-                                            .mobileValid.value
-                                            ? null
-                                            : (addCustomerController
-                                            .mobileController.value
-                                            .text
-                                            .isEmpty
-                                            ? 'Mobile number is required'
-                                            : 'Mobile number must be 10 digits'),
-                                      ),
-                                      onChanged: (value) {
-                                        setState(() {
-                                          addCustomerController
-                                              .mobileValid.value = value
-                                              .length ==
-                                              10; // Valid if exactly 10 digits
-                                        });
-                                      },
+                                children: const [
+                                  TextSpan(
+                                    text: '*',
+                                    style: TextStyle(
+                                      color: Colors.red,
+                                      fontSize: 12.0,
+                                      fontWeight: FontWeight.w400,
                                     ),
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 4),
-                              Builder(
-                                builder: (context) {
-                                  final formField =
-                                  context.findAncestorWidgetOfExactType<
-                                      TextFormField>();
-                                  return Text(
-                                    formField?.validator?.call(
-                                        addCustomerController
-                                            .mobileController.value.text) ??
-                                        '',
-                                    style: const TextStyle(
-                                        color: Colors.red,
-                                        fontSize: 12), // Error message style
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
-                        ],
+                            ),
+                            const SizedBox(height: 4.0),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                IntlPhoneField(
+                                  decoration: InputDecoration(
+                                    counterText: '',
+                                    hintText: 'Enter Mobile Number',
+                                    labelStyle: TextStyle(
+                                      fontFamily: Constants.Sofiafontfamily,
+                                      fontSize: 14,
+                                      color: Colors.grey,
+                                    ),
+                                    filled: true,
+                                    fillColor: AppColors.appNeutralColor5,
+                                    isDense: true,
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      vertical: 14,
+                                      horizontal: 12,
+                                    ),
+                                    enabledBorder: UnderlineInputBorder(
+                                      borderSide: const BorderSide(
+                                        color: AppColors.appNeutralColor5,
+                                        width: 1,
+                                      ),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    focusedBorder: const UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: AppColors.appNeutralColor5,
+                                        width: 1,
+                                      ),
+                                    ),
+                                    errorBorder: const UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: AppColors.appRedColor,
+                                        width: 1,
+                                      ),
+                                    ),
+                                    errorStyle: const TextStyle(
+                                      fontSize: 10.0,
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.normal,
+                                    ),
+                                  ),
+                                  initialCountryCode: 'US',
+                                  onChanged: (phone) {
+                                    setState(() {
+                                      addCustomerController.selectedCountryCode = phone.countryCode;
+                                      addCustomerController.mobileController.value.text = phone.number;
+                                    });
+                                  },
+                                  validator: (value) {
+                                    if (value == null || value.completeNumber.trim().isEmpty) {
+                                      return 'Mobile number is required';
+                                    } else if (value.completeNumber.trim().length < 10) {
+                                      return 'Mobile number must be at least 10 digits';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(bottom: 10.0),
@@ -386,7 +324,7 @@ class _EditCustomerPopupState extends State<EditCustomerPopup> {
                             const SizedBox(height: 4.0),
                             CommonTextField(
                               controller:
-                              addCustomerController.emailController.value,
+                                  addCustomerController.emailController.value,
                               labelText: "Email Id",
                               keyboardType: TextInputType.emailAddress,
                               focusNode: addCustomerController.emailFocusNode,
@@ -409,21 +347,24 @@ class _EditCustomerPopupState extends State<EditCustomerPopup> {
                               decoration: InputDecoration(
                                 labelStyle: const TextStyle(
                                     color: AppColors.appBlueColor),
-                                contentPadding: const EdgeInsets.only(right: 16,left: 16),
+                                isDense: true,
+                                contentPadding: const EdgeInsets.only(
+                                    right: 16, left: 16,top: 12,bottom: 12),
                                 focusedBorder: UnderlineInputBorder(
                                   borderSide: BorderSide(
-                                    color: addCustomerController.emailValid.value
-                                        ? AppColors.appNeutralColor5
-                                        : AppColors.appRedColor,
+                                    color:
+                                        addCustomerController.emailValid.value
+                                            ? AppColors.appNeutralColor5
+                                            : AppColors.appRedColor,
                                     width: 1, // Thickness for the underline
                                   ),
                                 ),
-                                enabledBorder: const UnderlineInputBorder(
-                                  borderSide: BorderSide(
+                                enabledBorder: UnderlineInputBorder(
+                                  borderSide: const BorderSide(
                                     color: AppColors.appNeutralColor5,
-                                    // Default color for enabled state
                                     width: 1,
                                   ),
+                                  borderRadius: BorderRadius.circular(8),
                                 ),
                                 errorBorder: const UnderlineInputBorder(
                                   borderSide: BorderSide(
@@ -431,12 +372,13 @@ class _EditCustomerPopupState extends State<EditCustomerPopup> {
                                     width: 1,
                                   ),
                                 ),
-                                errorText: addCustomerController.emailValid.value
-                                    ? null
-                                    : (addCustomerController
-                                    .emailController.value.text.isEmpty
-                                    ? 'Email is required'
-                                    : 'Invalid Email'),
+                                errorText:
+                                    addCustomerController.emailValid.value
+                                        ? null
+                                        : (addCustomerController.emailController
+                                                .value.text.isEmpty
+                                            ? 'Email is required'
+                                            : 'Invalid Email'),
                                 hintText: "Enter email",
                                 filled: true,
                                 fillColor: AppColors.appNeutralColor5,
@@ -465,9 +407,9 @@ class _EditCustomerPopupState extends State<EditCustomerPopup> {
                       const SizedBox(height: 4.0),
                       TextFormField(
                         controller:
-                        addCustomerController.descriptionController.value,
+                            addCustomerController.descriptionController.value,
                         maxLines: 10,
-                        minLines: 5,
+                        minLines: 2,
                         keyboardType: TextInputType.text,
                         decoration: InputDecoration(
                           hintText: "Enter Your Description Here",
@@ -478,7 +420,9 @@ class _EditCustomerPopupState extends State<EditCustomerPopup> {
                             fontFamily: 'Sofia Sans',
                           ),
                           alignLabelWithHint: true,
-                          contentPadding: const EdgeInsets.all(16.0),
+                          isDense: true,
+                          contentPadding: const EdgeInsets.only(
+                              right: 16, left: 16,top: 12,bottom: 12),
                           enabledBorder: OutlineInputBorder(
                             borderSide: const BorderSide(
                               color: AppColors.appNeutralColor5,
@@ -497,21 +441,23 @@ class _EditCustomerPopupState extends State<EditCustomerPopup> {
                           fillColor: AppColors.appNeutralColor5,
                         ),
                         style: const TextStyle(
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.w600,
                           color: AppColors.appNeutralColor2,
                           fontSize: 14,
                           fontFamily: 'Sofia Sans',
                         ),
                       ),
-                      // SizedBox(height: screenHeight * 0.02),
+                      SizedBox(height: screenHeight * 0.02),
                       Center(
                         child: SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
                             onPressed: () {
-                              if (addCustomerController.personValidation(context)){
+                              if (addCustomerController
+                                  .personValidation(context)) {
                                 GeneralMethods.loadingDialog(context);
-                                addCustomerController.updateCustomerDetail(widget.id);
+                                addCustomerController
+                                    .updateCustomerDetail(widget.id);
                                 widget.onSave();
                                 Navigator.pop(context);
                               }

@@ -3,27 +3,24 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:paycron/controller/variable_controller.dart';
-import 'package:paycron/model/drawer_model/transaction_model/ResAllTransaction.dart';
 import 'package:paycron/model/profileModel/ResAllSubmemberModel.dart';
 import 'package:paycron/network/api_call/api_call.dart';
 import 'package:paycron/network/api_call/url.dart';
 import 'package:paycron/utils/common_variable.dart';
 import 'package:paycron/utils/my_toast.dart';
 
-class AllSubmemberController extends GetxController{
-
+class AllSubmemberController extends GetxController {
   var variableController = Get.find<VariableController>();
 
   List<ResAllSubmemberModel> allSubmemberList =
       List<ResAllSubmemberModel>.empty(growable: true).obs;
 
-
   getAllSubmember(
-      String userId,
-      String query,
-      String argument,
-      String sort,
-      ) async {
+    String userId,
+    String query,
+    String argument,
+    String sort,
+  ) async {
     variableController.loading.value = true;
 
     try {
@@ -47,11 +44,11 @@ class AllSubmemberController extends GetxController{
         variableController.loading.value = false;
 
         List<ResAllSubmemberModel> submemberList =
-        JsonUtils.parseCustomerData(res);
+            JsonUtils.parseCustomerData(res);
         allSubmemberList.addAll(submemberList);
 
         if (allSubmemberList.isEmpty) {
-          MyToast.toast("No Submember found.");
+          // MyToast.toast("No Submember found.");
         }
       } else {
         MyToast.toast("Something went wrong. Please try again.");
@@ -67,8 +64,7 @@ class AllSubmemberController extends GetxController{
 }
 
 class JsonUtils {
-  static List<ResAllSubmemberModel> parseCustomerData(
-      dynamic jsonResponse) {
+  static List<ResAllSubmemberModel> parseCustomerData(dynamic jsonResponse) {
     if (jsonResponse is String) {
       final parsed = jsonDecode(jsonResponse);
       return (parsed['data'] as List)
@@ -82,5 +78,4 @@ class JsonUtils {
       throw Exception('Unexpected data format');
     }
   }
-
 }

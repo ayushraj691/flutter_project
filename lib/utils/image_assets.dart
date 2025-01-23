@@ -1,6 +1,6 @@
 class ImageAssets {
-
-  static String imageUrl = "https://paycron.amazing7studios.com/merchant/api/static";
+  static String imageUrl =
+      "https://paycron.amazing7studios.com/merchant/api/static";
   static String profile = "assets/images/profile.jpg";
   static String frame = "assets/images/Frame.png";
   static String circleForwardIcon = "assets/images/circle_forward_icon.png";
@@ -37,5 +37,6 @@ class ImageAssets {
   static String processingVolume = "assets/images/processing_volume.png";
   static String planDialogImage = "assets/images/plan_dialog_image.png";
   static String linkImage = "assets/images/link_image.png";
-
+  static String removeImage = "assets/images/remove.png";
+  static String disableImage = "assets/images/disableIcon.png";
 }

@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:paycron/controller/auth/authController.dart';
 import 'package:paycron/utils/color_constants.dart';
 import 'package:paycron/utils/my_toast.dart';
+import 'package:paycron/utils/string_constants.dart';
 import 'package:paycron/views/auth/forgot_password.dart';
 import 'package:paycron/views/widgets/common_button.dart';
 import 'package:paycron/views/widgets/common_textform_field.dart';
@@ -71,7 +72,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: Text(
                           'Please enter your details here',
                           style: TextStyle(
-                            fontWeight: FontWeight.w500,
+                            fontWeight: FontWeight.w600,
                             fontSize: 12,
                             fontFamily: 'Sofia Sans',
                             color: AppColors.appGreyColor,
@@ -150,25 +151,25 @@ class _LoginScreenState extends State<LoginScreen> {
                       suffixIconColor: AppColors.appGreyColor,
                       onSuffixIconTap: () {
                         authController.isObsecureForLogin.value =
-                        !authController.isObsecureForLogin.value;
+                            !authController.isObsecureForLogin.value;
                         setState(() {});
                       },
                       onChanged: (value) {},
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(right: 25.0, top: 20.0),
-                      child: InkWell(
-                        onTap: () {
-                          Get.to(const ForgotPasswordScreen());
-                        },
-                        child: const Align(
-                          alignment: Alignment.topRight,
+                      padding: const EdgeInsets.only(right: 10.0, top: 20.0),
+                      child: Align(
+                        alignment: Alignment.topRight,
+                        child: InkWell(
+                          onTap: () {
+                            Get.to(const ForgotPasswordScreen());
+                          },
                           child: Text(
                             "Forgot password?",
                             style: TextStyle(
-                              fontFamily: 'Sofia Sans',
+                              fontFamily: Constants.Sofiafontfamily,
                               fontSize: 12,
-                              fontWeight: FontWeight.w500,
+                              fontWeight: FontWeight.w600,
                               color: AppColors.appBlueColor,
                             ),
                           ),
@@ -189,7 +190,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     onPressed: () {
                       if (authController.emailController.value.text.isEmpty) {
                         MyToast.toast("Please Enter Email");
-                      } else if (authController.userPasswordController.value.text.isEmpty) {
+                      } else if (authController
+                          .userPasswordController.value.text.isEmpty) {
                         MyToast.toast("Please Enter Password");
                       } else {
                         authController.getLogin();
@@ -218,14 +220,14 @@ class _LoginScreenState extends State<LoginScreen> {
                           style: TextStyle(
                             fontFamily: 'Sofia Sans',
                             fontSize: 12,
-                            fontWeight: FontWeight.w500,
+                            fontWeight: FontWeight.w600,
                             color: AppColors.appBlueColor,
                           ),
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(height: size.height * 0.02), // Extra padding at the bottom
+                  SizedBox(height: size.height * 0.02),
                 ],
               ),
             ),

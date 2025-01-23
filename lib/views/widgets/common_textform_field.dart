@@ -24,7 +24,6 @@ class CommonTextField extends StatelessWidget {
   final InputDecoration? decoration;
   final bool? enable;
 
-
   const CommonTextField(
       {Key? key,
       this.hintText,
@@ -74,52 +73,46 @@ class CommonTextField extends StatelessWidget {
           fontSize: 16,
           color: AppColors.appTextColor, // Set the text color
         ),
-        decoration: decoration ?? InputDecoration(
-          counterText: '',
-          prefixIcon: prefixImage != null
-              ? InkWell(
-                  onTap: onSuffixIconTap,
-                  child: Icon(
-                    prefixImage,
-                    color: AppColors.appTextColor,
-                  ),
-                )
-              : null,
-          suffixIcon: suffixIcon != null
-              ? InkWell(
-                  onTap: onSuffixIconTap,
-                  child: Icon(
-                    suffixIcon,
-                    color: suffixIconColor,
-                  ),
-                )
-              : null,
-          labelStyle: const TextStyle(color: AppColors.appBlueColor),
-          contentPadding: const EdgeInsets.only(right: 16,left: 16),
-          enabledBorder: OutlineInputBorder(
-            borderSide: const BorderSide(
-              color: AppColors.appNeutralColor5,
-              width: 0,
+        decoration: decoration ??
+            InputDecoration(
+              counterText: '',
+              prefixIcon: prefixImage != null
+                  ? InkWell(
+                      onTap: onSuffixIconTap,
+                      child: Icon(
+                        prefixImage,
+                        color: AppColors.appTextColor,
+                      ),
+                    )
+                  : null,
+              suffixIcon: suffixIcon != null
+                  ? InkWell(
+                      onTap: onSuffixIconTap,
+                      child: Icon(
+                        suffixIcon,
+                        color: suffixIconColor,),)
+                  : null,
+              labelStyle: const TextStyle(color: AppColors.appBlueColor),
+              isDense: true,
+              contentPadding: const EdgeInsets.only(
+                  right: 16, left: 16, top: 10, bottom: 10),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: const BorderSide(
+                  color: AppColors.appNeutralColor5,
+                  width: 1,),
+                borderRadius: BorderRadius.circular(8),),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: const BorderSide(
+                  color: AppColors.appNeutralColor5,
+                  width: 1,),
+                borderRadius: BorderRadius.circular(8),),
+              hintText: hintText,
+              filled: true,
+              fillColor: AppColors.appNeutralColor5,
+              errorText: errorMessage,
             ),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderSide: const BorderSide(
-              color: AppColors.appNeutralColor5,
-              width: 0,
-            ),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          hintText: hintText,
-          filled: true,
-          fillColor: AppColors.appNeutralColor5,
-          errorText: errorMessage, // Show error text if provided
-        ),
-
-        validator: validator, // Call the validator function here
-        // enableInteractiveSelection: false, // Disable copy-paste interaction
+        validator: validator,
       ),
     );
   }
 }
-

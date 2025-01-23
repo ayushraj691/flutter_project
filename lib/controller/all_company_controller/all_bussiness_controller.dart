@@ -8,15 +8,15 @@ import 'package:paycron/network/api_call/url.dart';
 import 'package:paycron/utils/common_variable.dart';
 import 'package:paycron/utils/my_toast.dart';
 
-class AllBussinessController extends GetxController{
+class AllBussinessController extends GetxController {
   var variableController = Get.find<VariableController>();
 
-  final List<ResAllBussiness> allBussinessList =
-      <ResAllBussiness>[].obs;
+  final List<ResAllBussiness> allBussinessList = <ResAllBussiness>[].obs;
 
-  getAllBUssiness () async {
+  getAllBUssiness() async {
     variableController.loading.value = true;
-    var res = await ApiCall.getApiCall(MyUrls.allbusiness,CommonVariable.token.value,CommonVariable.userId.value);
+    var res = await ApiCall.getApiCall(MyUrls.allbusiness,
+        CommonVariable.token.value, CommonVariable.userId.value);
     debugPrint("*************************");
     debugPrint("*****$res*******");
     debugPrint("*************************");
@@ -24,8 +24,7 @@ class AllBussinessController extends GetxController{
       variableController.loading.value = false;
       allBussinessList.clear();
       for (int i = 0; i < res.length; i++) {
-        allBussinessList
-            .add(ResAllBussiness.fromJson(res[i]));
+        allBussinessList.add(ResAllBussiness.fromJson(res[i]));
       }
     } else {
       MyToast.toast("Something Went Wrong");
@@ -45,14 +44,17 @@ class AllBussinessController extends GetxController{
     variableController.loading.value = true;
     debugPrint("************$id*************");
     try {
-      var res = await ApiCall.getApiCall(MyUrls.fundsOfBusiness, CommonVariable.token.value, id);
+      var res = await ApiCall.getApiCall(
+          MyUrls.fundsOfBusiness, CommonVariable.token.value, id);
       debugPrint("*************************");
       debugPrint("API Response: $res");
       debugPrint("*************************");
       if (res != null) {
         var fundsData = ResFundsData.fromJson(res);
         variableController.loading.value = false;
-        CommonVariable.approvedBalance.value = fundsData.available is int ? fundsData.available.toDouble() : fundsData.available as double;
+        CommonVariable.approvedBalance.value = fundsData.available is int
+            ? fundsData.available.toDouble()
+            : fundsData.available as double;
         CommonVariable.pendingBalance.value = fundsData.current;
       } else {
         MyToast.toast("Failed to retrieve customer data");
@@ -64,5 +66,4 @@ class AllBussinessController extends GetxController{
       variableController.loading.value = false;
     }
   }
-
 }

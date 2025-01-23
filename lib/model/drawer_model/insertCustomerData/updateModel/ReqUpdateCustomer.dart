@@ -22,13 +22,17 @@ class Info {
   late String mobile;
   late String email;
 
-  Info({required this.custName, required this.description, required this.mobile, required this.email});
+  Info(
+      {required this.custName,
+      required this.description,
+      required this.mobile,
+      required this.email});
 
   Info.fromJson(Map<String, dynamic> json) {
-    custName = json['cust_name']??"";
-    description = json['description']??"";
-    mobile = json['mobile']??"";
-    email = json['email']??"";
+    custName = json['cust_name'] ?? "";
+    description = json['description'] ?? "";
+    mobile = json['mobile'] ?? "";
+    email = json['email'] ?? "";
   }
 
   Map<String, dynamic> toJson() {

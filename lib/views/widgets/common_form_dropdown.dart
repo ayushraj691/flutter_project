@@ -11,9 +11,11 @@ class CommonFormDropdown extends StatefulWidget {
   String? searchHintText;
   TextEditingController? searchController;
   FocusNode? focusNode;
+
   // void Function()? onTap;
   bool isActive;
   bool show;
+
   CommonFormDropdown({
     Key? key,
     required this.items,
@@ -35,102 +37,106 @@ class CommonFormDropdown extends StatefulWidget {
 class _CommonFormDropdownState extends State<CommonFormDropdown> {
   @override
   Widget build(BuildContext context) {
-    return (widget.show)?
-      Container(
-      // decoration: MyDecoration.decoration(
-      //   10.0,
-      //   2.0,
-      //   AppColors.appWhiteColor,
-      //   AppColors.appWhiteColor,
-      //   AppColors.appBlueColor,
-      // ),
-      child: DropdownButtonHideUnderline(
-
-        child: AbsorbPointer(
-          absorbing: !widget.isActive,
-          child: DropdownButton2<String>(
-            alignment: Alignment.centerLeft,
-            // isDense: true,
-
-            // buttonStyleData: ButtonStyleData(
-            //   decoration: BoxDecoration(
-            //     color: (widget.isActive) ? AppColors.appBlackColor : Colors.grey,
-            //   ),
-            //   // overlayColor: (widget.isActive)
-            //   //     ? MaterialStatePropertyAll(AppColors.appBlackColor)
-            //   //     : MaterialStatePropertyAll(Colors.grey),
+    return (widget.show)
+        ? Container(
+            // decoration: MyDecoration.decoration(
+            //   10.0,
+            //   2.0,
+            //   AppColors.appWhiteColor,
+            //   AppColors.appWhiteColor,
+            //   AppColors.appBlueColor,
             // ),
-            focusNode: widget.focusNode,
-            isExpanded: true,
-            hint: (widget.hintText != null) ? Text(widget.hintText!) : null,
-            value: widget.value,
-            items: widget.items
-                .toSet()
-                .toList()
-                .map(
-                  (e) => DropdownMenuItem<String>(
-                value: e,
-                child: Text(
-                  e,
-                  style: TextStyle(
-                    color: (widget.isActive)
-                        ? AppColors.appBlackColor
-                        : Colors.grey,
+            child: DropdownButtonHideUnderline(
+              child: AbsorbPointer(
+                absorbing: !widget.isActive,
+                child: DropdownButton2<String>(
+                  alignment: Alignment.centerLeft,
+                  // isDense: true,
+
+                  // buttonStyleData: ButtonStyleData(
+                  //   decoration: BoxDecoration(
+                  //     color: (widget.isActive) ? AppColors.appBlackColor : Colors.grey,
+                  //   ),
+                  //   // overlayColor: (widget.isActive)
+                  //   //     ? MaterialStatePropertyAll(AppColors.appBlackColor)
+                  //   //     : MaterialStatePropertyAll(Colors.grey),
+                  // ),
+                  focusNode: widget.focusNode,
+                  isExpanded: true,
+                  hint:
+                      (widget.hintText != null) ? Text(widget.hintText!) : null,
+                  value: widget.value,
+                  items: widget.items
+                      .toSet()
+                      .toList()
+                      .map(
+                        (e) => DropdownMenuItem<String>(
+                          value: e,
+                          child: Text(
+                            e,
+                            style: TextStyle(
+                              color: (widget.isActive)
+                                  ? AppColors.appBlackColor
+                                  : Colors.grey,
+                            ),
+                          ),
+                        ),
+                      )
+                      .toList(),
+                  onChanged: widget.onChanged,
+                  // onTap: widget.onTap,
+                  dropdownSearchData: (widget.searchController != null)
+                      ? DropdownSearchData(
+                          searchController: widget.searchController,
+                          searchInnerWidgetHeight: 50,
+                          searchMatchFn: (item, searchValue) {
+                            final myItem = widget.items.firstWhere(
+                              (element) =>
+                                  element.toLowerCase() ==
+                                  item.value?.toLowerCase(),
+                            );
+                            return myItem
+                                .toLowerCase()
+                                .contains(searchValue.toLowerCase());
+                          },
+                          searchInnerWidget: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: TextFormField(
+                              controller: widget.searchController,
+                              decoration: InputDecoration(
+                                hintText: widget.searchHintText,
+                                suffixIcon: const Icon(
+                                  Icons.search,
+                                  color: AppColors.appBlueColor,
+                                  size: 20,
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: const BorderSide(
+                                      // color: MyColors.textFieldBackgroundColor,
+                                      ),
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: const BorderSide(
+                                      // color: MyColors.textFieldBackgroundColor,
+                                      ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        )
+                      : null,
+                  onMenuStateChange: (isOpen) {
+                    widget.searchController?.clear();
+                  },
+                  dropdownStyleData: const DropdownStyleData(
+                    maxHeight: 200,
                   ),
                 ),
               ),
-            )
-                .toList(),
-            onChanged: widget.onChanged,
-            // onTap: widget.onTap,
-            dropdownSearchData: (widget.searchController != null)
-                ? DropdownSearchData(
-              searchController: widget.searchController,
-              searchInnerWidgetHeight: 50,
-              searchMatchFn: (item, searchValue) {
-                final myItem = widget.items.firstWhere(
-                      (element) =>
-                  element.toLowerCase() == item.value?.toLowerCase(),
-                );
-                return myItem.toLowerCase().contains(searchValue.toLowerCase());
-              },
-              searchInnerWidget: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextFormField(
-                  controller: widget.searchController,
-                  decoration: InputDecoration(
-                    hintText: widget.searchHintText,
-                    suffixIcon: const Icon(
-                      Icons.search,
-                      color: AppColors.appBlueColor,
-                      size: 20,
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: const BorderSide(
-                        // color: MyColors.textFieldBackgroundColor,
-                      ),
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: const BorderSide(
-                        // color: MyColors.textFieldBackgroundColor,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            )
-                : null,
-            onMenuStateChange: (isOpen) {
-              widget.searchController?.clear();
-            },
-            dropdownStyleData: const DropdownStyleData(
-              maxHeight: 200,
             ),
-          ),
-        ),
-      ),
-    ):Container();
+          )
+        : Container();
   }
 }

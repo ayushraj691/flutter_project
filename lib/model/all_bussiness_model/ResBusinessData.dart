@@ -6,7 +6,7 @@ class ResBusinessData {
 
   ResBusinessData.fromJson(Map<String, dynamic> json) {
     record =
-    json['record'] != null ? new Record.fromJson(json['record']) : null;
+        json['record'] != null ? new Record.fromJson(json['record']) : null;
     planDetials = json['plan_detials'] != null
         ? new PlanDetials.fromJson(json['plan_detials'])
         : null;
@@ -52,36 +52,36 @@ class Record {
 
   Record(
       {required this.businessDetail,
-       required this.support,
-       required this.bankDetails,
-       required this.sId,
-       required this.prefix,
-       required this.colorCode,
-       required this.creditLimit,
-       required this.blackFlag,
-       required this.selfVerify,
-       required this.selfDownload,
-       required this.isApproved,
-       required this.remark,
-       required this.lastUpdatedAccountmanid,
-       required this.lastPayment,
-       required this.accountManager,
-       required this.depositorManager,
-       required this.refferalManager,
-       required this.isTerminated,
-       required this.terminatedNote,
-       required this.isEditRequest,
-       required this.isDeleted,
-       required this.lastUpdated,
-       required this.createdOn,
-       required this.iV});
+      required this.support,
+      required this.bankDetails,
+      required this.sId,
+      required this.prefix,
+      required this.colorCode,
+      required this.creditLimit,
+      required this.blackFlag,
+      required this.selfVerify,
+      required this.selfDownload,
+      required this.isApproved,
+      required this.remark,
+      required this.lastUpdatedAccountmanid,
+      required this.lastPayment,
+      required this.accountManager,
+      required this.depositorManager,
+      required this.refferalManager,
+      required this.isTerminated,
+      required this.terminatedNote,
+      required this.isEditRequest,
+      required this.isDeleted,
+      required this.lastUpdated,
+      required this.createdOn,
+      required this.iV});
 
   Record.fromJson(Map<String, dynamic> json) {
     businessDetail = json['business_detail'] != null
         ? new BusinessDetail.fromJson(json['business_detail'])
         : null;
     support =
-    json['support'] != null ? new Support.fromJson(json['support']) : null;
+        json['support'] != null ? new Support.fromJson(json['support']) : null;
     bankDetails = json['bank_details'] != null
         ? new BankDetails.fromJson(json['bank_details'])
         : null;
@@ -160,24 +160,24 @@ class BusinessDetail {
 
   BusinessDetail(
       {required this.location,
-       required this.license,
-       required this.ein,
-       required this.businessName,
-       required this.businessEmail,
-       required this.businessType,
-       required this.industry,
-       required this.website,
-       required this.description,
-       required this.businessDetailstatus,
-       required this.businessPhone,
-       required this.plan});
+      required this.license,
+      required this.ein,
+      required this.businessName,
+      required this.businessEmail,
+      required this.businessType,
+      required this.industry,
+      required this.website,
+      required this.description,
+      required this.businessDetailstatus,
+      required this.businessPhone,
+      required this.plan});
 
   BusinessDetail.fromJson(Map<String, dynamic> json) {
     location = json['location'] != null
         ? new Location.fromJson(json['location'])
         : null;
     license =
-    json['license'] != null ? new License.fromJson(json['license']) : null;
+        json['license'] != null ? new License.fromJson(json['license']) : null;
     ein = json['ein'] != null ? new License.fromJson(json['ein']) : null;
     businessName = json['business_name'];
     businessEmail = json['business_email'];
@@ -222,7 +222,11 @@ class Location {
   late String? postalcode;
 
   Location(
-      {required this.address, required this.country, required this.city, required this.state, required this.postalcode});
+      {required this.address,
+      required this.country,
+      required this.city,
+      required this.state,
+      required this.postalcode});
 
   Location.fromJson(Map<String, dynamic> json) {
     address = json['address'];
@@ -267,7 +271,10 @@ class Support {
   late String? phone;
   late String? supportStatus;
 
-  Support({required this.supportEmail, required this.phone, required this.supportStatus});
+  Support(
+      {required this.supportEmail,
+      required this.phone,
+      required this.supportStatus});
 
   Support.fromJson(Map<String, dynamic> json) {
     supportEmail = json['support_email'];
@@ -293,10 +300,10 @@ class BankDetails {
 
   BankDetails(
       {required this.accountName,
-       required this.accountNumber,
-       required this.routingNumber,
-       required this.voidCheck,
-       required this.bankDetailstatus});
+      required this.accountNumber,
+      required this.routingNumber,
+      required this.voidCheck,
+      required this.bankDetailstatus});
 
   BankDetails.fromJson(Map<String, dynamic> json) {
     accountName = json['account_name'];
@@ -322,8 +329,8 @@ class PlanDetials {
   late String? name;
   late PlanPrices? planPrices;
   late String? details;
-  late int? setupPrice;
-  late int? monthlyPrice;
+  late var setupPrice;
+  late var monthlyPrice;
   late String? customPlan;
   late String? isVisible;
   late String? isDeleted;
@@ -333,17 +340,17 @@ class PlanDetials {
 
   PlanDetials(
       {required this.sId,
-       required this.name,
-       required this.planPrices,
-       required this.details,
-       required this.setupPrice,
-       required this.monthlyPrice,
-       required this.customPlan,
-       required this.isVisible,
-       required this.isDeleted,
-       required this.createdOn,
-       required this.lastUpdated,
-       required this.iV});
+      required this.name,
+      required this.planPrices,
+      required this.details,
+      required this.setupPrice,
+      required this.monthlyPrice,
+      required this.customPlan,
+      required this.isVisible,
+      required this.isDeleted,
+      required this.createdOn,
+      required this.lastUpdated,
+      required this.iV});
 
   PlanDetials.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
@@ -387,7 +394,10 @@ class PlanPrices {
   late List<String>? perSwipeFee;
   late List<String>? verificationFee;
 
-  PlanPrices({required this.processingFees, required this.perSwipeFee, required this.verificationFee});
+  PlanPrices(
+      {required this.processingFees,
+      required this.perSwipeFee,
+      required this.verificationFee});
 
   PlanPrices.fromJson(Map<String, dynamic> json) {
     processingFees = json['processing_fees'].cast<String>();

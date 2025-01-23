@@ -17,13 +17,13 @@ class ResAllGateway {
       required this.iV});
 
   ResAllGateway.fromJson(Map<String, dynamic> json) {
-    sId = json['_id']??"";
-    name = json['name']??"";
-    details = json['details']??"";
-    isDeleted = json['is_deleted']??false;
-    createdOn = json['created_on']??"";
-    lastUpdated = json['last_updated']??"";
-    iV = json['__v']??0;
+    sId = json['_id'] ?? "";
+    name = json['name'] ?? "";
+    details = json['details'] ?? "";
+    isDeleted = json['is_deleted'] ?? false;
+    createdOn = json['created_on'] ?? "";
+    lastUpdated = json['last_updated'] ?? "";
+    iV = json['__v'] ?? 0;
   }
 
   Map<String, dynamic> toJson() {

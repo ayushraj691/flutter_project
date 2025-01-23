@@ -15,11 +15,11 @@ class ReqCreatePayment {
       required this.items});
 
   ReqCreatePayment.fromJson(Map<String, dynamic> json) {
-    custId = json['cust_id']??"";
-    bankId = json['bank_id']??"";
-    payTotal = json['pay_total']??"";
-    checkNo = json['check_no']??"";
-    memo = json['memo']??"";
+    custId = json['cust_id'] ?? "";
+    bankId = json['bank_id'] ?? "";
+    payTotal = json['pay_total'] ?? "";
+    checkNo = json['check_no'] ?? "";
+    memo = json['memo'] ?? "";
     if (json['items'] != null) {
       items = <Items>[];
       json['items'].forEach((v) {
@@ -36,7 +36,7 @@ class ReqCreatePayment {
     data['check_no'] = checkNo;
     data['memo'] = memo;
     data['items'] = items.map((v) => v.toJson()).toList();
-      return data;
+    return data;
   }
 }
 
@@ -46,13 +46,17 @@ class Items {
   late String proQty;
   late String proPrice;
 
-  Items({required this.proId, required this.proName, required this.proQty, required this.proPrice});
+  Items(
+      {required this.proId,
+      required this.proName,
+      required this.proQty,
+      required this.proPrice});
 
   Items.fromJson(Map<String, dynamic> json) {
-    proId = json['pro_id']??"";
-    proName = json['pro_name']??"";
-    proQty = json['pro_qty']??"";
-    proPrice = json['pro_price']??"";
+    proId = json['pro_id'] ?? "";
+    proName = json['pro_name'] ?? "";
+    proQty = json['pro_qty'] ?? "";
+    proPrice = json['pro_price'] ?? "";
   }
 
   Map<String, dynamic> toJson() {

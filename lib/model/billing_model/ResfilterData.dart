@@ -3,12 +3,12 @@ class ResfilterData {
   late String fundId;
   late String businessId;
   late String txnNumber;
-  late int credit;
-  late double debit;
-  late double balance;
+  late var credit;
+  late var debit;
+  late var balance;
   late bool status;
-  late int addedNow;
-  late int addedAmount;
+  late var addedNow;
+  late var addedAmount;
   String? proofPay; // Nullable field
   late String fundSource;
   late String description;
@@ -48,9 +48,9 @@ class ResfilterData {
     fundId = json['fund_id'] ?? "";
     businessId = json['business_id'] ?? "";
     txnNumber = json['txn_number'] ?? "";
-    credit = json['credit'] ?? 0;
-    debit = (json['debit'] ?? 0.0).toDouble();
-    balance = (json['balance'] ?? 0.0).toDouble();
+    credit = json['credit'];
+    debit = json['debit'];
+    balance = json['balance'];
     status = json['status'] ?? false;
     addedNow = json['added_now'] ?? 0;
     addedAmount = json['added_amount'] ?? 0;

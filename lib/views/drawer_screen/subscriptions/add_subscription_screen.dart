@@ -18,6 +18,8 @@ import 'package:paycron/views/single_company_dashboard/add_customer_popup.dart';
 import 'package:paycron/views/widgets/NoDataScreen.dart';
 import 'package:paycron/views/widgets/common_textform_field.dart';
 
+import '../../../utils/image_assets.dart';
+
 class AddSubscriptionPage extends StatefulWidget {
   const AddSubscriptionPage({super.key});
 
@@ -72,22 +74,21 @@ class _AddSubscriptionPageState extends State<AddSubscriptionPage> {
     });
   }
 
-  void selectCustomer(String name, int index,String id) {
+  void selectCustomer(String name, int index, String id) {
     setState(() {
       addSubscriptionController.selectedCustomer = name;
       addSubscriptionController.selectedCount = index;
       addSubscriptionController.isDropdownOpen = false;
       addSubscriptionController.searchController.clear();
       addSubscriptionController.customerId = id;
-
     });
   }
 
-  void selectProduct(String productName, RxInt index,String proId) {
+  void selectProduct(String productName, RxInt index, String proId) {
     var selectedProduct =
         addSubscriptionController.filteredProduct[index.value];
     var selectedPrice = selectedProduct.price;
-    this.addSubscriptionController.selectedProduct = productName;
+    addSubscriptionController.selectedProduct = productName;
     addSubscriptionController.productPricingTextController.value.text =
         selectedPrice.toString();
     addSubscriptionController.isProductDropdownOpen.value = false;
@@ -113,6 +114,8 @@ class _AddSubscriptionPageState extends State<AddSubscriptionPage> {
       appBar: AppBar(
         backgroundColor: AppColors.appBackgroundColor,
         leading: IconButton(
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
           color: AppColors.appBlackColor,
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
@@ -130,742 +133,764 @@ class _AddSubscriptionPageState extends State<AddSubscriptionPage> {
           ),
         ),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: SizedBox(
-                      width: screenWidth,
-                      child: Card(
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(18.0),
-                        ),
-                        margin: const EdgeInsets.all(10.0),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
+      body: RefreshIndicator(
+        onRefresh: _refreshData,
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0,right: 8.0,left: 8.0),
+                      child: SizedBox(
+                        width: screenWidth,
+                        child: Card(
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18.0),
+                          ),
+                          margin: const EdgeInsets.all(10.0),
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              children: [
-                                const Align(
-                                  alignment: Alignment.topLeft,
-                                  child: Text(
-                                    'Customers List',
-                                    style: TextStyle(
-                                      fontFamily: 'Sofia Sans',
-                                      fontSize: 16.0,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(
-                                  height: 16.0,
-                                ),
-                                SizedBox(
-                                  width:
-                                      MediaQuery.of(context).size.width / 1.24,
-                                  child: RichText(
-                                    text: const TextSpan(
-                                      text: 'CustomerList ',
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                children: [
+                                  const Align(
+                                    alignment: Alignment.topLeft,
+                                    child: Text(
+                                      'Customers List',
                                       style: TextStyle(
                                         fontFamily: 'Sofia Sans',
-                                        fontSize: 12.0,
-                                        fontWeight: FontWeight.w400,
+                                        fontSize: 16.0,
+                                        fontWeight: FontWeight.w500,
                                         color: Colors.black,
                                       ),
-                                      children: [
-                                        TextSpan(
-                                          text: '*',
-                                          style: TextStyle(
-                                            color: Colors.red,
-                                            fontSize: 12.0,
-                                            fontWeight: FontWeight.w400,
-                                          ),
-                                        ),
-                                      ],
                                     ),
                                   ),
-                                ),
-                                const SizedBox(
-                                  height: 4.0,
-                                ),
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          addSubscriptionController
-                                                  .isDropdownOpen =
-                                              !addSubscriptionController
-                                                  .isDropdownOpen;
-                                        });
-                                      },
-                                      child: Container(
-                                        padding: const EdgeInsets.only(
-                                            right: 16.0,
-                                            left: 16.0,
-                                            top: 12.0,
-                                            bottom: 12.0),
-                                        decoration: BoxDecoration(
-                                          color: AppColors.appNeutralColor5,
-                                          borderRadius:
-                                              BorderRadius.circular(10),
+                                  const SizedBox(
+                                    height: 16.0,
+                                  ),
+                                  SizedBox(
+                                    width: MediaQuery.of(context).size.width /
+                                        1.24,
+                                    child: RichText(
+                                      text: const TextSpan(
+                                        text: 'CustomerList ',
+                                        style: TextStyle(
+                                          fontFamily: 'Sofia Sans',
+                                          fontSize: 12.0,
+                                          fontWeight: FontWeight.w400,
+                                          color: Colors.black,
                                         ),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text(
-                                                addSubscriptionController
-                                                    .selectedCustomer,
-                                                style: const TextStyle(
-                                                    fontSize: 16)),
-                                            Icon(addSubscriptionController
-                                                    .isDropdownOpen
-                                                ? Icons.arrow_drop_up
-                                                : Icons.arrow_drop_down),
-                                          ],
-                                        ),
+                                        children: [
+                                          TextSpan(
+                                            text: '*',
+                                            style: TextStyle(
+                                              color: Colors.red,
+                                              fontSize: 12.0,
+                                              fontWeight: FontWeight.w400,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                    if (addSubscriptionController
-                                        .isDropdownOpen)
-                                      Container(
-                                        margin: const EdgeInsets.only(top: 10),
-                                        padding: const EdgeInsets.all(10),
-                                        decoration: BoxDecoration(
-                                          color: AppColors.appNeutralColor5,
-                                          borderRadius:
-                                              BorderRadius.circular(8),
+                                  ),
+                                  const SizedBox(
+                                    height: 4.0,
+                                  ),
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            addSubscriptionController
+                                                    .isDropdownOpen =
+                                                !addSubscriptionController
+                                                    .isDropdownOpen;
+                                          });
+                                        },
+                                        child: Container(
+                                          padding: const EdgeInsets.only(
+                                              right: 16.0,
+                                              left: 16.0,
+                                              top: 12.0,
+                                              bottom: 12.0),
+                                          decoration: BoxDecoration(
+                                            color: AppColors.appNeutralColor5,
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                          ),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                  addSubscriptionController
+                                                      .selectedCustomer,
+                                                  style: const TextStyle(
+                                                      fontSize: 16)),
+                                              Icon(addSubscriptionController
+                                                      .isDropdownOpen
+                                                  ? Icons.arrow_drop_up
+                                                  : Icons.arrow_drop_down),
+                                            ],
+                                          ),
                                         ),
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.9,
-                                        height: 300,
-                                        // Fixed height for the dropdown container
-                                        child: Column(
-                                          children: [
-                                            // Search box with a side "Create" button
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  bottom: 8.0),
-                                              child: Row(
-                                                children: [
-                                                  Expanded(
-                                                    child: Container(
-                                                      height: 36,
-                                                      // Fixed height for the container
-                                                      decoration: BoxDecoration(
-                                                        boxShadow: [
-                                                          BoxShadow(
-                                                            color: Colors.grey
-                                                                .withOpacity(0),
-                                                            // Shadow color
-                                                            blurRadius: 0,
-                                                            // Blur radius
-                                                            offset: const Offset(
-                                                                0,
-                                                                0), // Position of shadow (x, y)
-                                                          ),
-                                                        ],
-                                                        color: AppColors
-                                                            .appWhiteColor,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(30),
-                                                        // Circular shape
-                                                        border: Border.all(
-                                                            color: AppColors
-                                                                .appWhiteColor),
-                                                      ),
-                                                      child: TextField(
-                                                        controller:
-                                                            addSubscriptionController
-                                                                .searchController,
-                                                        onChanged: (value) =>
-                                                            filterSearchResults(
-                                                                value),
-                                                        maxLines: 1,
-                                                        // Ensures single-line input with horizontal scrolling
-                                                        textAlignVertical:
-                                                            TextAlignVertical
-                                                                .center,
-                                                        // Centers text vertically within TextField
+                                      ),
+                                      if (addSubscriptionController
+                                          .isDropdownOpen)
+                                        Container(
+                                          margin:
+                                              const EdgeInsets.only(top: 10),
+                                          padding: const EdgeInsets.all(10),
+                                          decoration: BoxDecoration(
+                                            color: AppColors.appNeutralColor5,
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                          ),
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.9,
+                                          height: 300,
+                                          // Fixed height for the dropdown container
+                                          child: Column(
+                                            children: [
+                                              // Search box with a side "Create" button
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    bottom: 8.0),
+                                                child: Row(
+                                                  children: [
+                                                    Expanded(
+                                                      child: Container(
+                                                        height: 36,
+                                                        // Fixed height for the container
                                                         decoration:
-                                                            const InputDecoration(
-                                                          isDense: true,
-                                                          // Helps align the content within the fixed height
-                                                          contentPadding:
-                                                              EdgeInsets
-                                                                  .symmetric(
-                                                            vertical: 8.0,
-                                                            // Fine-tune vertical padding for alignment
-                                                            horizontal:
-                                                                12.0, // Space for horizontal padding
+                                                            BoxDecoration(
+                                                          boxShadow: [
+                                                            BoxShadow(
+                                                              color: Colors.grey
+                                                                  .withOpacity(
+                                                                      0),
+                                                              blurRadius: 0,
+                                                              offset: const Offset(
+                                                                  0,
+                                                                  0),
+                                                            ),
+                                                          ],
+                                                          color: AppColors
+                                                              .appWhiteColor,
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(30),
+                                                          // Circular shape
+                                                          border: Border.all(
+                                                              color: AppColors
+                                                                  .appWhiteColor),
+                                                        ),
+                                                        child: TextField(
+                                                          controller:
+                                                              addSubscriptionController
+                                                                  .searchController,
+                                                          onChanged: (value) =>
+                                                              filterSearchResults(
+                                                                  value),
+                                                          maxLines: 1,
+                                                          textAlignVertical:
+                                                              TextAlignVertical
+                                                                  .center,
+                                                          decoration:
+                                                              const InputDecoration(
+                                                            isDense: true,
+                                                            contentPadding:
+                                                                EdgeInsets
+                                                                    .symmetric(
+                                                              vertical: 8.0,
+                                                              horizontal:
+                                                                  12.0,
+                                                            ),
+                                                            hintText:
+                                                                'Search customers',
+                                                            hintStyle:
+                                                                TextStyle(
+                                                              fontFamily:
+                                                                  'Sofia Sans',
+                                                              fontSize: 12.0,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w400,
+                                                              color:
+                                                                  Colors.black,
+                                                            ),
+                                                            prefixIcon: Icon(
+                                                                Icons.search,
+                                                                color: Colors
+                                                                    .grey),
+                                                            border: InputBorder
+                                                                .none,
                                                           ),
-                                                          hintText:
-                                                              'Search customers',
-                                                          hintStyle: TextStyle(
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    const SizedBox(width: 8),
+                                                    Container(
+                                                      height: 36,
+                                                      decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                                30),
+                                                      ),
+                                                      child:
+                                                          ElevatedButton.icon(
+                                                        onPressed: () {
+                                                          Get.to(
+                                                              const AddCustomerForm());
+                                                        },
+                                                        icon: const Icon(
+                                                          Icons.add_circle,
+                                                          size: 16,
+                                                        ),
+                                                        label: const Text(
+                                                          "Create",
+                                                          style: TextStyle(
                                                             fontFamily:
                                                                 'Sofia Sans',
-                                                            fontSize: 12.0,
+                                                            fontSize: 14.0,
                                                             fontWeight:
                                                                 FontWeight.w400,
-                                                            color: Colors.black,
+                                                            color: Colors.white,
                                                           ),
-                                                          prefixIcon: Icon(
-                                                              Icons.search,
-                                                              color:
-                                                                  Colors.grey),
-                                                          border:
-                                                              InputBorder.none,
+                                                        ),
+                                                        style: ElevatedButton
+                                                            .styleFrom(
+                                                          backgroundColor:
+                                                              AppColors
+                                                                  .appBlueColor,
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .symmetric(
+                                                                  horizontal:
+                                                                      12.5,
+                                                                  vertical: 7),
+                                                          shape:
+                                                              RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        30),
+                                                          ),
                                                         ),
                                                       ),
                                                     ),
-                                                  ),
-                                                  const SizedBox(width: 8),
-                                                  Container(
-                                                    height: 36,
-                                                    decoration: BoxDecoration(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              30), // Circular shape
-                                                    ),
-                                                    child: ElevatedButton.icon(
-                                                      onPressed: () {
-                                                        Get.to(
-                                                            const AddCustomerForm());
-                                                      },
-                                                      icon: const Icon(
-                                                        Icons.add_circle,
-                                                        size: 16,
-                                                      ),
-                                                      label: const Text(
-                                                        "Create",
-                                                        style: TextStyle(
-                                                          fontFamily:
-                                                              'Sofia Sans',
-                                                          fontSize: 14.0,
-                                                          fontWeight:
-                                                              FontWeight.w400,
-                                                          color: Colors.white,
-                                                        ),
-                                                      ),
-                                                      style: ElevatedButton
-                                                          .styleFrom(
-                                                        backgroundColor:
-                                                            AppColors
-                                                                .appBlueColor,
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .symmetric(
-                                                                horizontal:
-                                                                    12.5,
-                                                                vertical: 7),
-                                                        shape:
-                                                            RoundedRectangleBorder(
-                                                          borderRadius:
-                                                              BorderRadius.circular(
-                                                                  30), // Circular shape
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            Expanded(
-                                              child: SingleChildScrollView(
-                                                child: Column(
-                                                  children:
-                                                      addSubscriptionController
-                                                          .filteredCustomers
-                                                          .asMap()
-                                                          .entries
-                                                          .map((entry) {
-                                                    int index = entry.key;
-                                                    var customer = entry.value;
-                                                    return GestureDetector(
-                                                      onTap: () => {
-                                                        selectCustomer(
-                                                            customer
-                                                                .info.custName,
-                                                            index,customer.sId),
-                                                        customerDetailViewController
-                                                            .getSingleData(customer.sId),
-                                                        addSubscriptionController
-                                                            .isVisibilityAccount
-                                                            .value = true
-                                                      },
-                                                      child: CustomerTile(
-                                                        name: customer
-                                                            .info.custName,
-                                                        email:
-                                                            customer.info.email,
-                                                        phone: customer
-                                                            .info.mobile,
-                                                      ),
-                                                    );
-                                                  }).toList(),
+                                                  ],
                                                 ),
                                               ),
+                                              Expanded(
+                                                child: SingleChildScrollView(
+                                                  child: Column(
+                                                    children:
+                                                        addSubscriptionController
+                                                            .filteredCustomers
+                                                            .asMap()
+                                                            .entries
+                                                            .map((entry) {
+                                                      int index = entry.key;
+                                                      var customer =
+                                                          entry.value;
+                                                      return GestureDetector(
+                                                        onTap: () => {
+                                                          selectCustomer(
+                                                              customer.info
+                                                                  .custName,
+                                                              index,
+                                                              customer.sId),
+                                                          customerDetailViewController
+                                                              .getSingleData(
+                                                                  customer.sId),
+                                                          addSubscriptionController
+                                                              .isVisibilityAccount
+                                                              .value = true
+                                                        },
+                                                        child: CustomerTile(
+                                                          name: customer
+                                                              .info.custName,
+                                                          email: customer
+                                                              .info.email,
+                                                          phone: customer
+                                                              .info.mobile,
+                                                        ),
+                                                      );
+                                                    }).toList(),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                  const SizedBox(
+                                    width: 10,
+                                    height: 12.0,
+                                  ),
+                                  SizedBox(
+                                    width: MediaQuery.of(context).size.width /
+                                        1.24,
+                                    child: RichText(
+                                      text: const TextSpan(
+                                        text: 'Check number ',
+                                        style: TextStyle(
+                                          fontFamily: 'Sofia Sans',
+                                          fontSize: 12.0,
+                                          fontWeight: FontWeight.w400,
+
+                                          color: Colors.black,
+                                        ),
+                                        children: [
+                                          TextSpan(
+                                            text: '*',
+                                            style: TextStyle(
+                                              color: Colors.red,
+                                              fontSize: 12.0,
+                                              fontWeight: FontWeight.w400,
                                             ),
-                                          ],
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                                const SizedBox(
-                                  width: 10,
-                                  height: 12.0,
-                                ),
-                                SizedBox(
-                                  width:
-                                      MediaQuery.of(context).size.width / 1.24,
-                                  child: RichText(
-                                    text: const TextSpan(
-                                      text: 'Check number ',
-                                      style: TextStyle(
-                                        fontFamily: 'Sofia Sans',
-                                        fontSize: 12.0,
-                                        fontWeight: FontWeight.w400,
-                                        color: Colors.black,
-                                      ),
-                                      children: [
-                                        TextSpan(
-                                          text: '*',
-                                          style: TextStyle(
-                                            color: Colors.red,
-                                            fontSize: 12.0,
-                                            fontWeight: FontWeight.w400,
                                           ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    width: 10,
+                                    height: 4.0,
+                                  ),
+                                  CommonTextField(
+                                    hintText: "Check number",
+                                    controller: addSubscriptionController
+                                        .checkNumberTextController.value,
+                                    focusNode: addSubscriptionController
+                                        .checkNoFocusNode,
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.digitsOnly
+                                    ],
+                                    keyboardType: TextInputType.number,
+                                    maxLength: 4,
+                                    onChanged: (value) {
+                                      String pattern = r'^\d{4}$';
+                                      RegExp regExp = RegExp(pattern);
+                                      setState(() {
+                                        if (value.isEmpty) {
+                                          addSubscriptionController.checkNoValid =
+                                              false.obs;
+                                        } else if (regExp.hasMatch(value)) {
+                                          addSubscriptionController.checkNoValid =
+                                              true.obs;
+                                          addSubscriptionController
+                                              .checkNoErrorMessage =
+                                          "check No Must be 4 digit";
+                                        } else {
+                                          addSubscriptionController.checkNoValid =
+                                              false.obs;
+                                        }
+                                      });
+                                    },
+                                    decoration: InputDecoration(
+                                      counterText: '',
+                                      labelStyle: const TextStyle(
+                                          color: AppColors.appBlueColor),
+                                      isDense: true,
+                                      contentPadding: const EdgeInsets.only(
+                                          right: 16, left: 16,top: 12,bottom: 12),
+                                      focusedBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                          color: addSubscriptionController
+                                              .checkNoValid.value
+                                              ? AppColors.appNeutralColor5
+                                              : AppColors.appRedColor,
+                                          width:
+                                          1, // Thickness for the underline
                                         ),
-                                      ],
+                                      ),
+                                      enabledBorder: UnderlineInputBorder(
+                                        borderSide: const BorderSide(
+                                          color: AppColors.appNeutralColor5,
+                                          // Default color for enabled state
+                                          width: 1,
+                                        ),
+                                          borderRadius: BorderRadius.circular(8.0)
+                                      ),
+                                      errorBorder: const UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                          color: AppColors.appRedColor,
+                                          width: 1,
+                                        ),
+                                      ),
+                                      errorText: addSubscriptionController
+                                          .checkNoValid.value
+                                          ? null
+                                          : (addSubscriptionController
+                                          .checkNumberTextController
+                                          .value
+                                          .text
+                                          .isEmpty
+                                          ? 'check number is required'
+                                          : 'check No Must be 4 digit'),
+                                      hintText: "Enter CheckNo",
+                                      filled: true,
+                                      fillColor: AppColors.appNeutralColor5,
                                     ),
-                                  ),
-                                ),
-                                const SizedBox(
-                                  width: 10,
-                                  height: 4.0,
-                                ),
-                                CommonTextField(
-                                  hintText: "Check number",
-                                  controller: addSubscriptionController
-                                      .checkNumberTextController.value,
-                                  focusNode:
-                                  addSubscriptionController.checkNoFocusNode,
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.digitsOnly
-                                  ],
-                                  keyboardType: TextInputType.number,
-                                  maxLength: 4,
-                                  onChanged: (value) {
-                                    String pattern = r'^\d{4}$';
-                                    RegExp regExp = RegExp(pattern);
-                                    setState(() {
-                                      if (value.isEmpty) {
-                                        addSubscriptionController.checkNoValid = false.obs;
-                                      } else if (regExp.hasMatch(value)) {
-                                        addSubscriptionController.checkNoValid = true.obs;
-                                        addSubscriptionController.checkNoErrorMessage = "check No Must be 4 digit";
-                                      } else {
-                                        addSubscriptionController.checkNoValid = false.obs;
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'CheckNo is required';
+                                      }else if (value.trim().length < 4) {
+                                        return 'check No Must be 4 digit';
                                       }
-                                    });
-                                  },
-                                  decoration: InputDecoration(
-                                    counterText: '',
-                                    labelStyle: const TextStyle(color: AppColors.appBlueColor),
-                                    contentPadding: const EdgeInsets.only(right: 16,left: 16),
-                                    focusedBorder: UnderlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: addSubscriptionController.checkNoValid.value
-                                            ? AppColors.appNeutralColor5
-                                            : AppColors.appRedColor,
-                                        width: 1, // Thickness for the underline
-                                      ),
-                                    ),
-                                    enabledBorder: const UnderlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: AppColors.appNeutralColor5,
-                                        // Default color for enabled state
-                                        width: 1,
-                                      ),
-                                    ),
-                                    errorBorder: const UnderlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: AppColors.appRedColor,
-                                        // Error border for invalid input
-                                        width: 1,
-                                      ),
-                                    ),
-                                    errorText: addSubscriptionController.checkNoValid.value
-                                        ? null
-                                        : 'CheckNo is required',
-                                    // Error message when invalid
-                                    hintText: "Enter CheckNo",
-                                    filled: true,
-                                    fillColor: AppColors.appNeutralColor5,
+                                      return null;
+                                    },
                                   ),
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'CheckNo is required';
-                                    }
-                                    return null;
-                                  },
-
-                                ),
-                                const SizedBox(
-                                  width: 10,
-                                  height: 12.0,
-                                ),
-                                SizedBox(
-                                  width:
-                                      MediaQuery.of(context).size.width / 1.24,
-                                  child: RichText(
-                                    text: const TextSpan(
-                                      text: 'Memo ',
-                                      style: TextStyle(
-                                        fontFamily: 'Sofia Sans',
-                                        fontSize: 12.0,
-                                        fontWeight: FontWeight.w400,
-                                        color: Colors.black,
-                                      ),
-                                      children: [
-                                        TextSpan(
-                                          text: '*',
-                                          style: TextStyle(
-                                            color: Colors.red,
-                                            // Set a different color for the asterisk
-                                            fontSize: 12.0,
-                                            // Same or different size
-                                            fontWeight: FontWeight.w400,
+                                  const SizedBox(
+                                    width: 10,
+                                    height: 12.0,
+                                  ),
+                                  SizedBox(
+                                    width: MediaQuery.of(context).size.width /
+                                        1.24,
+                                    child: RichText(
+                                      text: const TextSpan(
+                                        text: 'Memo ',
+                                        style: TextStyle(
+                                          fontFamily: 'Sofia Sans',
+                                          fontSize: 12.0,
+                                          fontWeight: FontWeight.w400,
+                                          color: Colors.black,
+                                        ),
+                                        children: [
+                                          TextSpan(
+                                            text: '*',
+                                            style: TextStyle(
+                                              color: Colors.red,
+                                              // Set a different color for the asterisk
+                                              fontSize: 12.0,
+                                              // Same or different size
+                                              fontWeight: FontWeight.w400,
+                                            ),
                                           ),
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
                                   ),
-                                ),
-                                const SizedBox(
-                                  width: 10,
-                                  height: 4.0,
-                                ),
-                                CommonTextField(
-                                  hintText: "Enter Memo",
-                                  controller: addSubscriptionController
-                                      .memoTextController.value,
-                                  focusNode: addSubscriptionController.memoFocusNode,
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.allow(
-                                        RegExp(r'^[a-zA-Z0-9\s]*$')),
-                                  ],
-                                  onChanged: (value) {
-                                    String pattern = r'^[a-zA-Z0-9\s]*$';
-                                    RegExp regExp = RegExp(pattern);
-                                    setState(() {
-                                      if (value.isEmpty) {
-                                        addSubscriptionController.memoValid = false.obs;
-                                      } else if (regExp.hasMatch(value)) {
-                                        addSubscriptionController.memoValid = true.obs;
-                                      } else {
-                                        addSubscriptionController.memoValid = false.obs;
-                                      }
-                                    });
-                                  },
-                                  decoration: InputDecoration(
-                                    labelStyle: const TextStyle(color: AppColors.appBlueColor),
-                                    contentPadding: const EdgeInsets.only(right: 16,left: 16),
-                                    focusedBorder: UnderlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: addSubscriptionController.memoValid.value
-                                            ? AppColors.appNeutralColor5
-                                            : AppColors.appRedColor,
-                                        width: 1, // Thickness for the underline
-                                      ),
-                                    ),
-                                    enabledBorder: const UnderlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: AppColors.appNeutralColor5,
-                                        // Default color for enabled state
-                                        width: 1,
-                                      ),
-                                    ),
-                                    errorBorder: const UnderlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: AppColors.appRedColor,
-                                        // Error border for invalid input
-                                        width: 1,
-                                      ),
-                                    ),
-                                    errorText: addSubscriptionController.memoValid.value
-                                        ? null
-                                        : 'Memo is required',
+                                  const SizedBox(
+                                    width: 10,
+                                    height: 4.0,
+                                  ),
+                                  CommonTextField(
                                     hintText: "Enter Memo",
-                                    filled: true,
-                                    fillColor: AppColors.appNeutralColor5,
-                                  ),
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Memo is required';
-                                    }
-                                    return null;
-                                  },
-
-                                ),
-                                const SizedBox(
-                                  width: 10,
-                                  height: 12.0,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Visibility(
-                    visible:
-                        addSubscriptionController.isVisibilityAccount.value,
-                    child: SizedBox(
-                      width: screenWidth,
-                      child: Card(
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(18.0),
-                        ),
-                        margin: const EdgeInsets.all(10.0),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              children: [
-                                const Align(
-                                  alignment: Alignment.topLeft,
-                                  child: Text(
-                                    'Select Account',
-                                    style: TextStyle(
-                                      fontFamily: 'Sofia Sans',
-                                      fontSize: 16.0,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(
-                                  height: 20,
-                                ),
-                                Obx(() {
-                                  if (customerDetailViewController.allBankList.isEmpty) {
-                                    return variableController.loading.value
-                                        ? Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Container(
-                                        alignment: Alignment.center,
-                                        height: 50,
-                                        width: 50,
-                                        child: Lottie.asset("assets/lottie/half-circles.json"),
+                                    controller: addSubscriptionController
+                                        .memoTextController.value,
+                                    focusNode:
+                                        addSubscriptionController.memoFocusNode,
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.allow(
+                                          RegExp(r'^[a-zA-Z0-9\s]*$')),
+                                    ],
+                                    onChanged: (value) {
+                                      String pattern = r'^[a-zA-Z0-9\s]*$';
+                                      RegExp regExp = RegExp(pattern);
+                                      setState(() {
+                                        if (value.isEmpty) {
+                                          addSubscriptionController.memoValid =
+                                              false.obs;
+                                        } else if (regExp.hasMatch(value)) {
+                                          addSubscriptionController.memoValid =
+                                              true.obs;
+                                        } else {
+                                          addSubscriptionController.memoValid =
+                                              false.obs;
+                                        }
+                                      });
+                                    },
+                                    decoration: InputDecoration(
+                                      labelStyle: const TextStyle(
+                                          color: AppColors.appBlueColor),
+                                      isDense: true,
+                                      contentPadding: const EdgeInsets.only(
+                                          right: 16, left: 16,top: 12,bottom: 12),
+                                      focusedBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                          color: addSubscriptionController
+                                                  .memoValid.value
+                                              ? AppColors.appNeutralColor5
+                                              : AppColors.appRedColor,
+                                          width:
+                                              1, // Thickness for the underline
+                                        ),
+                                        borderRadius: BorderRadius.circular(8.0)
                                       ),
-                                    )
-                                        : NoDataFoundCard();
-                                  } else {
-                                    return  ListView.builder(
-                                      shrinkWrap: true,
-                                      itemCount: (customerDetailViewController.allBankList.isNotEmpty &&
-                                          addSubscriptionController.selectedCustomer != "Select Customer")
-                                          ? customerDetailViewController.allBankList.length
-                                          : 0,
-                                      itemBuilder: (context, index) {
-                                        return accountListItem(customerDetailViewController.allBankList,index,context);
-                                      },
-                                      physics: const ScrollPhysics(),
-                                    );
-                                  }
-                                }),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 16.0, right: 8.0),
-                    // Optional: Adds padding around the frame
-                    child: Center(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Item Particulars',
-                            style: TextStyle(
-                              fontFamily: Constants.Sofiafontfamily,
-                              fontSize: 16.0,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.black,
-                            ),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16.0, vertical: 12.0),
-                            child: GestureDetector(
-                              onTap: (){
-                                itemParticularPopup(context);
-                                setState(() {
-                                  addSubscriptionController.productQuantityTextController.value = TextEditingController(text: "1");
-                                  addSubscriptionController.isDropdownOpen = false;
-                                });
-                              },
-                              child: const Row(
-                                children: [
-                                  Icon(Icons.add_circle,
-                                      color: Colors.blue, size: 16),
-                                  SizedBox(width: 6),
-                                  Text(
-                                    'Add Item',
-                                    style: TextStyle(
-                                        fontFamily: 'Sofia Sans',
-                                        color: Colors.blue,
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600),
+                                      enabledBorder: UnderlineInputBorder(
+                                        borderSide: const BorderSide(
+                                          color: AppColors.appNeutralColor5,
+                                          width: 1,
+                                        ),
+                                          borderRadius: BorderRadius.circular(8.0)
+                                      ),
+                                      errorBorder: const UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                          color: AppColors.appRedColor,
+                                          // Error border for invalid input
+                                          width: 1,
+                                        ),
+                                      ),
+                                      errorText: addSubscriptionController
+                                              .memoValid.value
+                                          ? null
+                                          : 'Memo is required',
+                                      hintText: "Enter Memo",
+                                      filled: true,
+                                      fillColor: AppColors.appNeutralColor5,
+                                    ),
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Memo is required';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                  const SizedBox(
+                                    width: 10,
+                                    height: 12.0,
                                   ),
                                 ],
                               ),
                             ),
                           ),
-                        ],
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    width: screenWidth,
-                    child: Column(
-                      children: [
-                        Obx(() {
-                          return ListView.builder(
-                            shrinkWrap: true,
-                            itemCount:
-                                addSubscriptionController.addProductList.length,
-                            itemBuilder: (context, index) {
-                              return ProductListItem(
-                                quantity: addSubscriptionController
-                                    .addProductList[index].qantity,
-                                price: addSubscriptionController
-                                    .addProductList[index].price,
-                                productName: addSubscriptionController
-                                    .addProductList[index].productName,
-                                totalPrice: addSubscriptionController
-                                    .addProductList[index].totalPrice,
-                                index: index
-                              );
-                            },
-                            physics: const ScrollPhysics(),
-                          );
-                        }),
-                      ],
+                    Visibility(
+                      visible:
+                          addSubscriptionController.isVisibilityAccount.value,
+                      child: SizedBox(
+                        width: screenWidth * 0.96,
+                        child: Card(
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18.0),
+                          ),
+                          margin: const EdgeInsets.all(10.0),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                children: [
+                                  const Align(
+                                    alignment: Alignment.topLeft,
+                                    child: Text(
+                                      'Select Account',
+                                      style: TextStyle(
+                                        fontFamily: 'Sofia Sans',
+                                        fontSize: 16.0,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                  Obx(() {
+                                    if (customerDetailViewController
+                                        .allBankList.isEmpty) {
+                                      return variableController.loading.value
+                                          ? Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: Container(
+                                                alignment: Alignment.center,
+                                                height: 50,
+                                                width: 50,
+                                                child: Lottie.asset(
+                                                    "assets/lottie/half-circles.json"),
+                                              ),
+                                            )
+                                          : NoDataFoundCard();
+                                    } else {
+                                      return ListView.builder(
+                                        shrinkWrap: true,
+                                        itemCount: (customerDetailViewController
+                                                    .allBankList.isNotEmpty &&
+                                                addSubscriptionController
+                                                        .selectedCustomer !=
+                                                    "Select Customer")
+                                            ? customerDetailViewController
+                                                .allBankList.length
+                                            : 0,
+                                        itemBuilder: (context, index) {
+                                          return accountListItem(
+                                              customerDetailViewController
+                                                  .allBankList,
+                                              index,
+                                              context);
+                                        },
+                                        physics: const ScrollPhysics(),
+                                      );
+                                    }
+                                  }),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 16.0, right: 8.0),
+                      // Optional: Adds padding around the frame
+                      child: Center(
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
-                              'Invoice Mode',
+                            Text(
+                              'Item Particulars',
                               style: TextStyle(
-                                fontFamily: 'Sofia Sans',
+                                fontFamily: Constants.Sofiafontfamily,
                                 fontSize: 16.0,
                                 fontWeight: FontWeight.w600,
                                 color: Colors.black,
                               ),
                             ),
-                            Row(
-                              children: [
-                                Checkbox(
-                                  shape: const RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.all(
-                                      Radius.circular(4),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16.0, vertical: 12.0),
+                              child: GestureDetector(
+                                onTap: () {
+                                  itemParticularPopup(context);
+                                  setState(() {
+                                    addSubscriptionController
+                                            .productQuantityTextController
+                                            .value =
+                                        TextEditingController(text: "1");
+                                    addSubscriptionController.isDropdownOpen =
+                                        false;
+                                    addSubscriptionController
+                                        .isProductDropdownOpen = false.obs;
+                                  });
+                                },
+                                child: const Row(
+                                  children: [
+                                    Icon(Icons.add_circle,
+                                        color: Colors.blue, size: 16),
+                                    SizedBox(width: 6),
+                                    Text(
+                                      'Add Item',
+                                      style: TextStyle(
+                                          fontFamily: 'Sofia Sans',
+                                          color: Colors.blue,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600),
                                     ),
-                                  ),
-                                  value: addSubscriptionController.isSelected,
-                                  activeColor: AppColors.appBlueColor,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      addSubscriptionController.isSelected = !addSubscriptionController.isSelected;
-                                    });
-                                  },
+                                  ],
                                 ),
-                                const Text("Send Invoice",
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontFamily: 'Sofia Sans',
-                                      fontWeight: FontWeight.w600,
-                                      color: AppColors.appBlueColor,
-                                    )),
-                              ],
+                              ),
                             ),
                           ],
                         ),
                       ),
-                      Visibility(
-                        visible: addSubscriptionController.isSelected,
-                        child: Padding(
+                    ),
+                    SizedBox(
+                      width: screenWidth,
+                      child: Column(
+                        children: [
+                          Obx(() {
+                            return ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: addSubscriptionController
+                                  .addProductList.length,
+                              itemBuilder: (context, index) {
+                                return ProductListItem(
+                                    quantity: addSubscriptionController
+                                        .addProductList[index].qantity,
+                                    price: addSubscriptionController
+                                        .addProductList[index].price,
+                                    productName: addSubscriptionController
+                                        .addProductList[index].productName,
+                                    totalPrice: addSubscriptionController
+                                        .addProductList[index].totalPrice,
+                                    index: index);
+                              },
+                              physics: const ScrollPhysics(),
+                            );
+                          }),
+                        ],
+                      ),
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
                           padding:
                               const EdgeInsets.only(left: 16.0, right: 16.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Obx(() {
-                                return Row(
-                                  children: [
-                                    SizedBox(
-                                      width: 16,
-                                      height: 30,
-                                      child: Radio<int>(
-                                        value: 1,
-                                        groupValue: addSubscriptionController
-                                            .selectedSubscriptionMode.value,
-                                        onChanged: (value) {
-                                          addSubscriptionController
-                                              .selectedSubscriptionMode
-                                              .value = value!;
-                                        },
-                                        activeColor: AppColors.appBlueColor,
+                              const Text(
+                                'Invoice Mode',
+                                style: TextStyle(
+                                  fontFamily: 'Sofia Sans',
+                                  fontSize: 16.0,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              Row(
+                                children: [
+                                  Checkbox(
+                                    shape: const RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(4),
                                       ),
                                     ),
-                                    const SizedBox(
-                                      width: 8.0,
-                                    ),
-                                    const Text(
-                                      'Send invoice to customer',
+                                    value: addSubscriptionController.isSelected,
+                                    activeColor: AppColors.appBlueColor,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        addSubscriptionController.isSelected =
+                                            !addSubscriptionController
+                                                .isSelected;
+                                      });
+                                    },
+                                  ),
+                                  const Text("Send Invoice",
                                       style: TextStyle(
+                                        fontSize: 14,
                                         fontFamily: 'Sofia Sans',
-                                        fontSize: 12.0,
-                                        fontWeight: FontWeight.w400,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              }),
-                              Obx(() {
-                                return Row(
-                                  children: [
-                                    SizedBox(
-                                      width: 16,
-                                      height: 30,
-                                      child: Radio<int>(
-                                          value: 2,
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColors.appBlueColor,
+                                      )),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        Visibility(
+                          visible: addSubscriptionController.isSelected,
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.only(left: 16.0, right: 16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Obx(() {
+                                  return Row(
+                                    children: [
+                                      SizedBox(
+                                        width: 16,
+                                        height: 30,
+                                        child: Radio<int>(
+                                          value: 1,
                                           groupValue: addSubscriptionController
                                               .selectedSubscriptionMode.value,
                                           onChanged: (value) {
@@ -873,14 +898,14 @@ class _AddSubscriptionPageState extends State<AddSubscriptionPage> {
                                                 .selectedSubscriptionMode
                                                 .value = value!;
                                           },
-                                          activeColor: AppColors.appBlueColor),
-                                    ),
-                                    const SizedBox(
-                                      width: 8.0,
-                                    ),
-                                    const Expanded(
-                                      child: Text(
-                                        'Automatically change the charge if the customer payment is due',
+                                          activeColor: AppColors.appBlueColor,
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        width: 8.0,
+                                      ),
+                                      const Text(
+                                        'Send invoice to customer',
                                         style: TextStyle(
                                           fontFamily: 'Sofia Sans',
                                           fontSize: 12.0,
@@ -888,157 +913,209 @@ class _AddSubscriptionPageState extends State<AddSubscriptionPage> {
                                           color: Colors.black,
                                         ),
                                       ),
-                                    ),
-                                  ],
-                                );
-                              }),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.only(left: 16, right: 26),
-                    child: Divider(color: AppColors.appGreyColor),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 16.0, right: 16.0),
-                    child: Center(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(
-                            'Total Amount',
-                            style: TextStyle(
-                              fontFamily: 'Sofia Sans',
-                              fontSize: 16.0,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.black,
-                            ),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16.0, vertical: 12.0),
-                            child: Row(
-                              children: [
-                                const SizedBox(width: 8),
-                                Obx(() => Text(
-                                      "\$${addSubscriptionController.totalAmount.value}",
-                                      style: TextStyle(
-                                          fontFamily:
-                                              Constants.Sofiafontfamily,
-                                          color: Colors.black,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600),
-                                    )),
+                                    ],
+                                  );
+                                }),
+                                Obx(() {
+                                  return Row(
+                                    children: [
+                                      SizedBox(
+                                        width: 16,
+                                        height: 30,
+                                        child: Radio<int>(
+                                            value: 2,
+                                            groupValue:
+                                                addSubscriptionController
+                                                    .selectedSubscriptionMode
+                                                    .value,
+                                            onChanged: (value) {
+                                              addSubscriptionController
+                                                  .selectedSubscriptionMode
+                                                  .value = value!;
+                                            },
+                                            activeColor:
+                                                AppColors.appBlueColor),
+                                      ),
+                                      const SizedBox(
+                                        width: 8.0,
+                                      ),
+                                      const Expanded(
+                                        child: Text(
+                                          'Automatically change the charge if the customer payment is due',
+                                          style: TextStyle(
+                                            fontFamily: 'Sofia Sans',
+                                            fontSize: 12.0,
+                                            fontWeight: FontWeight.w400,
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                }),
                               ],
                             ),
                           ),
-                        ],
+                        ),
+                      ],
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.only(left: 16, right: 26),
+                      child: Divider(color: AppColors.appGreyColor),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+                      child: Center(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              'Total Amount',
+                              style: TextStyle(
+                                fontFamily: 'Sofia Sans',
+                                fontSize: 16.0,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.black,
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16.0, vertical: 12.0),
+                              child: Row(
+                                children: [
+                                  const SizedBox(width: 8),
+                                  Obx(() => Text(
+                                        "\$${addSubscriptionController.totalAmount.value}",
+                                        style: TextStyle(
+                                            fontFamily:
+                                                Constants.Sofiafontfamily,
+                                            color: Colors.black,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600),
+                                      )),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(20.0), // Space from the bottom
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Obx(() {
+                      final isDisabled =
+                          addSubscriptionController.totalAmount.value == 0.0;
+
+                      return ElevatedButton(
+                        onPressed: isDisabled
+                            ? null // Disable the button
+                            : () {
+                                showScheduleSubscriptionDialog(context);
+                              },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: isDisabled
+                              ? AppColors.appWhiteColor
+                                  .withOpacity(0.5) // Blurred appearance
+                              : AppColors.appWhiteColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                            side: BorderSide(
+                              color: isDisabled
+                                  ? AppColors.appBlueColor.withOpacity(0.5)
+                                  : AppColors.appBlueColor,
+                            ),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.schedule_rounded,
+                              color: isDisabled
+                                  ? AppColors.appBlueColor.withOpacity(0.5)
+                                  : AppColors.appBlueColor,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              "Schedule",
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: isDisabled
+                                    ? AppColors.appBlueColor.withOpacity(0.5)
+                                    : AppColors.appBlueColor,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }),
+                  ),
+                  const SizedBox(width: 20),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        if (addSubscriptionController.selectedCustomer !=
+                            "Select Customer") {
+                          if (addSubscriptionController
+                              .customerValidation(context)) {
+                            addSubscriptionController.productDetailList();
+                            if (addSubscriptionController
+                                .finalProductList.isNotEmpty) {
+                              GeneralMethods.loadingDialog(context);
+                              addSubscriptionController
+                                  .insertSubscriptionPaymentData();
+                              Get.back();
+                              setState(() {});
+                            } else {
+                              MyToast.toast('Add Item');
+                            }
+                          }
+                        } else {
+                          MyToast.toast("Customer is required");
+                        }
+                        setState(() {});
+                      },
+                      style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          backgroundColor: AppColors.appBlueColor),
+                      child: const Text(
+                        "Start",
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ),
                 ],
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(20.0), // Space from the bottom
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Obx(() {
-                    final isDisabled = addSubscriptionController.totalAmount.value == 0.0;
-
-                    return ElevatedButton(
-                      onPressed: isDisabled
-                          ? null // Disable the button
-                          : () {
-                        showScheduleSubscriptionDialog(context);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: isDisabled
-                            ? AppColors.appWhiteColor.withOpacity(0.5) // Blurred appearance
-                            : AppColors.appWhiteColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                          side: BorderSide(
-                            color: isDisabled
-                                ? AppColors.appBlueColor.withOpacity(0.5)
-                                : AppColors.appBlueColor,
-                          ),
-                        ),
-                        elevation: 0,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.schedule_rounded,
-                            color: isDisabled
-                                ? AppColors.appBlueColor.withOpacity(0.5)
-                                : AppColors.appBlueColor,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            "Schedule",
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: isDisabled
-                                  ? AppColors.appBlueColor.withOpacity(0.5)
-                                  : AppColors.appBlueColor,
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }),
-                ),
-                const SizedBox(width: 20),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      if (addSubscriptionController.selectedCustomer != "Select Customer") {
-                        if (addSubscriptionController.customerValidation(context)) {
-                          addSubscriptionController.productDetailList();
-                          if (addSubscriptionController.finalProductList.isNotEmpty) {
-                            GeneralMethods.loadingDialog(context);
-                            addSubscriptionController.insertSubscriptionPaymentData();
-                          } else {
-                            MyToast.toast('Add Item');
-                          }
-                        }
-                      } else {
-                        MyToast.toast("Customer is required");
-                      }
-                      setState(() {});
-                    },
-                    style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        backgroundColor: AppColors.appBlueColor),
-                    child: const Text(
-                      "Start",
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
+  Future<void> _refreshData() async {
+    callMethods();
+    addSubscriptionController.isProductDropdownOpen.value = false;
+    addSubscriptionController.isDropdownOpen = false;
+    setState(() {});
+  }
+
   Widget accountListItem(List<BankId> allBusinessList, int index, context) {
-    bool isSelected = allBusinessList[index].primary ;
+    bool isSelected = allBusinessList[index].primary;
     addSubscriptionController.bankId = allBusinessList[index].sId;
     return InkWell(
       onTap: () {
@@ -1046,13 +1123,13 @@ class _AddSubscriptionPageState extends State<AddSubscriptionPage> {
           selectedIndex = index;
           addSubscriptionController.bankId = allBusinessList[selectedIndex].sId;
           for (int i = 0; i < allBusinessList.length; i++) {
-            allBusinessList[i].primary = i == selectedIndex;  // Update primary flag for selected account
+            allBusinessList[i].primary =
+                i == selectedIndex; // Update primary flag for selected account
           }
         });
       },
       child: Padding(
-        padding: EdgeInsets.all(
-            MediaQuery.of(context).size.width * 0.02),
+        padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.01),
         child: Column(
           children: [
             Center(
@@ -1064,9 +1141,9 @@ class _AddSubscriptionPageState extends State<AddSubscriptionPage> {
                       bottom: MediaQuery.of(context).size.height *
                           0.02, // Responsive bottom padding
                       left: MediaQuery.of(context).size.width *
-                          0.05, // Responsive left padding
+                          0.04, // Responsive left padding
                       right: MediaQuery.of(context).size.width *
-                          0.05, // Responsive right padding
+                          0.04, // Responsive right padding
                     ),
                     decoration: BoxDecoration(
                       color: isSelected
@@ -1074,9 +1151,8 @@ class _AddSubscriptionPageState extends State<AddSubscriptionPage> {
                           : AppColors.appNeutralColor5,
                       borderRadius: BorderRadius.circular(30.0),
                       border: isSelected
-                          ? Border.all(color: AppColors.appBlueColor, width: 2)
-                          : Border.all(
-                          color: AppColors.appNeutralColor5, width: 2),
+                          ? Border.all(color: AppColors.appBlueColor, width: 1)
+                          : Border.all(color: AppColors.appBackgroundGreyColor, width: 1),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1092,12 +1168,12 @@ class _AddSubscriptionPageState extends State<AddSubscriptionPage> {
                                 'Account Number  :  ',
                                 style: TextStyle(
                                   color: AppColors.appGreyColor,
-                                  fontSize: 16,
+                                  fontSize: 12,
                                   fontFamily: 'Sofia Sans',
                                   fontWeight: FontWeight.w400,
                                 ),
                                 overflow:
-                                TextOverflow.ellipsis, // Handle overflow
+                                    TextOverflow.ellipsis, // Handle overflow
                               ),
                             ),
                             const SizedBox(
@@ -1123,25 +1199,20 @@ class _AddSubscriptionPageState extends State<AddSubscriptionPage> {
                   ),
                   if (isSelected)
                     Positioned(
-                      top: -13,
+                      top: -10,
                       left: 30,
                       child: Container(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 10.0, vertical: 4.0),
-                        decoration: const BoxDecoration(
+                        decoration: BoxDecoration(
                           color: AppColors.appBlueColor,
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(15),
-                            topRight: Radius.circular(15),
-                            bottomRight: Radius.circular(15),
-                            bottomLeft: Radius.circular(15),
-                          ),
+                          borderRadius: BorderRadius.circular(15),
                         ),
                         child: const Text(
                           'Primary Account',
                           style: TextStyle(
                             color: AppColors.appWhiteColor,
-                            fontSize: 14,
+                            fontSize: 10,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -1382,7 +1453,9 @@ class _AddSubscriptionPageState extends State<AddSubscriptionPage> {
                                         proId.value = product.sId;
                                         return GestureDetector(
                                           onTap: () => selectProduct(
-                                              proName.value, index,proId.value),
+                                              proName.value,
+                                              index,
+                                              proId.value),
                                           child: ProductTile(
                                             productName: proName.value,
                                             productId: proId.value,
@@ -1463,7 +1536,9 @@ class _AddSubscriptionPageState extends State<AddSubscriptionPage> {
                               .productQuantityTextController.value,
                           labelText: 'Quantity',
                           keyboardType: TextInputType.number,
-                          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly
+                          ],
                           onChanged: (value) {
                             calculateTotalAmount();
                           },
@@ -1477,7 +1552,9 @@ class _AddSubscriptionPageState extends State<AddSubscriptionPage> {
                               .productPricingTextController.value,
                           labelText: 'Pricing',
                           keyboardType: TextInputType.number,
-                          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly
+                          ],
                           onChanged: (value) {
                             calculateTotalAmount();
                           },
@@ -1517,13 +1594,22 @@ class _AddSubscriptionPageState extends State<AddSubscriptionPage> {
                       height: 50,
                       child: ElevatedButton(
                         onPressed: () {
-                          if(addSubscriptionController.selectedProduct=="Select Product"){
+                          if (addSubscriptionController.selectedProduct ==
+                              "Select Product") {
                             MyToast.toast("Please Select product");
-                          }else if (addSubscriptionController.productQuantityTextController.value.text.isEmpty){
+                          } else if (addSubscriptionController
+                              .productQuantityTextController
+                              .value
+                              .text
+                              .isEmpty) {
                             MyToast.toast("Please Select Quantity");
-                          }else if (addSubscriptionController.productPricingTextController.value.text.isEmpty){
+                          } else if (addSubscriptionController
+                              .productPricingTextController
+                              .value
+                              .text
+                              .isEmpty) {
                             MyToast.toast("Please Select Price");
-                          }else{
+                          } else {
                             addSubscriptionController.addProductDetail();
                             addSubscriptionController.calculateTotalAmount();
                             addSubscriptionController.clearAllProduct();
@@ -1555,7 +1641,7 @@ class _AddSubscriptionPageState extends State<AddSubscriptionPage> {
   }
 }
 
-void CreateCustomerPopup(BuildContext context) {
+void createCustomerPopup(BuildContext context) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -1586,14 +1672,13 @@ class ProductListItem extends StatelessWidget {
       required this.price,
       required this.productName,
       required this.totalPrice,
-      required this.index
-      });
+      required this.index});
 
   @override
   Widget build(BuildContext context) {
     final addSubscriptionController = Get.find<AddSubscriptionController>();
-  return Container(
-      padding: const EdgeInsets.only(left: 16.0,right: 16.0,bottom: 16),
+    return Container(
+      padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16),
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -1620,45 +1705,44 @@ class ProductListItem extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                     fontFamily: Constants.Sofiafontfamily),
               ),
-              PopupMenuButton<String>(
-                onSelected: (value) {
-                  if (value == 'remove') {
-                    // addSubscriptionController.removeAccountDetail(index);
-                  } else if (value == 'delete')
-                  {
-                    debugPrint("Delete option selected");
-                  }
-                },
-                icon: const Icon(Icons.more_vert),
-                itemBuilder: (BuildContext context) {
-                  return [
-                    const PopupMenuItem<String>(
-                      value: 'edit',
-                      child: Row(
-                        children: [
-                          Icon(Icons.edit_outlined,
-                              color: AppColors.appBlackColor),
-                          // Icon for edit
-                          SizedBox(width: 4),
-                          Text('Edit'),
-                        ],
+              Material(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                color: Colors.transparent,
+                child: PopupMenuButton<String>(
+                  icon: const Icon(Icons.more_vert),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  onSelected: (value) {
+                    if (value == 'remove') {
+                      addSubscriptionController.removeAccountDetail(index);
+                    }
+                  },
+                  itemBuilder: (BuildContext context) {
+                    return [
+                      PopupMenuItem<String>(
+                        value: 'remove',
+                        padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0),
+                        child: Row(
+                          children: [
+                            Image(
+                              image: AssetImage( ImageAssets.removeImage),
+                              width: 16,
+                              height: 16,
+                              color: AppColors.appBlackColor,
+                            ),
+                            const SizedBox(width: 4),
+                            const Text('Remove'),
+                          ],
+                        ),
                       ),
-                    ),
-                    const PopupMenuItem<String>(
-                      value: 'remove',
-                      child: Row(
-                        children: [
-                          Icon(Icons.delete_outline_outlined,
-                              color: AppColors.appBlackColor),
-                          // Icon for remove
-                          SizedBox(width: 4),
-                          Text('Remove'),
-                        ],
-                      ),
-                    ),
-                  ];
-                },
+                    ];
+                  },
+                ),
               ),
+
             ],
           ),
           Row(

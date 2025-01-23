@@ -35,7 +35,6 @@ class ResSinglePayment {
   late String lastUpdated;
   late int iV;
 
-
   ResSinglePayment(
       {required this.subscriptionInfo,
       required this.sId,
@@ -77,34 +76,37 @@ class ResSinglePayment {
     subscriptionInfo = (json['subscription_info'] != null
         ? new SubscriptionInfo.fromJson(json['subscription_info'])
         : null)!;
-    sId = json['_id']??0;
+    sId = json['_id'] ?? 0;
     businessId = (json['business_id'] != null
         ? new BusinessId.fromJson(json['business_id'])
         : null)!;
-    custId =
-        (json['cust_id'] != null ? new CustId.fromJson(json['cust_id']) : null)!;
-    bankId =
-        (json['bank_id'] != null ? new BankId.fromJson(json['bank_id']) : null)!;
-    checkNo = json['check_no']??0;
-    memo = json['memo']??"";
-    source = json['source']??"";
-    txnNumber = json['txn_number']??"";
-    randomNumber = json['random_number']??0;
-    payTotal = json['pay_total']??'';
-    isInvoice = json['is_invoice']??false;
-    isInvoicePreapproved = json['is_invoice_preapproved']??false;
-    payDue = json['pay_due']??"";
-    isSendInvoice = json['is_send_invoice']??false;
-    isSusbcription = json['is_susbcription']??false;
-    isSchedule = json['is_schedule']??false;
-    scheduleStart = json['schedule_start']??false;
-    subscriptionIsInvoice = json['subscription_is_invoice']??false;
-    subscriptionInvoicePreapproved = json['subscription_invoice_preapproved']??false;
-    verificationStatus = json['verification_status']??false;
-    verifyToken = json['verify_token']??"";
-    subscriptionType = json['subscription_type']??'';
-    payStatus = json['pay_status']??"";
-    payMode = json['pay_mode']??"";
+    custId = (json['cust_id'] != null
+        ? new CustId.fromJson(json['cust_id'])
+        : null)!;
+    bankId = (json['bank_id'] != null
+        ? new BankId.fromJson(json['bank_id'])
+        : null)!;
+    checkNo = json['check_no'] ?? 0;
+    memo = json['memo'] ?? "";
+    source = json['source'] ?? "";
+    txnNumber = json['txn_number'] ?? "";
+    randomNumber = json['random_number'] ?? 0;
+    payTotal = json['pay_total'] ?? '';
+    isInvoice = json['is_invoice'] ?? false;
+    isInvoicePreapproved = json['is_invoice_preapproved'] ?? false;
+    payDue = json['pay_due'] ?? "";
+    isSendInvoice = json['is_send_invoice'] ?? false;
+    isSusbcription = json['is_susbcription'] ?? false;
+    isSchedule = json['is_schedule'] ?? false;
+    scheduleStart = json['schedule_start'] ?? false;
+    subscriptionIsInvoice = json['subscription_is_invoice'] ?? false;
+    subscriptionInvoicePreapproved =
+        json['subscription_invoice_preapproved'] ?? false;
+    verificationStatus = json['verification_status'] ?? false;
+    verifyToken = json['verify_token'] ?? "";
+    subscriptionType = json['subscription_type'] ?? '';
+    payStatus = json['pay_status'] ?? "";
+    payMode = json['pay_mode'] ?? "";
     if (json['products'] != null) {
       products = <Products>[];
       json['products'].forEach((v) {
@@ -112,24 +114,24 @@ class ResSinglePayment {
       });
     }
     recurring = json['recurring'].cast<String>();
-    cancelReason = json['cancel_reason']??'';
-    downloadBymerchant = json['download_bymerchant']??false;
-    downloadByadmin = json['download_byadmin']??false;
-    isDeletedRequest = json['is_deleted_request']??false;
-    isDeleted = json['is_deleted']??false;
-    createdOn = json['created_on']??"";
-    lastUpdated = json['last_updated']??"";
-    iV = json['__v']??0;
+    cancelReason = json['cancel_reason'] ?? '';
+    downloadBymerchant = json['download_bymerchant'] ?? false;
+    downloadByadmin = json['download_byadmin'] ?? false;
+    isDeletedRequest = json['is_deleted_request'] ?? false;
+    isDeleted = json['is_deleted'] ?? false;
+    createdOn = json['created_on'] ?? "";
+    lastUpdated = json['last_updated'] ?? "";
+    iV = json['__v'] ?? 0;
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['subscription_info'] = subscriptionInfo!.toJson();
-      data['_id'] = sId;
+    data['_id'] = sId;
     data['business_id'] = businessId.toJson();
     data['cust_id'] = custId.toJson();
     data['bank_id'] = bankId.toJson();
-      data['check_no'] = checkNo;
+    data['check_no'] = checkNo;
     data['memo'] = memo;
     data['source'] = source;
     data['txn_number'] = this.txnNumber;
@@ -171,12 +173,13 @@ class SubscriptionInfo {
   late String subsCycle;
   late String end;
 
-  SubscriptionInfo({required this.start, required this.subsCycle, required this.end});
+  SubscriptionInfo(
+      {required this.start, required this.subsCycle, required this.end});
 
   SubscriptionInfo.fromJson(Map<String, dynamic> json) {
-    start = json['start']??'';
-    subsCycle = json['subs_cycle']??"";
-    end = json['end']??"";
+    start = json['start'] ?? '';
+    subsCycle = json['subs_cycle'] ?? "";
+    end = json['end'] ?? "";
   }
 
   Map<String, dynamic> toJson() {
@@ -189,8 +192,8 @@ class SubscriptionInfo {
 }
 
 class BusinessId {
- late BusinessDetail businessDetail;
- late String sId;
+  late BusinessDetail businessDetail;
+  late String sId;
 
   BusinessId({required this.businessDetail, required this.sId});
 
@@ -198,7 +201,7 @@ class BusinessId {
     businessDetail = (json['business_detail'] != null
         ? new BusinessDetail.fromJson(json['business_detail'])
         : null)!;
-    sId = json['_id']??0;
+    sId = json['_id'] ?? 0;
   }
 
   Map<String, dynamic> toJson() {
@@ -216,12 +219,15 @@ class BusinessDetail {
   late String businessEmail;
   late String businessPhone;
 
-  BusinessDetail({required this.businessName, required this.businessEmail, required this.businessPhone});
+  BusinessDetail(
+      {required this.businessName,
+      required this.businessEmail,
+      required this.businessPhone});
 
   BusinessDetail.fromJson(Map<String, dynamic> json) {
-    businessName = json['business_name']??"";
-    businessEmail = json['business_email']??"";
-    businessPhone = json['business_phone']??"";
+    businessName = json['business_name'] ?? "";
+    businessEmail = json['business_email'] ?? "";
+    businessPhone = json['business_phone'] ?? "";
   }
 
   Map<String, dynamic> toJson() {
@@ -234,14 +240,14 @@ class BusinessDetail {
 }
 
 class CustId {
- late Info info;
- late String sId;
+  late Info info;
+  late String sId;
 
   CustId({required this.info, required this.sId});
 
   CustId.fromJson(Map<String, dynamic> json) {
     info = (json['info'] != null ? new Info.fromJson(json['info']) : null)!;
-    sId = json['_id']??0;
+    sId = json['_id'] ?? 0;
   }
 
   Map<String, dynamic> toJson() {
@@ -262,9 +268,9 @@ class Info {
   Info({required this.custName, required this.mobile, required this.email});
 
   Info.fromJson(Map<String, dynamic> json) {
-    custName = json['cust_name']??"";
-    mobile = json['mobile']??"";
-    email = json['email']??"";
+    custName = json['cust_name'] ?? "";
+    mobile = json['mobile'] ?? "";
+    email = json['email'] ?? "";
   }
 
   Map<String, dynamic> toJson() {
@@ -304,15 +310,15 @@ class BankId {
     location = (json['location'] != null
         ? new Location.fromJson(json['location'])
         : null)!;
-    sId = json['_id']??0;
-    primary = json['primary']??false;
-    accountName = json['account_name']??"";
-    accountNumber = json['account_number']??"";
-    routingNumber = json['routing_number']??"";
-    bankName = json['bank_name']??"";
-    bankAddress = json['bank_address']??"";
-    bankCity = json['bank_city']??"";
-    bankState = json['bank_state']??"";
+    sId = json['_id'] ?? 0;
+    primary = json['primary'] ?? false;
+    accountName = json['account_name'] ?? "";
+    accountNumber = json['account_number'] ?? "";
+    routingNumber = json['routing_number'] ?? "";
+    bankName = json['bank_name'] ?? "";
+    bankAddress = json['bank_address'] ?? "";
+    bankCity = json['bank_city'] ?? "";
+    bankState = json['bank_state'] ?? "";
   }
 
   Map<String, dynamic> toJson() {
@@ -341,14 +347,18 @@ class Location {
   late String postalCode;
 
   Location(
-      {required this.address, required this.country, required this.city, required this.state, required this.postalCode});
+      {required this.address,
+      required this.country,
+      required this.city,
+      required this.state,
+      required this.postalCode});
 
   Location.fromJson(Map<String, dynamic> json) {
-    address = json['address']??"";
-    country = json['country']??"";
-    city = json['city']??"";
-    state = json['state']??"";
-    postalCode = json['postal_code']??"";
+    address = json['address'] ?? "";
+    country = json['country'] ?? "";
+    city = json['city'] ?? "";
+    state = json['state'] ?? "";
+    postalCode = json['postal_code'] ?? "";
   }
 
   Map<String, dynamic> toJson() {
@@ -368,15 +378,19 @@ class Products {
   late String paymentId;
   late int iV;
 
-  Products({required this.proDetail, required this.sId, required this.paymentId, required this.iV});
+  Products(
+      {required this.proDetail,
+      required this.sId,
+      required this.paymentId,
+      required this.iV});
 
   Products.fromJson(Map<String, dynamic> json) {
     proDetail = (json['pro_detail'] != null
         ? new ProDetail.fromJson(json['pro_detail'])
         : null)!;
-    sId = json['_id']??0;
-    paymentId = json['payment_id']??"";
-    iV = json['__v']??0;
+    sId = json['_id'] ?? 0;
+    paymentId = json['payment_id'] ?? "";
+    iV = json['__v'] ?? 0;
   }
 
   Map<String, dynamic> toJson() {
@@ -397,13 +411,17 @@ class ProDetail {
   late String proQty;
   late String proPrice;
 
-  ProDetail({required this.proId, required this.proName, required this.proQty, required this.proPrice});
+  ProDetail(
+      {required this.proId,
+      required this.proName,
+      required this.proQty,
+      required this.proPrice});
 
   ProDetail.fromJson(Map<String, dynamic> json) {
-    proId = json['pro_id']??"";
-    proName = json['pro_name']??"";
-    proQty = json['pro_qty']??"";
-    proPrice = json['pro_price']??"";
+    proId = json['pro_id'] ?? "";
+    proName = json['pro_name'] ?? "";
+    proQty = json['pro_qty'] ?? "";
+    proPrice = json['pro_price'] ?? "";
   }
 
   Map<String, dynamic> toJson() {

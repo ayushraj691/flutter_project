@@ -22,17 +22,24 @@ class AllTabController extends GetxController {
   List<ResAllFilterCustomerData> allCustomerDataList =
       List<ResAllFilterCustomerData>.empty(growable: true).obs;
 
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
 
   final buttonText = 'Select Date'.obs;
   final startDate = ''.obs;
   final endDate = ''.obs;
   final selectedIndex = 1.obs;
 
-
   AllTabController() {
     final DateTime now = DateTime.now();
-    final DateTime lastYear = DateTime(now.year - 1);
+    final DateTime last7Days = DateTime.now().subtract(const Duration(days: 7));
+    setDateRange(now, last7Days);
+  }
+  void setDateRange(DateTime end, DateTime start) {
+    endDate.value =  DateFormat.yMMMd().format(end);
+    startDate.value =  DateFormat.yMMMd().format(start);
+    buttonText.value =
+    '${DateFormat('dd MMM, yy').format(start)} - ${DateFormat('dd MMM, yy').format(end)}';
   }
 
   void callMethod() async {
@@ -93,45 +100,53 @@ class AllTabController extends GetxController {
               ),
             ),
             const SizedBox(height: 16),
-            // Zigzag Button Layout
             Column(
               children: [
-                // First Row
                 Row(
                   children: [
-                    _buildOptionButton("Today", 1,context),
-                    const SizedBox(width: 8),
-                    _buildOptionButton("Yesterday", 2,context),
+                    Expanded(
+                      child: _buildOptionButton("Today", 1, context),
+                    ),
+                    const SizedBox(width: 8), // Spacing between buttons
+                    Expanded(
+                      child: _buildOptionButton("Yesterday", 2, context),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8), // Vertical spacing between rows
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildOptionButton("Last 7 days", 3, context),
+                    ),
+                    const SizedBox(width: 8), // Spacing between buttons
+                    Expanded(
+                      child: _buildOptionButton("Last 30 days", 4, context),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 8),
-
-                // Second Row
                 Row(
                   children: [
-                    const Spacer(flex: 1),
-                    _buildOptionButton("Last 7 days", 3,context),
+                    Expanded(
+                      child: _buildOptionButton("Last Month", 5, context),
+                    ),
                     const SizedBox(width: 8),
-                    _buildOptionButton("Last 30 days", 4,context),
+                    Expanded(
+                      child: _buildOptionButton("Last 2 months", 6, context),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 8),
-                // Third Row
                 Row(
                   children: [
-                    _buildOptionButton("Last Month", 5,context),
+                    Expanded(
+                      child: _buildOptionButton("Last 6 months", 7, context),
+                    ),
                     const SizedBox(width: 8),
-                    _buildOptionButton("Last 2 months", 6,context),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                // Fourth Row
-                Row(
-                  children: [
-                    const Spacer(flex: 1),
-                    _buildOptionButton("Last 6 months", 7,context),
-                    const SizedBox(width: 8),
-                    _buildOptionButton("Last 1 year", 8,context),
+                    Expanded(
+                      child: _buildOptionButton("Last 1 year", 8, context),
+                    ),
                   ],
                 ),
               ],
@@ -140,13 +155,16 @@ class AllTabController extends GetxController {
             ElevatedButton.icon(
               onPressed: () {
                 Navigator.pop(context);
-                Get.to(RangeDatePickerScreen(onSubmit: (DateTime? pickStartDate, DateTime? pickEndDate) {
-                  buttonText.value = '${DateFormat.yMMMd().format(pickStartDate!)} - ${DateFormat.yMMMd().format(pickEndDate!)}';
-                  startDate.value = DateFormat.yMMMd().format(pickStartDate);
-                  endDate.value = DateFormat.yMMMd().format(pickEndDate);
-                  callMethod();
-                  Navigator.pop(context);
-                },));
+                Get.to(RangeDatePickerScreen(
+                  onSubmit: (DateTime? pickStartDate, DateTime? pickEndDate) {
+                    buttonText.value =
+                        '${DateFormat('dd MMM, yy').format(pickStartDate!)} - ${DateFormat('dd MMM, yy').format(pickEndDate!)}';
+                    startDate.value = DateFormat.yMMMd().format(pickStartDate);
+                    endDate.value = DateFormat.yMMMd().format(pickEndDate);
+                    callMethod();
+                    Navigator.pop(context);
+                  },
+                ));
               },
               icon: const Icon(Icons.calendar_today),
               label: const Text("Custom range"),
@@ -169,13 +187,13 @@ class AllTabController extends GetxController {
     );
   }
 
-  Widget _buildOptionButton(String label, int index,BuildContext context) {
+  Widget _buildOptionButton(String label, int index, BuildContext context) {
     return Expanded(
       flex: 4,
       child: GestureDetector(
         onTap: () {
-          selectedIndex.value= index;
-          _handleDateSelection(index,context);
+          selectedIndex.value = index;
+          _handleDateSelection(index, context);
         },
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
@@ -198,15 +216,13 @@ class AllTabController extends GetxController {
     );
   }
 
-  void _handleDateSelection(int index,BuildContext context) {
-
+  void _handleDateSelection(int index, BuildContext context) {
     DateTime now = DateTime.now();
     DateTime yesterday = DateTime.now().subtract(const Duration(days: 1));
     DateTime last7Days = DateTime.now().subtract(const Duration(days: 7));
     DateTime last30Days = DateTime.now().subtract(const Duration(days: 30));
     DateTime last6Months = DateTime.now().subtract(const Duration(days: 180));
     DateTime lastYear = DateTime.now().subtract(const Duration(days: 365));
-
 
     DateTime start, end;
 
@@ -238,7 +254,7 @@ class AllTabController extends GetxController {
         start = last6Months;
         end = now;
         break;
-      case 8: // Last 1 year
+      case 8:
         start = lastYear;
         end = now;
         break;
@@ -246,14 +262,14 @@ class AllTabController extends GetxController {
         return;
     }
 
-    buttonText.value = '${DateFormat.yMMMd().format(start)} - ${DateFormat.yMMMd().format(end)}';
+    buttonText.value =
+    '${DateFormat('dd MMM, yy').format(start)} - ${DateFormat('dd MMM, yy').format(end)}';
     startDate.value = DateFormat.yMMMd().format(start);
     endDate.value = DateFormat.yMMMd().format(end);
 
     callMethod();
     Navigator.pop(context);
   }
-
 
   Future<void> downloadCSV() async {
     try {
@@ -276,8 +292,9 @@ class AllTabController extends GetxController {
 
         csvRows.add([
           customer.info.custName,
-          GeneralMethods.maskAccountNumber(
-              customer.bankId.isNotEmpty ? customer.bankId[0].accountNumber : 'N/A'),
+          GeneralMethods.maskAccountNumber(customer.bankId.isNotEmpty
+              ? customer.bankId[0].accountNumber
+              : 'N/A'),
           customer.info.email,
           "$formattedDate | $formattedTime"
         ]);
@@ -290,7 +307,6 @@ class AllTabController extends GetxController {
         // Get the appropriate external storage directory
         Directory? downloadsDirectory = await getExternalStorageDirectory();
         if (downloadsDirectory != null) {
-
           final filePath = "${downloadsDirectory.path}/allCustomers.csv";
           final file = File(filePath);
 
@@ -347,7 +363,8 @@ class AllTabController extends GetxController {
       }
     } catch (e) {
       debugPrint("Exception while opening file: $e");
-      MyToast.toast("An error occurred while opening the file. Please try again.");
+      MyToast.toast(
+          "An error occurred while opening the file. Please try again.");
     }
   }
 
@@ -363,7 +380,6 @@ class AllTabController extends GetxController {
       },
     );
   }
-
 
   getAllCustomerData(
     String businessId,
@@ -398,7 +414,7 @@ class AllTabController extends GetxController {
             JsonUtils.parseCustomerData(res);
         allCustomerDataList.addAll(customerList);
         if (allCustomerDataList.isEmpty) {
-          MyToast.toast("No customers found.");
+          // MyToast.toast("No customers found.");
         }
       } else {
         MyToast.toast("Something went wrong. Please try again.");
@@ -412,7 +428,6 @@ class AllTabController extends GetxController {
     }
   }
 }
-
 
 class JsonUtils {
   static List<ResAllFilterCustomerData> parseCustomerData(

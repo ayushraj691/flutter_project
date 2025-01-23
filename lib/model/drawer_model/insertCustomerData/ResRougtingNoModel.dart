@@ -1,56 +1,58 @@
 class ResCheckRoutingNo {
- late String? message;
- late String? institutionStatusCode;
- late String? officeCode;
- late String? newRoutingNumber;
- late String? state;
- late String? city;
- late String? address;
- late String? rn;
- late String? changeDate;
- late String? recordTypeCode;
- late String? customerName;
- late String? telephone;
- late String? dataViewCode;
- late int? code;
- late String? routingNumber;
- late String? zip;
+  late String? message;
+  late String? institutionStatusCode;
+  late String? officeCode;
+  late String? newRoutingNumber;
+  late String? state;
+  late String? city;
+  late String? address;
+  late String? rn;
+  late String? changeDate;
+  late String? recordTypeCode;
+  late String? customerName;
+  late String? telephone;
+  late String? dataViewCode;
+  late int? code;
+  late String? routingNumber;
+  late String? zip;
 
   ResCheckRoutingNo(
       {required this.message,
-       required this.institutionStatusCode,
-       required this.officeCode,
-       required this.newRoutingNumber,
-       required this.state,
-       required this.city,
-       required this.address,
-       required this.rn,
-       required this.changeDate,
-       required this.recordTypeCode,
-       required this.customerName,
-       required this.telephone,
-       required this.dataViewCode,
-       required this.code,
-       required this.routingNumber,
-       required this.zip});
+      required this.institutionStatusCode,
+      required this.officeCode,
+      required this.newRoutingNumber,
+      required this.state,
+      required this.city,
+      required this.address,
+      required this.rn,
+      required this.changeDate,
+      required this.recordTypeCode,
+      required this.customerName,
+      required this.telephone,
+      required this.dataViewCode,
+      required this.code,
+      required this.routingNumber,
+      required this.zip});
 
   ResCheckRoutingNo.fromJson(Map<String, dynamic> json) {
-    message = json['message']??"";
-    institutionStatusCode = json['institution_status_code']??"";
-    officeCode = json['office_code']??"";
-    newRoutingNumber = json['new_routing_number']??"";
-    state = json['state']??"";
-    city = json['city']??"";
-    address = json['address']??"";
-    rn = json['rn']??"";
-    changeDate = json['change_date']??"";
-    recordTypeCode = json['record_type_code']??"";
-    customerName = json['customer_name']??"";
-    telephone = json['telephone']??"";
-    dataViewCode = json['data_view_code']??"";
-    code = (json['code'] is String) ? int.tryParse(json['code']) : json['code'] as int?;
-    routingNumber = json['routing_number']??"";
-    zip = json['zip']??"";
+    message = json['message'] ?? "";
+    institutionStatusCode = json['institution_status_code'] ?? "";
+    officeCode = json['office_code'] ?? "";
+    newRoutingNumber = json['new_routing_number'] ?? "";
+    state = json['state'] ?? "";
+    city = json['city'] ?? "";
+    address = json['address'] ?? "";
+    rn = json['rn'] ?? "";
+    changeDate = json['change_date'] ?? "";
+    recordTypeCode = json['record_type_code'] ?? "";
+    customerName = json['customer_name'] ?? "";
+    telephone = json['telephone'] ?? "";
+    dataViewCode = json['data_view_code'] ?? "";
+    code = (json['code'] is String)
+        ? int.tryParse(json['code'])
+        : json['code'] as int?;
+    routingNumber = json['routing_number'] ?? "";
+    zip = json['zip'] ?? "";
   }
 
   Map<String, dynamic> toJson() {

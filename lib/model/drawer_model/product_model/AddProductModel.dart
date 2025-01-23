@@ -6,7 +6,11 @@ class AddProductModel {
   late String productId;
 
   AddProductModel(
-      {required this.productName, required this.qantity, required this.price, required this.totalPrice,required this.productId});
+      {required this.productName,
+      required this.qantity,
+      required this.price,
+      required this.totalPrice,
+      required this.productId});
 
   AddProductModel.fromJson(Map<String, dynamic> json) {
     productName = json['product_name'];

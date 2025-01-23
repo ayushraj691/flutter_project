@@ -1,8 +1,8 @@
 import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_rx/get_rx.dart';
 import 'package:paycron/controller/variable_controller.dart';
 import 'package:paycron/model/drawer_model/insertCustomerData/ReqAddCustomer.dart';
 import 'package:paycron/model/drawer_model/insertCustomerData/ReqRougtingNoModel.dart';
@@ -15,10 +15,12 @@ import 'package:paycron/network/api_call/api_call.dart';
 import 'package:paycron/network/api_call/url.dart';
 import 'package:paycron/utils/common_variable.dart';
 import 'package:paycron/utils/my_toast.dart';
-import 'package:paycron/views/drawer_screen/customer/company_customer_main_screen.dart';
 
-class AddCustomerController extends GetxController{
+import 'all_controller.dart';
+
+class AddCustomerController extends GetxController {
   var variableController = Get.find<VariableController>();
+  var allTabController = Get.find<AllTabController>();
 
   ///----------------------Bank Detail Variables-----------------------
 
@@ -29,19 +31,23 @@ class AddCustomerController extends GetxController{
   RxString city = "".obs;
   String selectedCountryCode = '+1';
 
-
   ///----------------------Personal Detail Controller-----------------------
 
   final Rx<TextEditingController> nameController = TextEditingController().obs;
-  final Rx<TextEditingController> mobileController = TextEditingController().obs;
+  final Rx<TextEditingController> mobileController =
+      TextEditingController().obs;
   final Rx<TextEditingController> emailController = TextEditingController().obs;
-  final Rx<TextEditingController> descriptionController = TextEditingController().obs;
+  final Rx<TextEditingController> descriptionController =
+      TextEditingController().obs;
 
   ///---------------Account Details Controller----------------------
-  Rx<TextEditingController> accountHolderNameController = TextEditingController().obs;
+  Rx<TextEditingController> accountHolderNameController =
+      TextEditingController().obs;
   TextEditingController routingNumberController = TextEditingController();
-  Rx<TextEditingController> accountNumberController = TextEditingController().obs;
-  Rx<TextEditingController> confirmAccountNumberController = TextEditingController().obs;
+  Rx<TextEditingController> accountNumberController =
+      TextEditingController().obs;
+  Rx<TextEditingController> confirmAccountNumberController =
+      TextEditingController().obs;
   Rx<TextEditingController> suitAptController = TextEditingController().obs;
   Rx<TextEditingController> streetController = TextEditingController().obs;
   Rx<TextEditingController> countryController = TextEditingController().obs;
@@ -91,7 +97,6 @@ class AddCustomerController extends GetxController{
   final FocusNode cityFocusNode = FocusNode();
   final FocusNode zipcodeFocusNode = FocusNode();
 
-
   bool personValidation(BuildContext context) {
     if (nameController.value.text.isEmpty) {
       nameValid = false.obs;
@@ -113,7 +118,8 @@ class AddCustomerController extends GetxController{
       emailErrorMessage = 'Email is required';
       FocusScope.of(context).requestFocus(emailFocusNode);
       return false;
-    } else if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(emailController.value.text)) {
+    } else if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+        .hasMatch(emailController.value.text)) {
       emailValid = false.obs;
       emailErrorMessage = 'Invalid Email';
       FocusScope.of(context).requestFocus(emailFocusNode);
@@ -162,14 +168,17 @@ class AddCustomerController extends GetxController{
       confirmAccountErrorMessage = 'Confirm Account number is required';
       FocusScope.of(context).requestFocus(confirmAccountNumberFocusNode);
       return false;
-    } else if (confirmAccountNumberController.value.text != accountNumberController.value.text.trim()) {
+    } else if (confirmAccountNumberController.value.text !=
+        accountNumberController.value.text.trim()) {
       ConfirmAccountNumberValid = false.obs;
-      confirmAccountErrorMessage = 'Account Number & Confirm Account Number should be the same';
+      confirmAccountErrorMessage =
+          'Account Number & Confirm Account Number should be the same';
       FocusScope.of(context).requestFocus(confirmAccountNumberFocusNode);
       return false;
     } else if (confirmAccountNumberController.value.text.length > 15) {
       ConfirmAccountNumberValid = false.obs;
-      confirmAccountErrorMessage = 'Confirm Account number must be 15 digits or less';
+      confirmAccountErrorMessage =
+          'Confirm Account number must be 15 digits or less';
       FocusScope.of(context).requestFocus(confirmAccountNumberFocusNode);
       return false;
     } else if (suitAptController.value.text.isEmpty) {
@@ -203,12 +212,14 @@ class AddCustomerController extends GetxController{
       FocusScope.of(context).requestFocus(zipcodeFocusNode);
       return false;
     } else {
-      AccountNameValid = routingValid = AccountNumberValid = ConfirmAccountNumberValid = suitAptValid = streetValid = countrytValid = stateValid = cityValid = zipcodeValid = true.obs;
+      AccountNameValid = routingValid = AccountNumberValid =
+          ConfirmAccountNumberValid = suitAptValid = streetValid =
+              countrytValid = stateValid = cityValid = zipcodeValid = true.obs;
       return true;
     }
   }
 
-  bool isSwitched=false;
+  bool isSwitched = false;
   List<Items> accountDetailsList = List<Items>.empty(growable: true).obs;
   var isRoutingNumberValid = false.obs;
 
@@ -232,8 +243,7 @@ class AddCustomerController extends GetxController{
         city: cityController.value.text.trim(),
         country: countryController.value.text.trim(),
         state: stateController.value.text.trim(),
-        postalCode: zipController.value.text.trim())
-    );
+        postalCode: zipController.value.text.trim()));
   }
 
   void removeAccountDetail(int index) {
@@ -244,7 +254,7 @@ class AddCustomerController extends GetxController{
         accountDetailsList[0].primary = true;
       }
     } else {
-      print("Index out of range");
+      debugPrint("Index out of range");
     }
   }
 
@@ -259,7 +269,7 @@ class AddCustomerController extends GetxController{
     stateController.value.clear();
     cityController.value.clear();
     zipController.value.clear();
-    isSwitched=false;
+    isSwitched = false;
     bankName = "".obs;
     bankAddress = "".obs;
     postalCode = "".obs;
@@ -267,7 +277,6 @@ class AddCustomerController extends GetxController{
     city = "".obs;
     isRoutingNumberValid = false.obs;
   }
-
 
   void clearAllCustomer() {
     nameController.value.clear();
@@ -280,25 +289,30 @@ class AddCustomerController extends GetxController{
     variableController.loading.value = true;
     ReqAddcustomerDetails reqAddcustomerDetails = ReqAddcustomerDetails(
         description: descriptionController.value.text.trim(),
-        mobile:'${selectedCountryCode.replaceAll('+', '')}${mobileController.value.text.trim()}',
+        mobile:
+            '${selectedCountryCode.replaceAll('+', '')}${mobileController.value.text.trim()}',
         email: emailController.value.text.trim(),
         custName: nameController.value.text.trim(),
         items: accountDetailsList);
     debugPrint(json.encode(reqAddcustomerDetails.toJson()));
-    var res =
-        await ApiCall.postApiCalltoken(MyUrls.addCustomer, reqAddcustomerDetails,CommonVariable.token.value,CommonVariable.businessId.value);
+    var res = await ApiCall.postApiCalltoken(
+        MyUrls.addCustomer,
+        reqAddcustomerDetails,
+        CommonVariable.token.value,
+        CommonVariable.businessId.value);
     debugPrint("*************************");
     debugPrint("*****$res*******");
     debugPrint("*************************");
     if (res != null) {
       ResAddCustomer resAddCustomer = ResAddCustomer.fromJson(res);
-      if(resAddCustomer.code==200){
+      if (resAddCustomer.code == 200) {
         variableController.loading.value = false;
         MyToast.toast("customer add successful");
+        Get.back();
         accountDetailsList.clear();
         clearAllCustomer();
         clearAllAccount();
-        Get.off(const DrawerCustomerDetailScreen());
+        allTabController.callMethod();
       }
     } else {
       MyToast.toast("Something Went Wrong");
@@ -308,26 +322,27 @@ class AddCustomerController extends GetxController{
 
   validateRoutingNumber(String routingNumber) async {
     variableController.loading.value = true;
-    ReqCheckRoutingNo reqCheckRoutingNo = ReqCheckRoutingNo(routingNumber: routingNumber);
+    ReqCheckRoutingNo reqCheckRoutingNo =
+        ReqCheckRoutingNo(routingNumber: routingNumber);
     debugPrint(json.encode(reqCheckRoutingNo.toJson()));
-    var res =
-    await ApiCall.postApiCall(MyUrls.checkRoutingNumber, reqCheckRoutingNo,CommonVariable.token.value);
+    var res = await ApiCall.postApiCall(MyUrls.checkRoutingNumber,
+        reqCheckRoutingNo, CommonVariable.token.value);
     debugPrint("*************************");
     debugPrint("*****$res*******");
     debugPrint("*************************");
     if (res != null) {
       ResCheckRoutingNo resCheckRoutingNo = ResCheckRoutingNo.fromJson(res);
-      if(resCheckRoutingNo.code==200){
+      if (resCheckRoutingNo.code == 200) {
         isRoutingNumberValid = true.obs;
-        bankName.value = resCheckRoutingNo.customerName??"";
-        postalCode.value = resCheckRoutingNo.zip??"";
-        bankAddress.value = resCheckRoutingNo.address??"";
-        state.value = resCheckRoutingNo.state??"";
-        city.value = resCheckRoutingNo.city??"";
-        routingValid=true.obs;
-      }else{
-        routingErrorMessage=resCheckRoutingNo.message.toString();
-        routingValid=false.obs;
+        bankName.value = resCheckRoutingNo.customerName ?? "";
+        postalCode.value = resCheckRoutingNo.zip ?? "";
+        bankAddress.value = resCheckRoutingNo.address ?? "";
+        state.value = resCheckRoutingNo.state ?? "";
+        city.value = resCheckRoutingNo.city ?? "";
+        routingValid = true.obs;
+      } else {
+        routingErrorMessage = resCheckRoutingNo.message.toString();
+        routingValid = false.obs;
       }
     } else {
       MyToast.toast("Something Went Wrong");
@@ -335,7 +350,7 @@ class AddCustomerController extends GetxController{
     }
   }
 
-  addSingleAccount(String id) async{
+  addSingleAccount(String id) async {
     variableController.loading.value = true;
     ReqSingleAccount reqSingleAccount = ReqSingleAccount(
         primary: isSwitched,
@@ -349,15 +364,15 @@ class AddCustomerController extends GetxController{
         state: stateController.value.text.trim(),
         postalCode: zipController.value.text.trim());
     debugPrint(json.encode(reqSingleAccount.toJson()));
-    var res =
-    await ApiCall.postApiCalltoken(MyUrls.addSingleAccount, reqSingleAccount,CommonVariable.token.value,id);
+    var res = await ApiCall.postApiCalltoken(MyUrls.addSingleAccount,
+        reqSingleAccount, CommonVariable.token.value, id);
     debugPrint("*************************");
     debugPrint("*****$res*******");
     debugPrint("*************************");
     if (res != null) {
       variableController.loading.value = false;
       ResAddCustomer resAddCustomer = ResAddCustomer.fromJson(res);
-      if(resAddCustomer.code==200){
+      if (resAddCustomer.code == 200) {
         MyToast.toast("Account add successful");
         clearAllAccount();
       }
@@ -367,30 +382,31 @@ class AddCustomerController extends GetxController{
     }
   }
 
-  updateCustomerDetail(String id) async{
+  updateCustomerDetail(String id) async {
     variableController.loading.value = true;
-    ReqUpdateCustomer reqUpdateCustomer = ReqUpdateCustomer(info: Info(
-        custName: nameController.value.text,
-        description: descriptionController.value.text,
-        mobile: mobileController.value.text,
-        email: emailController.value.text));
+    ReqUpdateCustomer reqUpdateCustomer = ReqUpdateCustomer(
+        info: Info(
+            custName: nameController.value.text,
+            description: descriptionController.value.text,
+            mobile: mobileController.value.text,
+            email: emailController.value.text));
     debugPrint(json.encode(reqUpdateCustomer.toJson()));
-    var res =
-    await ApiCall.putApiCall(MyUrls.updateCustomer, reqUpdateCustomer,CommonVariable.token.value,id);
+    var res = await ApiCall.putApiCall(MyUrls.updateCustomer, reqUpdateCustomer,
+        CommonVariable.token.value, id);
     debugPrint("*************************");
     debugPrint("*****$res*******");
     debugPrint("*************************");
     if (res != null) {
       variableController.loading.value = false;
-        MyToast.toast("Updated Successful");
-        Get.back();
+      MyToast.toast("Updated Successful");
+      Get.back();
     } else {
       MyToast.toast("Something Went Wrong");
       variableController.loading.value = false;
     }
   }
 
-  updateBankDetail(String id,String bankId) async{
+  updateBankDetail(String id, String bankId) async {
     variableController.loading.value = true;
     ReqUpdateBankDetail reqUpdateBankDetail = ReqUpdateBankDetail(
         accountName: accountHolderNameController.value.text.trim(),
@@ -405,8 +421,8 @@ class AddCustomerController extends GetxController{
         routingNumber: routingNumberController.value.text.trim(),
         state: stateController.value.text.trim());
     debugPrint(json.encode(reqUpdateBankDetail.toJson()));
-    var res =
-    await ApiCall.putApiCall(MyUrls.updateCustomerBank, reqUpdateBankDetail,CommonVariable.token.value,bankId);
+    var res = await ApiCall.putApiCall(MyUrls.updateCustomerBank,
+        reqUpdateBankDetail, CommonVariable.token.value, bankId);
     debugPrint("*************************");
     debugPrint("*****$res*******");
     debugPrint("*************************");
@@ -419,6 +435,4 @@ class AddCustomerController extends GetxController{
       variableController.loading.value = false;
     }
   }
-
-
 }

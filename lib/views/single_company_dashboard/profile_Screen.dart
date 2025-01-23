@@ -7,6 +7,8 @@ import 'package:paycron/utils/common_variable.dart';
 import 'package:paycron/views/single_company_dashboard/merchant_screen/merchantProfile.dart';
 import 'package:paycron/views/single_company_dashboard/submember.dart';
 
+import '../../utils/string_constants.dart';
+
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
@@ -14,11 +16,8 @@ class ProfileScreen extends StatefulWidget {
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-
 class _ProfileScreenState extends State<ProfileScreen> {
-
   var merchantController = Get.find<MerchantController>();
-
 
   @override
   void initState() {
@@ -28,7 +27,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.initState();
   }
 
-  callMethod() async{
+  callMethod() async {
     await merchantController.getSingleUser(CommonVariable.userId.value);
   }
 
@@ -43,6 +42,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.appBackgroundColor,
         leading: IconButton(
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
           color: AppColors.appBlackColor,
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
@@ -50,28 +51,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
           },
         ),
         titleSpacing: 0,
-        title: Obx(() => Text(
-          CommonVariable.businessName.value==""?'Profile Detail': CommonVariable.businessName.value,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: AppColors.appTextColor,
-            fontFamily: 'Sofia Sans',
+        title: Obx(
+          () => Text(
+            CommonVariable.businessName.value == ""
+                ? 'Profile Detail'
+                : CommonVariable.businessName.value,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: AppColors.appTextColor,
+              fontFamily: Constants.Sofiafontfamily,
+            ),
           ),
-        ),),
+        ),
       ),
       body: Padding(
-        padding: EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            const Align(
+            Align(
               alignment: Alignment.topLeft,
               child: Padding(
-                padding: EdgeInsets.only(left: 12.0, top: 20, bottom: 10),
+                padding: const EdgeInsets.only(left: 12.0),
                 child: Text(
                   "Profile",
                   style: TextStyle(
-                    fontFamily: 'Sofia Sans',
+                    fontFamily: Constants.Sofiafontfamily,
                     color: AppColors.appBlackColor,
                     fontWeight: FontWeight.w600,
                     fontSize: 30,
@@ -98,10 +103,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           color: AppColors.appWhiteColor,
                           borderRadius: BorderRadius.circular(20.0),
                         ),
-                        textStyle: const TextStyle(
+                        textStyle: TextStyle(
                           fontSize: 14.0,
                           fontWeight: FontWeight.w600,
-                          fontFamily: 'Sofia Sans',
+                          fontFamily: Constants.Sofiafontfamily,
                         ),
                         tabTextColor: AppColors.appGreyColor,
                         selectedTabTextColor: AppColors.appTextColor,
@@ -111,17 +116,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         indicatorPadding: const EdgeInsets.all(5.0),
                         tabs: const [
-                          SegmentTab(
-                            label: 'Merchant Profile',
-                          ),
-                          SegmentTab(
-                            label: 'Submember',
-                          ),
+                          SegmentTab(label: 'Merchant Profile',),
+                          SegmentTab(label: 'Submember',),
                         ],
                       ),
                     ),
-                     const Expanded(
+                    const Expanded(
                       child: TabBarView(
+                        physics: NeverScrollableScrollPhysics(),
                         children: [
                           MerchantProfile(),
                           SubMember(),

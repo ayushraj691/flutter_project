@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -12,7 +13,6 @@ import 'package:paycron/model/drawer_model/product_model/ResAllFilterProductData
 import 'package:paycron/network/api_call/api_call.dart';
 import 'package:paycron/network/api_call/url.dart';
 import 'package:paycron/utils/common_variable.dart';
-import 'package:paycron/utils/general_methods.dart';
 import 'package:paycron/utils/my_toast.dart';
 import 'package:paycron/views/widgets/date_picker_page.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -28,7 +28,15 @@ class AllTabProductController extends GetxController {
 
   AllTabProductController() {
     final DateTime now = DateTime.now();
-    final DateTime lastYear = DateTime(now.year - 1);
+    final DateTime last7Days = DateTime.now().subtract(const Duration(days: 7));
+    setDateRange(now, last7Days);
+  }
+
+  void setDateRange(DateTime end, DateTime start) {
+    endDate.value =  DateFormat.yMMMd().format(end);
+    startDate.value =  DateFormat.yMMMd().format(start);
+    buttonText.value =
+    '${DateFormat('dd MMM, yy').format(start)} - ${DateFormat('dd MMM, yy').format(end)}';
   }
 
   void callMethod() async {
@@ -49,6 +57,7 @@ class AllTabProductController extends GetxController {
   }
 
   final selectedIndex = 1.obs;
+
   void showSelectDurationBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -90,45 +99,53 @@ class AllTabProductController extends GetxController {
               ),
             ),
             const SizedBox(height: 16),
-            // Zigzag Button Layout
             Column(
               children: [
-                // First Row
                 Row(
                   children: [
-                    _buildOptionButton("Today", 1,context),
-                    const SizedBox(width: 8),
-                    _buildOptionButton("Yesterday", 2,context),
+                    Expanded(
+                      child: _buildOptionButton("Today", 1, context),
+                    ),
+                    const SizedBox(width: 8), // Spacing between buttons
+                    Expanded(
+                      child: _buildOptionButton("Yesterday", 2, context),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8), // Vertical spacing between rows
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildOptionButton("Last 7 days", 3, context),
+                    ),
+                    const SizedBox(width: 8), // Spacing between buttons
+                    Expanded(
+                      child: _buildOptionButton("Last 30 days", 4, context),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 8),
-
-                // Second Row
                 Row(
                   children: [
-                    const Spacer(flex: 1),
-                    _buildOptionButton("Last 7 days", 3,context),
+                    Expanded(
+                      child: _buildOptionButton("Last Month", 5, context),
+                    ),
                     const SizedBox(width: 8),
-                    _buildOptionButton("Last 30 days", 4,context),
+                    Expanded(
+                      child: _buildOptionButton("Last 2 months", 6, context),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 8),
-                // Third Row
                 Row(
                   children: [
-                    _buildOptionButton("Last Month", 5,context),
+                    Expanded(
+                      child: _buildOptionButton("Last 6 months", 7, context),
+                    ),
                     const SizedBox(width: 8),
-                    _buildOptionButton("Last 2 months", 6,context),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                // Fourth Row
-                Row(
-                  children: [
-                    const Spacer(flex: 1),
-                    _buildOptionButton("Last 6 months", 7,context),
-                    const SizedBox(width: 8),
-                    _buildOptionButton("Last 1 year", 8,context),
+                    Expanded(
+                      child: _buildOptionButton("Last 1 year", 8, context),
+                    ),
                   ],
                 ),
               ],
@@ -137,13 +154,16 @@ class AllTabProductController extends GetxController {
             ElevatedButton.icon(
               onPressed: () {
                 Navigator.pop(context);
-                Get.to(RangeDatePickerScreen(onSubmit: (DateTime? pickStartDate, DateTime? pickEndDate) {
-                  buttonText.value = '${DateFormat.yMMMd().format(pickStartDate!)} - ${DateFormat.yMMMd().format(pickEndDate!)}';
-                  startDate.value = DateFormat.yMMMd().format(pickStartDate);
-                  endDate.value = DateFormat.yMMMd().format(pickEndDate);
-                  callMethod();
-                  Navigator.pop(context);
-                },));
+                Get.to(RangeDatePickerScreen(
+                  onSubmit: (DateTime? pickStartDate, DateTime? pickEndDate) {
+                    buttonText.value =
+                        '${DateFormat('dd MMM, yy').format(pickStartDate!)} - ${DateFormat('dd MMM, yy').format(pickEndDate!)}';
+                    startDate.value = DateFormat.yMMMd().format(pickStartDate);
+                    endDate.value = DateFormat.yMMMd().format(pickEndDate);
+                    callMethod();
+                    Navigator.pop(context);
+                  },
+                ));
               },
               icon: const Icon(Icons.calendar_today),
               label: const Text("Custom range"),
@@ -166,13 +186,13 @@ class AllTabProductController extends GetxController {
     );
   }
 
-  Widget _buildOptionButton(String label, int index,BuildContext context) {
+  Widget _buildOptionButton(String label, int index, BuildContext context) {
     return Expanded(
       flex: 4,
       child: GestureDetector(
         onTap: () {
-          selectedIndex.value= index;
-          _handleDateSelection(index,context);
+          selectedIndex.value = index;
+          _handleDateSelection(index, context);
         },
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
@@ -195,15 +215,13 @@ class AllTabProductController extends GetxController {
     );
   }
 
-  void _handleDateSelection(int index,BuildContext context) {
-
+  void _handleDateSelection(int index, BuildContext context) {
     DateTime now = DateTime.now();
     DateTime yesterday = DateTime.now().subtract(const Duration(days: 1));
     DateTime last7Days = DateTime.now().subtract(const Duration(days: 7));
     DateTime last30Days = DateTime.now().subtract(const Duration(days: 30));
     DateTime last6Months = DateTime.now().subtract(const Duration(days: 180));
     DateTime lastYear = DateTime.now().subtract(const Duration(days: 365));
-
 
     DateTime start, end;
 
@@ -243,7 +261,8 @@ class AllTabProductController extends GetxController {
         return;
     }
 
-    buttonText.value = '${DateFormat.yMMMd().format(start)} - ${DateFormat.yMMMd().format(end)}';
+    buttonText.value =
+    '${DateFormat('dd MMM, yy').format(start)} - ${DateFormat('dd MMM, yy').format(end)}';
     startDate.value = DateFormat.yMMMd().format(start);
     endDate.value = DateFormat.yMMMd().format(end);
 
@@ -251,9 +270,8 @@ class AllTabProductController extends GetxController {
     Navigator.pop(context);
   }
 
-
-
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
 
   Future<void> downloadCSV() async {
     try {
@@ -288,7 +306,6 @@ class AllTabProductController extends GetxController {
         // Get the appropriate external storage directory
         Directory? downloadsDirectory = await getExternalStorageDirectory();
         if (downloadsDirectory != null) {
-
           final filePath = "${downloadsDirectory.path}/allProduct.csv";
           final file = File(filePath);
 
@@ -345,7 +362,8 @@ class AllTabProductController extends GetxController {
       }
     } catch (e) {
       debugPrint("Exception while opening file: $e");
-      MyToast.toast("An error occurred while opening the file. Please try again.");
+      MyToast.toast(
+          "An error occurred while opening the file. Please try again.");
     }
   }
 
@@ -361,7 +379,6 @@ class AllTabProductController extends GetxController {
       },
     );
   }
-
 
   getAllProductData(
     String businessId,
@@ -400,7 +417,7 @@ class AllTabProductController extends GetxController {
         allProductDataList.addAll(customerList);
 
         if (allProductDataList.isEmpty) {
-          MyToast.toast("No Product found.");
+          // MyToast.toast("No Product found.");
         }
       } else {
         MyToast.toast("Something went wrong. Please try again.");
@@ -416,8 +433,7 @@ class AllTabProductController extends GetxController {
 }
 
 class JsonUtils {
-  static List<ResAllFilterProductData> parseCustomerData(
-      dynamic jsonResponse) {
+  static List<ResAllFilterProductData> parseCustomerData(dynamic jsonResponse) {
     if (jsonResponse is String) {
       final parsed = jsonDecode(jsonResponse);
       return (parsed['data'] as List)

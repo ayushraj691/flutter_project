@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -18,7 +19,7 @@ import 'package:paycron/utils/my_toast.dart';
 import 'package:paycron/views/widgets/date_picker_page.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-class NewVirtualTerminalController extends GetxController{
+class NewVirtualTerminalController extends GetxController {
 
   var variableController = Get.find<VariableController>();
 
@@ -53,8 +54,23 @@ class NewVirtualTerminalController extends GetxController{
       "$sortMap",
     );
   }
+
   final buttonText = 'Select Date'.obs;
   final selectedIndex = 1.obs;
+
+  NewVirtualTerminalController() {
+    final DateTime now = DateTime.now();
+    final DateTime last7Days = DateTime.now().subtract(const Duration(days: 7));
+    setDateRange(now, last7Days);
+  }
+  void setDateRange(DateTime end, DateTime start) {
+    endDate.value =  DateFormat.yMMMd().format(end);
+    startDate.value =  DateFormat.yMMMd().format(start);
+    buttonText.value =
+    '${DateFormat('dd MMM, yy').format(start)} - ${DateFormat('dd MMM, yy').format(end)}';
+  }
+
+
   void showSelectDurationBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -63,122 +79,136 @@ class NewVirtualTerminalController extends GetxController{
           top: Radius.circular(20),
         ),
       ),
-      builder: (_) => Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(
-            top: Radius.circular(20),
-          ),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Top drag handle
-            Center(
-              child: Container(
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade400,
-                  borderRadius: BorderRadius.circular(2),
-                ),
+      builder: (_) =>
+          Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(
+                top: Radius.circular(20),
               ),
             ),
-            const SizedBox(height: 16),
-            // Title
-            const Text(
-              "Select duration",
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 16),
-            // Zigzag Button Layout
-            Column(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // First Row
-                Row(
+                // Top drag handle
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade400,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                // Title
+                const Text(
+                  "Select duration",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Column(
                   children: [
-                    _buildOptionButton("Today", 1,context),
-                    const SizedBox(width: 8),
-                    _buildOptionButton("Yesterday", 2,context),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildOptionButton("Today", 1, context),
+                        ),
+                        const SizedBox(width: 8), // Spacing between buttons
+                        Expanded(
+                          child: _buildOptionButton("Yesterday", 2, context),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8), // Vertical spacing between rows
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildOptionButton("Last 7 days", 3, context),
+                        ),
+                        const SizedBox(width: 8), // Spacing between buttons
+                        Expanded(
+                          child: _buildOptionButton("Last 30 days", 4, context),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildOptionButton("Last Month", 5, context),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: _buildOptionButton("Last 2 months", 6, context),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildOptionButton("Last 6 months", 7, context),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: _buildOptionButton("Last 1 year", 8, context),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
-                const SizedBox(height: 8),
-
-                // Second Row
-                Row(
-                  children: [
-                    const Spacer(flex: 1),
-                    _buildOptionButton("Last 7 days", 3,context),
-                    const SizedBox(width: 8),
-                    _buildOptionButton("Last 30 days", 4,context),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                // Third Row
-                Row(
-                  children: [
-                    _buildOptionButton("Last Month", 5,context),
-                    const SizedBox(width: 8),
-                    _buildOptionButton("Last 2 months", 6,context),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                // Fourth Row
-                Row(
-                  children: [
-                    const Spacer(flex: 1),
-                    _buildOptionButton("Last 6 months", 7,context),
-                    const SizedBox(width: 8),
-                    _buildOptionButton("Last 1 year", 8,context),
-                  ],
+                const SizedBox(height: 16),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Get.to(RangeDatePickerScreen(
+                      onSubmit: (DateTime? pickStartDate,
+                          DateTime? pickEndDate) {
+                        buttonText.value = '${DateFormat('dd MMM, yy').format(
+                            pickStartDate!)} - ${DateFormat('dd MMM, yy').format(
+                            pickEndDate!)}';
+                        startDate.value =
+                            DateFormat.yMMMd().format(pickStartDate);
+                        endDate.value = DateFormat.yMMMd().format(pickEndDate);
+                        callMethod();
+                        Navigator.pop(context);
+                      },));
+                  },
+                  icon: const Icon(Icons.calendar_today),
+                  label: const Text("Custom range"),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 14,
+                    ),
+                    minimumSize: const Size(double.infinity, 48), // Full width
+                  ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
-            ElevatedButton.icon(
-              onPressed: () {
-                Navigator.pop(context);
-                Get.to(RangeDatePickerScreen(onSubmit: (DateTime? pickStartDate, DateTime? pickEndDate) {
-                  buttonText.value = '${DateFormat.yMMMd().format(pickStartDate!)} - ${DateFormat.yMMMd().format(pickEndDate!)}';
-                  startDate.value = DateFormat.yMMMd().format(pickStartDate);
-                  endDate.value = DateFormat.yMMMd().format(pickEndDate);
-                  callMethod();
-                  Navigator.pop(context);
-                },));
-              },
-              icon: const Icon(Icons.calendar_today),
-              label: const Text("Custom range"),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 14,
-                ),
-                minimumSize: const Size(double.infinity, 48), // Full width
-              ),
-            ),
-          ],
-        ),
-      ),
+          ),
     );
   }
 
-  Widget _buildOptionButton(String label, int index,BuildContext context) {
+  Widget _buildOptionButton(String label, int index, BuildContext context) {
     return Expanded(
       flex: 4,
       child: GestureDetector(
         onTap: () {
-          selectedIndex.value= index;
-          _handleDateSelection(index,context);
+          selectedIndex.value = index;
+          _handleDateSelection(index, context);
         },
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
@@ -201,8 +231,7 @@ class NewVirtualTerminalController extends GetxController{
     );
   }
 
-  void _handleDateSelection(int index,BuildContext context) {
-
+  void _handleDateSelection(int index, BuildContext context) {
     DateTime now = DateTime.now();
     DateTime yesterday = DateTime.now().subtract(const Duration(days: 1));
     DateTime last7Days = DateTime.now().subtract(const Duration(days: 7));
@@ -249,7 +278,8 @@ class NewVirtualTerminalController extends GetxController{
         return;
     }
 
-    buttonText.value = '${DateFormat.yMMMd().format(start)} - ${DateFormat.yMMMd().format(end)}';
+    buttonText.value =
+    '${DateFormat('dd MMM, yy').format(start)} - ${DateFormat('dd MMM, yy').format(end)}';
     startDate.value = DateFormat.yMMMd().format(start);
     endDate.value = DateFormat.yMMMd().format(end);
 
@@ -258,12 +288,19 @@ class NewVirtualTerminalController extends GetxController{
   }
 
 
-
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+
   Future<void> downloadCSV() async {
     try {
       final List<List<String>> csvRows = [
-        ['TransactionId', 'Customer', 'Amount', 'Created On', 'Source','status']
+        [
+          'TransactionId',
+          'Customer',
+          'Amount',
+          'Created On',
+          'Source',
+          'status'
+        ]
       ];
 
       for (var transaction in newVirtualTerminalList) {
@@ -296,7 +333,6 @@ class NewVirtualTerminalController extends GetxController{
         // Get the appropriate external storage directory
         Directory? downloadsDirectory = await getExternalStorageDirectory();
         if (downloadsDirectory != null) {
-
           final filePath = "${downloadsDirectory.path}/newVirtualTerminal.csv";
           final file = File(filePath);
 
@@ -353,7 +389,8 @@ class NewVirtualTerminalController extends GetxController{
       }
     } catch (e) {
       debugPrint("Exception while opening file: $e");
-      MyToast.toast("An error occurred while opening the file. Please try again.");
+      MyToast.toast(
+          "An error occurred while opening the file. Please try again.");
     }
   }
 
@@ -372,10 +409,13 @@ class NewVirtualTerminalController extends GetxController{
 
   verifyData(List<String> ids) async {
     variableController.loading.value = true;
-    ReqVerifyTransactionData reqVerifyTransactionData = ReqVerifyTransactionData(ids: ids);
+    ReqVerifyTransactionData reqVerifyTransactionData = ReqVerifyTransactionData(
+        ids: ids);
     debugPrint(json.encode(reqVerifyTransactionData.toJson()));
     var res =
-    await ApiCall.postApiCalltoken(MyUrls.verifyPayment, reqVerifyTransactionData,CommonVariable.token.value,CommonVariable.businessId.value);
+    await ApiCall.postApiCalltoken(
+        MyUrls.verifyPayment, reqVerifyTransactionData,
+        CommonVariable.token.value, CommonVariable.businessId.value);
     debugPrint("*************************");
     debugPrint("*****$res*******");
     debugPrint("*************************");
@@ -389,10 +429,13 @@ class NewVirtualTerminalController extends GetxController{
 
   deleteData(List<String> ids) async {
     variableController.loading.value = true;
-    ReqDeleteTransactionData reqDeleteTransactionData = ReqDeleteTransactionData(ids: ids);
+    ReqDeleteTransactionData reqDeleteTransactionData = ReqDeleteTransactionData(
+        ids: ids);
     debugPrint(json.encode(reqDeleteTransactionData.toJson()));
     var res =
-    await ApiCall.postApiCalltoken(MyUrls.deletePayment, reqDeleteTransactionData,CommonVariable.token.value,CommonVariable.businessId.value);
+    await ApiCall.postApiCalltoken(
+        MyUrls.deletePayment, reqDeleteTransactionData,
+        CommonVariable.token.value, CommonVariable.businessId.value);
     debugPrint("*************************");
     debugPrint("*****$res*******");
     debugPrint("*************************");
@@ -406,10 +449,13 @@ class NewVirtualTerminalController extends GetxController{
 
   downloadData(List<String> ids) async {
     variableController.loading.value = true;
-    ReqDeleteTransactionData reqDeleteTransactionData = ReqDeleteTransactionData(ids: ids);
+    ReqDeleteTransactionData reqDeleteTransactionData = ReqDeleteTransactionData(
+        ids: ids);
     debugPrint(json.encode(reqDeleteTransactionData.toJson()));
     var res =
-    await ApiCall.postApiCallDownload(MyUrls.downloadPayment, reqDeleteTransactionData,CommonVariable.token.value,CommonVariable.businessId.value);
+    await ApiCall.postApiCallDownload(
+        MyUrls.downloadPayment, reqDeleteTransactionData,
+        CommonVariable.token.value, CommonVariable.businessId.value);
     debugPrint("*************************");
     debugPrint("*****$res*******");
     debugPrint("*************************");
@@ -421,14 +467,12 @@ class NewVirtualTerminalController extends GetxController{
     }
   }
 
-  getAllNewVirtualTerminalData(
-      String businessId,
+  getAllNewVirtualTerminalData(String businessId,
       String query,
       String argument,
       String startDate,
       String endDate,
-      String sort,
-      ) async {
+      String sort,) async {
     variableController.loading.value = true;
 
     try {
@@ -459,7 +503,7 @@ class NewVirtualTerminalController extends GetxController{
         newVirtualTerminalList.addAll(customerList);
 
         if (newVirtualTerminalList.isEmpty) {
-          MyToast.toast("No Transaction found.");
+          // MyToast.toast("No Transaction found.");
         }
       } else {
         MyToast.toast("Something went wrong. Please try again.");
@@ -475,8 +519,7 @@ class NewVirtualTerminalController extends GetxController{
 }
 
 class JsonUtils {
-  static List<ResTransactionDetail> parseCustomerData(
-      dynamic jsonResponse) {
+  static List<ResTransactionDetail> parseCustomerData(dynamic jsonResponse) {
     if (jsonResponse is String) {
       final parsed = jsonDecode(jsonResponse);
       return (parsed['data'] as List)

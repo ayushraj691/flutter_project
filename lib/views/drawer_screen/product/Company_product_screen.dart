@@ -11,6 +11,8 @@ import 'package:paycron/views/drawer_screen/product/add_product_screen.dart';
 import 'package:paycron/views/drawer_screen/product/all_screen_product.dart';
 import 'package:paycron/views/widgets/common_button.dart';
 
+import '../../../utils/string_constants.dart';
+
 class CompanyDetailProductScreen extends StatefulWidget {
   const CompanyDetailProductScreen({super.key});
 
@@ -19,8 +21,27 @@ class CompanyDetailProductScreen extends StatefulWidget {
       _CompanyDetailProductScreenState();
 }
 
-class _CompanyDetailProductScreenState
-    extends State<CompanyDetailProductScreen> {
+class _CompanyDetailProductScreenState extends State<CompanyDetailProductScreen>
+    with SingleTickerProviderStateMixin {
+  late TabController tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    tabController = TabController(length: 3, vsync: this);
+
+    // Listen to tab changes and rebuild UI
+    tabController.addListener(() {
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    tabController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -32,6 +53,8 @@ class _CompanyDetailProductScreenState
         backgroundColor: AppColors.appBackgroundColor,
         leading: IconButton(
           color: AppColors.appBlackColor,
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
@@ -53,17 +76,30 @@ class _CompanyDetailProductScreenState
           Padding(
             padding: const EdgeInsets.all(4.0),
             child: InkWell(
-              onTap: () => {Get.to(const BusinessProfileScreen())
+              onTap: () {
+                Get.to(const BusinessProfileScreen());
               },
-              child: CircleAvatar(
-                radius: screenHeight / 45,
-                backgroundImage: AssetImage(ImageAssets.profile),
+              splashColor: Colors.transparent,
+              highlightColor: Colors.transparent,
+              child:  Container(
+                width: screenHeight / 20,
+                height: screenHeight / 20,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                    image: AssetImage(ImageAssets.profile),
+                    fit: BoxFit.fill,
+                    alignment: Alignment.center,
+                  ),
+                ),
               ),
             ),
           ),
           Builder(
             builder: (BuildContext context) => IconButton(
               icon: Image.asset(ImageAssets.closeDrawer),
+              splashColor: Colors.transparent,
+              highlightColor: Colors.transparent,
               onPressed: () {
                 Scaffold.of(context).openEndDrawer();
               },
@@ -78,7 +114,7 @@ class _CompanyDetailProductScreenState
             const Align(
               alignment: Alignment.topLeft,
               child: Padding(
-                padding: EdgeInsets.only(left: 12.0, top: 20, bottom: 10),
+                padding: EdgeInsets.only(left: 16.0, top: 10, bottom: 10),
                 child: Text(
                   "Products",
                   style: TextStyle(
@@ -90,24 +126,39 @@ class _CompanyDetailProductScreenState
                 ),
               ),
             ),
-            DefaultTabController(
-              length: 3,
+            Container(
+              margin: const EdgeInsets.only(left: 12.0,right: 12.0),
               child: Column(
                 children: [
-                  const TabBar(
+                  TabBar(
+                    controller: tabController,
                     labelColor: AppColors.appBlueColor,
                     unselectedLabelColor: Colors.grey,
-                    indicatorColor: AppColors.appBlueColor,
-                    tabs: [
+                    indicatorPadding: EdgeInsets.zero,
+                    labelStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w600,fontFamily: Constants.Sofiafontfamily),
+                    indicator: const BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          color: AppColors.appBlueColor,
+                          width: 1.0,
+                        ),
+                      ),
+                    ),
+                    tabs: const [
                       Tab(text: 'All'),
                       Tab(text: 'Active'),
                       Tab(text: 'Inactive'),
                     ],
                   ),
+                  Container(
+                    height: 1,
+                    color: Colors.grey.withOpacity(0.4),
+                  ),
                   SizedBox(
-                    height: screenHeight *0.72,
-                    child: const TabBarView(
-                      children: [
+                    height: MediaQuery.of(context).size.height * 0.73,
+                    child: TabBarView(
+                      controller: tabController,
+                      children: const [
                         AllTabProduct(),
                         ActiveTabProduct(),
                         InactiveTabProduct(),
@@ -116,7 +167,7 @@ class _CompanyDetailProductScreenState
                   ),
                 ],
               ),
-            ),
+            )
           ],
         ),
       ),

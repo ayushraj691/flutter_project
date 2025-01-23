@@ -44,13 +44,13 @@ class FundSourcedetail {
       required this.iV});
 
   FundSourcedetail.fromJson(Map<String, dynamic> json) {
-    sId = json['_id']??"";
-    name = json['name']??"";
-    details = json['details']??"";
-    isDeleted = json['is_deleted']??false;
-    createdOn = json['created_on']??"";
-    lastUpdated = json['last_updated']??"";
-    iV = json['__v']??0;
+    sId = json['_id'] ?? "";
+    name = json['name'] ?? "";
+    details = json['details'] ?? "";
+    isDeleted = json['is_deleted'] ?? false;
+    createdOn = json['created_on'] ?? "";
+    lastUpdated = json['last_updated'] ?? "";
+    iV = json['__v'] ?? 0;
   }
 
   Map<String, dynamic> toJson() {
@@ -111,27 +111,27 @@ class Allfunds {
       required this.iV});
 
   Allfunds.fromJson(Map<String, dynamic> json) {
-    sId = json['_id']??"";
+    sId = json['_id'] ?? "";
     fundId =
         json['fund_id'] != null ? new FundId.fromJson(json['fund_id']) : null;
-    businessId = json['business_id']??"";
-    txnNumber = json['txn_number']??"";
+    businessId = json['business_id'] ?? "";
+    txnNumber = json['txn_number'] ?? "";
     credit = json['credit'];
     debit = json['debit'];
     balance = json['balance'];
-    status = json['status']??false;
+    status = json['status'] ?? false;
     addedNow = json['added_now'];
     addedAmount = json['added_amount'];
-    proofPay = json['proof_pay']??"";
-    fundSource = json['fund_source']??"";
-    description = json['description']??"";
-    remarks = json['remarks']??"";
+    proofPay = json['proof_pay'] ?? "";
+    fundSource = json['fund_source'] ?? "";
+    description = json['description'] ?? "";
+    remarks = json['remarks'] ?? "";
     fundType = json['fund_type'];
-    isApproved = json['is_approved']??"";
-    lastUpdated = json['last_updated']??"";
-    isDeleted = json['is_deleted']??false;
-    isCreated = json['is_created']??"";
-    iV = json['__v']??0;
+    isApproved = json['is_approved'] ?? "";
+    lastUpdated = json['last_updated'] ?? "";
+    isDeleted = json['is_deleted'] ?? false;
+    isCreated = json['is_created'] ?? "";
+    iV = json['__v'] ?? 0;
   }
 
   Map<String, dynamic> toJson() {
@@ -163,9 +163,9 @@ class Allfunds {
 }
 
 class FundId {
- late String sId;
- late var available;
- late var current;
+  late String sId;
+  late var available;
+  late var current;
 
   FundId({required this.sId, required this.available, required this.current});
 

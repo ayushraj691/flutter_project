@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:paycron/controller/variable_controller.dart';
@@ -12,22 +13,31 @@ import 'package:paycron/utils/common_variable.dart';
 import 'package:paycron/utils/my_toast.dart';
 import 'package:paycron/views/drawer_screen/invoice/invoice_main_screen.dart';
 
-class AddInvoiceController extends GetxController{
+import 'all_invoice_controller.dart';
 
+class AddInvoiceController extends GetxController {
   var variableController = Get.find<VariableController>();
+  var allInvoiceTabController = Get.find<AllInvoiceController>();
 
-  Rx<TextEditingController> customerListTextController = TextEditingController().obs;
-  Rx<TextEditingController> productQuantityTextController = TextEditingController(text: "1").obs;
-  Rx<TextEditingController> productPricingTextController = TextEditingController().obs;
-  Rx<TextEditingController> checkNumberTextController = TextEditingController().obs;
+
+  Rx<TextEditingController> customerListTextController =
+      TextEditingController().obs;
+  Rx<TextEditingController> productQuantityTextController =
+      TextEditingController(text: "1").obs;
+  Rx<TextEditingController> productPricingTextController =
+      TextEditingController().obs;
+  Rx<TextEditingController> checkNumberTextController =
+      TextEditingController().obs;
   Rx<TextEditingController> memoTextController = TextEditingController().obs;
-  Rx<TextEditingController> accountNumberTextController = TextEditingController().obs;
-  Rx<TextEditingController> paymentDueController = TextEditingController(text: "01").obs;
+  Rx<TextEditingController> accountNumberTextController =
+      TextEditingController().obs;
+  Rx<TextEditingController> paymentDueController =
+      TextEditingController(text: "01").obs;
 
   TextEditingController searchController = TextEditingController();
   TextEditingController productSearchController = TextEditingController();
-  List<ResCustomerList> filteredCustomers =  <ResCustomerList>[].obs;
-  List<ResProductList> filteredProduct =  <ResProductList>[].obs;
+  List<ResCustomerList> filteredCustomers = <ResCustomerList>[].obs;
+  List<ResProductList> filteredProduct = <ResProductList>[].obs;
   bool isDropdownOpen = false;
   RxBool isProductDropdownOpen = false.obs;
   RxBool isVisibilityAccount = false.obs;
@@ -36,7 +46,7 @@ class AddInvoiceController extends GetxController{
   String selectedProduct = "Select Product";
   int selectedCount = 0;
   RxInt productSelectedCount = 0.obs;
-  var productTotalAmount =0.0.obs;
+  var productTotalAmount = 0.0.obs;
   var totalAmount = 0.0.obs;
   String customerId = '';
   String productId = '';
@@ -44,16 +54,18 @@ class AddInvoiceController extends GetxController{
 
   Rx<bool> checkNoValid = true.obs;
   Rx<bool> memoValid = true.obs;
+
   // Rx<bool> productValid = true.obs;
   //
   var checkNoErrorMessage = null;
   var memoErrorMessage = null;
+
   // var productErrorMessage = null;
   //
   final FocusNode checkNoFocusNode = FocusNode();
   final FocusNode memoFocusNode = FocusNode();
-  // final FocusNode productFocusNode = FocusNode();
 
+  // final FocusNode productFocusNode = FocusNode();
 
   bool customerValidation(BuildContext context) {
     if (checkNumberTextController.value.text.isEmpty) {
@@ -61,7 +73,7 @@ class AddInvoiceController extends GetxController{
       checkNoErrorMessage = 'CheckNo is required';
       FocusScope.of(context).requestFocus(checkNoFocusNode);
       return false;
-    }else if (memoTextController.value.text.isEmpty) {
+    } else if (memoTextController.value.text.isEmpty) {
       memoValid = false.obs;
       memoErrorMessage = 'Memo is required';
       FocusScope.of(context).requestFocus(memoFocusNode);
@@ -79,14 +91,12 @@ class AddInvoiceController extends GetxController{
   List<ResProductList> productList =
       List<ResProductList>.empty(growable: true).obs;
 
-  final List<BankId> allBankList =
-      <BankId>[].obs;
+  final List<BankId> allBankList = <BankId>[].obs;
 
   List<AddProductModel> addProductList =
       List<AddProductModel>.empty(growable: true).obs;
 
-  List<Items> finalProductList =
-      List<Items>.empty(growable: true).obs;
+  List<Items> finalProductList = List<Items>.empty(growable: true).obs;
 
   void calculateTotalAmount() {
     double total = 0.0;
@@ -96,7 +106,7 @@ class AddInvoiceController extends GetxController{
     totalAmount.value = total; // Reactive update
   }
 
-  void addProductDetail(){
+  void addProductDetail() {
     addProductList.add(AddProductModel(
         productName: selectedProduct,
         qantity: productQuantityTextController.value.text,
@@ -111,7 +121,7 @@ class AddInvoiceController extends GetxController{
     }
   }
 
-  void clearAllCustomer(){
+  void clearAllCustomer() {
     selectedCustomer = "Select Customer";
     memoTextController.value.clear();
     customerListTextController.value.clear();
@@ -127,7 +137,7 @@ class AddInvoiceController extends GetxController{
   void clearAllProduct() {
     productPricingTextController.value.clear();
     selectedProduct = "Select Product";
-    productTotalAmount =0.0.obs;
+    productTotalAmount = 0.0.obs;
     isVisibilityAccount = false.obs;
     isDropdownOpen = false;
   }
@@ -136,7 +146,8 @@ class AddInvoiceController extends GetxController{
     variableController.loading.value = true;
     debugPrint("************$id*************");
     try {
-      var res = await ApiCall.getApiCall(MyUrls.customerList, CommonVariable.token.value, id);
+      var res = await ApiCall.getApiCall(
+          MyUrls.customerList, CommonVariable.token.value, id);
       debugPrint("*************************");
       debugPrint("API Response: $res");
       debugPrint("*************************");
@@ -160,7 +171,6 @@ class AddInvoiceController extends GetxController{
         MyToast.toast("Failed to retrieve customer data");
         variableController.loading.value = false;
       }
-
     } catch (e) {
       debugPrint("Error occurred: $e");
       MyToast.toast("Something Went Wrong: ${e.toString()}");
@@ -181,13 +191,12 @@ class AddInvoiceController extends GetxController{
     }
   }
 
-
-
   Future<void> getProductList(String id) async {
     variableController.loading.value = true;
     debugPrint("************$id*************");
     try {
-      var res = await ApiCall.getApiCall(MyUrls.productList, CommonVariable.token.value, id);
+      var res = await ApiCall.getApiCall(
+          MyUrls.productList, CommonVariable.token.value, id);
 
       debugPrint("*************************");
       debugPrint("API Response: $res");
@@ -201,7 +210,6 @@ class AddInvoiceController extends GetxController{
           for (var item in res) {
             var productListData = ResProductList.fromJson(item);
             productList.add(productListData);
-
           }
         } else if (res is Map<String, dynamic>) {
           var productListData = ResProductList.fromJson(res);
@@ -220,7 +228,6 @@ class AddInvoiceController extends GetxController{
     }
   }
 
-
   insertInvoicePaymentData() async {
     variableController.loading.value = true;
     ReqInvoicePayment reqInvoicePayment = ReqInvoicePayment(
@@ -230,25 +237,27 @@ class AddInvoiceController extends GetxController{
         payTotal: totalAmount.value,
         checkNo: checkNumberTextController.value.text,
         memo: memoTextController.value.text,
-        isInvoice: selectedInvoiceMode==2?true:false,
-        isInvoicePreapproved: selectedInvoiceMode==1?true:false,
+        isInvoice: selectedInvoiceMode == 2 ? true : false,
+        isInvoicePreapproved: selectedInvoiceMode == 1 ? true : false,
         items: finalProductList);
     debugPrint(json.encode(reqInvoicePayment.toJson()));
-    var res =
-    await ApiCall.postApiCalltoken(MyUrls.addInvoice, reqInvoicePayment,CommonVariable.token.value,CommonVariable.businessId.value);
+    var res = await ApiCall.postApiCalltoken(
+        MyUrls.addInvoice,
+        reqInvoicePayment,
+        CommonVariable.token.value,
+        CommonVariable.businessId.value);
     debugPrint("*************************");
     debugPrint("*****$res*******");
     debugPrint("*************************");
     if (res != null) {
       variableController.loading.value = false;
       clearAllCustomer();
-      Get.off(const InvoiceScreen());
+      Get.back();
+      allInvoiceTabController.callMethod();
     } else {
       MyToast.toast("Something Went Wrong");
       variableController.loading.value = false;
       Get.back();
     }
   }
-
-
 }

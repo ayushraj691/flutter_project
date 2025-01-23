@@ -4,12 +4,12 @@ class ResAllRecentTransaction {
   late BusinessId businessId;
   late String custId;
   late String bankId;
-  late int checkNo;
+  late var checkNo;
   late String memo;
   late String source;
   late String txnNumber;
-  late int randomNumber;
-  late int payTotal;
+  late var randomNumber;
+  late var payTotal;
   late bool isInvoice;
   late bool isInvoicePreapproved;
   late String payDue;
@@ -25,6 +25,7 @@ class ResAllRecentTransaction {
   late String payStatus;
   late String payMode;
   late List<String> products;
+
   // late List<Null> recurring;
   late bool cancelReason;
   late bool downloadBymerchant;
@@ -37,57 +38,60 @@ class ResAllRecentTransaction {
 
   ResAllRecentTransaction(
       {required this.subscriptionInfo,
-        required this.sId,
-        required this.businessId,
-        required this.custId,
-        required this.bankId,
-        required this.checkNo,
-        required this.memo,
-        required this.source,
-        required this.txnNumber,
-        required this.randomNumber,
-        required this.payTotal,
-        required this.isInvoice,
-        required this.isInvoicePreapproved,
-        required this.payDue,
-        required this.isSendInvoice,
-        required this.isSusbcription,
-        required this.isSchedule,
-        required this.scheduleStart,
-        required this.subscriptionIsInvoice,
-        required this.subscriptionInvoicePreapproved,
-        required this.verificationStatus,
-        required this.verifyToken,
-        required this.subscriptionType,
-        required this.payStatus,
-        required this.payMode,
-        required this.products,
-        // required this.recurring,
-        required this.cancelReason,
-        required this.downloadBymerchant,
-        required this.downloadByadmin,
-        required this.isDeletedRequest,
-        required this.isDeleted,
-        required this.createdOn,
-        required this.lastUpdated,
-        required this.iV});
+      required this.sId,
+      required this.businessId,
+      required this.custId,
+      required this.bankId,
+      required this.checkNo,
+      required this.memo,
+      required this.source,
+      required this.txnNumber,
+      required this.randomNumber,
+      required this.payTotal,
+      required this.isInvoice,
+      required this.isInvoicePreapproved,
+      required this.payDue,
+      required this.isSendInvoice,
+      required this.isSusbcription,
+      required this.isSchedule,
+      required this.scheduleStart,
+      required this.subscriptionIsInvoice,
+      required this.subscriptionInvoicePreapproved,
+      required this.verificationStatus,
+      required this.verifyToken,
+      required this.subscriptionType,
+      required this.payStatus,
+      required this.payMode,
+      required this.products,
+      // required this.recurring,
+      required this.cancelReason,
+      required this.downloadBymerchant,
+      required this.downloadByadmin,
+      required this.isDeletedRequest,
+      required this.isDeleted,
+      required this.createdOn,
+      required this.lastUpdated,
+      required this.iV});
 
   ResAllRecentTransaction.fromJson(Map<String, dynamic> json) {
     subscriptionInfo = (json['subscription_info'] != null
         ? SubscriptionInfo.fromJson(json['subscription_info'])
-        : SubscriptionInfo(subsCycle: "", start: "", end: "")); // Default object if null
+        : SubscriptionInfo(
+            subsCycle: "", start: "", end: "")); // Default object if null
     sId = json['_id'] ?? "";
     businessId = (json['business_id'] != null
         ? BusinessId.fromJson(json['business_id'])
-        : BusinessId(businessDetail: BusinessDetail(businessName: ""), sId: "")); // Default object if null
+        : BusinessId(
+            businessDetail: BusinessDetail(businessName: ""),
+            sId: "")); // Default object if null
     custId = json['cust_id'] ?? "";
     bankId = json['bank_id'] ?? "";
-    checkNo = json['check_no'] ?? 0;
+    checkNo = json['check_no'];
     memo = json['memo'] ?? "";
     source = json['source'] ?? "";
     txnNumber = json['txn_number'] ?? "";
-    randomNumber = json['random_number'] ?? 0;
-    payTotal = json['pay_total'] ?? 0;
+    randomNumber = json['random_number'];
+    payTotal = json['pay_total'];
     isInvoice = json['is_invoice'] ?? false;
     isInvoicePreapproved = json['is_invoice_preapproved'] ?? false;
     payDue = json['pay_due'] ?? "";
@@ -96,13 +100,15 @@ class ResAllRecentTransaction {
     isSchedule = json['is_schedule'] ?? false;
     scheduleStart = json['schedule_start'] ?? false;
     subscriptionIsInvoice = json['subscription_is_invoice'] ?? false;
-    subscriptionInvoicePreapproved = json['subscription_invoice_preapproved'] ?? false;
+    subscriptionInvoicePreapproved =
+        json['subscription_invoice_preapproved'] ?? false;
     verificationStatus = json['verification_status'] ?? false;
     verifyToken = json['verify_token'] ?? "";
     subscriptionType = json['subscription_type'] ?? "";
     payStatus = json['pay_status'] ?? "";
     payMode = json['pay_mode'] ?? "";
-    products = json['products'] != null ? List<String>.from(json['products']) : [];
+    products =
+        json['products'] != null ? List<String>.from(json['products']) : [];
     cancelReason = json['cancel_reason'] ?? false;
     downloadBymerchant = json['download_bymerchant'] ?? false;
     downloadByadmin = json['download_byadmin'] ?? false;
@@ -166,12 +172,13 @@ class SubscriptionInfo {
   late String start;
   late String end;
 
-  SubscriptionInfo({required this.subsCycle, required this.start, required this.end});
+  SubscriptionInfo(
+      {required this.subsCycle, required this.start, required this.end});
 
   SubscriptionInfo.fromJson(Map<String, dynamic> json) {
-    subsCycle = json['subs_cycle']??"";
-    start = json['start']??"";
-    end = json['end']??"";
+    subsCycle = json['subs_cycle'] ?? "";
+    start = json['start'] ?? "";
+    end = json['end'] ?? "";
   }
 
   Map<String, dynamic> toJson() {
@@ -193,7 +200,7 @@ class BusinessId {
     businessDetail = (json['business_detail'] != null
         ? new BusinessDetail.fromJson(json['business_detail'])
         : null)!;
-    sId = json['_id']??"";
+    sId = json['_id'] ?? "";
   }
 
   Map<String, dynamic> toJson() {
@@ -212,7 +219,7 @@ class BusinessDetail {
   BusinessDetail({required this.businessName});
 
   BusinessDetail.fromJson(Map<String, dynamic> json) {
-    businessName = json['business_name']??"";
+    businessName = json['business_name'] ?? "";
   }
 
   Map<String, dynamic> toJson() {

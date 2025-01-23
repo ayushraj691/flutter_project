@@ -1,11 +1,9 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CommonVariable {
-
-  static var  email = "".obs;
+  static var email = "".obs;
   static var verified = "".obs;
   static var userId = "".obs;
   static var userName = "".obs;
@@ -32,9 +30,7 @@ class CommonVariable {
     businessCheck.value = preferences.getInt("BUSINESS_CHECK") ?? 0;
     token.value = preferences.getString("TOKEN") ?? "";
 
-    debugPrint("From Common Variable ${email.value} and ${role.value} and ${userId.value}");
+    debugPrint(
+        "From Common Variable ${email.value} and ${role.value} and ${userId.value}");
   }
-
-
-
 }

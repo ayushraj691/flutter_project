@@ -17,13 +17,11 @@ import 'package:paycron/utils/my_toast.dart';
 import 'package:paycron/views/widgets/date_picker_page.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-class ReimbursementVirtualTerminalController extends GetxController{
-
+class ReimbursementVirtualTerminalController extends GetxController {
   var variableController = Get.find<VariableController>();
 
   List<ResTransactionDetail> reimbursementVirtualTerminalList =
       List<ResTransactionDetail>.empty(growable: true).obs;
-
 
   final startDate = ''.obs;
   final endDate = ''.obs;
@@ -47,9 +45,24 @@ class ReimbursementVirtualTerminalController extends GetxController{
       "$sortMap",
     );
   }
+
   final buttonText = 'Select Date'.obs;
 
   final selectedIndex = 1.obs;
+
+  ReimbursementVirtualTerminalController() {
+    final DateTime now = DateTime.now();
+    final DateTime last7Days = DateTime.now().subtract(const Duration(days: 7));
+    setDateRange(now, last7Days);
+  }
+  void setDateRange(DateTime end, DateTime start) {
+    endDate.value =  DateFormat.yMMMd().format(end);
+    startDate.value =  DateFormat.yMMMd().format(start);
+    buttonText.value =
+    '${DateFormat('dd MMM, yy').format(start)} - ${DateFormat('dd MMM, yy').format(end)}';
+  }
+
+
   void showSelectDurationBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -91,45 +104,53 @@ class ReimbursementVirtualTerminalController extends GetxController{
               ),
             ),
             const SizedBox(height: 16),
-            // Zigzag Button Layout
             Column(
               children: [
-                // First Row
                 Row(
                   children: [
-                    _buildOptionButton("Today", 1,context),
-                    const SizedBox(width: 8),
-                    _buildOptionButton("Yesterday", 2,context),
+                    Expanded(
+                      child: _buildOptionButton("Today", 1, context),
+                    ),
+                    const SizedBox(width: 8), // Spacing between buttons
+                    Expanded(
+                      child: _buildOptionButton("Yesterday", 2, context),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8), // Vertical spacing between rows
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildOptionButton("Last 7 days", 3, context),
+                    ),
+                    const SizedBox(width: 8), // Spacing between buttons
+                    Expanded(
+                      child: _buildOptionButton("Last 30 days", 4, context),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 8),
-
-                // Second Row
                 Row(
                   children: [
-                    const Spacer(flex: 1),
-                    _buildOptionButton("Last 7 days", 3,context),
+                    Expanded(
+                      child: _buildOptionButton("Last Month", 5, context),
+                    ),
                     const SizedBox(width: 8),
-                    _buildOptionButton("Last 30 days", 4,context),
+                    Expanded(
+                      child: _buildOptionButton("Last 2 months", 6, context),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 8),
-                // Third Row
                 Row(
                   children: [
-                    _buildOptionButton("Last Month", 5,context),
+                    Expanded(
+                      child: _buildOptionButton("Last 6 months", 7, context),
+                    ),
                     const SizedBox(width: 8),
-                    _buildOptionButton("Last 2 months", 6,context),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                // Fourth Row
-                Row(
-                  children: [
-                    const Spacer(flex: 1),
-                    _buildOptionButton("Last 6 months", 7,context),
-                    const SizedBox(width: 8),
-                    _buildOptionButton("Last 1 year", 8,context),
+                    Expanded(
+                      child: _buildOptionButton("Last 1 year", 8, context),
+                    ),
                   ],
                 ),
               ],
@@ -138,13 +159,16 @@ class ReimbursementVirtualTerminalController extends GetxController{
             ElevatedButton.icon(
               onPressed: () {
                 Navigator.pop(context);
-                Get.to(RangeDatePickerScreen(onSubmit: (DateTime? pickStartDate, DateTime? pickEndDate) {
-                  buttonText.value = '${DateFormat.yMMMd().format(pickStartDate!)} - ${DateFormat.yMMMd().format(pickEndDate!)}';
-                  startDate.value = DateFormat.yMMMd().format(pickStartDate);
-                  endDate.value = DateFormat.yMMMd().format(pickEndDate);
-                  callMethod();
-                  Navigator.pop(context);
-                },));
+                Get.to(RangeDatePickerScreen(
+                  onSubmit: (DateTime? pickStartDate, DateTime? pickEndDate) {
+                    buttonText.value =
+                        '${DateFormat('dd MMM, yy').format(pickStartDate!)} - ${DateFormat('dd MMM, yy').format(pickEndDate!)}';
+                    startDate.value = DateFormat.yMMMd().format(pickStartDate);
+                    endDate.value = DateFormat.yMMMd().format(pickEndDate);
+                    callMethod();
+                    Navigator.pop(context);
+                  },
+                ));
               },
               icon: const Icon(Icons.calendar_today),
               label: const Text("Custom range"),
@@ -167,13 +191,13 @@ class ReimbursementVirtualTerminalController extends GetxController{
     );
   }
 
-  Widget _buildOptionButton(String label, int index,BuildContext context) {
+  Widget _buildOptionButton(String label, int index, BuildContext context) {
     return Expanded(
       flex: 4,
       child: GestureDetector(
         onTap: () {
-          selectedIndex.value= index;
-          _handleDateSelection(index,context);
+          selectedIndex.value = index;
+          _handleDateSelection(index, context);
         },
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
@@ -196,15 +220,13 @@ class ReimbursementVirtualTerminalController extends GetxController{
     );
   }
 
-  void _handleDateSelection(int index,BuildContext context) {
-
+  void _handleDateSelection(int index, BuildContext context) {
     DateTime now = DateTime.now();
     DateTime yesterday = DateTime.now().subtract(const Duration(days: 1));
     DateTime last7Days = DateTime.now().subtract(const Duration(days: 7));
     DateTime last30Days = DateTime.now().subtract(const Duration(days: 30));
     DateTime last6Months = DateTime.now().subtract(const Duration(days: 180));
     DateTime lastYear = DateTime.now().subtract(const Duration(days: 365));
-
 
     DateTime start, end;
 
@@ -244,7 +266,8 @@ class ReimbursementVirtualTerminalController extends GetxController{
         return;
     }
 
-    buttonText.value = '${DateFormat.yMMMd().format(start)} - ${DateFormat.yMMMd().format(end)}';
+    buttonText.value =
+    '${DateFormat('dd MMM, yy').format(start)} - ${DateFormat('dd MMM, yy').format(end)}';
     startDate.value = DateFormat.yMMMd().format(start);
     endDate.value = DateFormat.yMMMd().format(end);
 
@@ -252,12 +275,20 @@ class ReimbursementVirtualTerminalController extends GetxController{
     Navigator.pop(context);
   }
 
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
 
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
   Future<void> downloadCSV() async {
     try {
       final List<List<String>> csvRows = [
-        ['TransactionId', 'Customer', 'Amount', 'Created On', 'Source','status']
+        [
+          'TransactionId',
+          'Customer',
+          'Amount',
+          'Created On',
+          'Source',
+          'status'
+        ]
       ];
 
       for (var transaction in reimbursementVirtualTerminalList) {
@@ -289,8 +320,8 @@ class ReimbursementVirtualTerminalController extends GetxController{
       if (status.isGranted) {
         Directory? downloadsDirectory = await getExternalStorageDirectory();
         if (downloadsDirectory != null) {
-
-          final filePath = "${downloadsDirectory.path}/ reimbursementVirtualTerminal.csv";
+          final filePath =
+              "${downloadsDirectory.path}/ reimbursementVirtualTerminal.csv";
           final file = File(filePath);
 
           await file.writeAsString(csvString);
@@ -346,7 +377,8 @@ class ReimbursementVirtualTerminalController extends GetxController{
       }
     } catch (e) {
       debugPrint("Exception while opening file: $e");
-      MyToast.toast("An error occurred while opening the file. Please try again.");
+      MyToast.toast(
+          "An error occurred while opening the file. Please try again.");
     }
   }
 
@@ -364,13 +396,13 @@ class ReimbursementVirtualTerminalController extends GetxController{
   }
 
   getReimbursementVirtualTerminalData(
-      String businessId,
-      String query,
-      String argument,
-      String startDate,
-      String endDate,
-      String sort,
-      ) async {
+    String businessId,
+    String query,
+    String argument,
+    String startDate,
+    String endDate,
+    String sort,
+  ) async {
     variableController.loading.value = true;
 
     try {
@@ -397,11 +429,11 @@ class ReimbursementVirtualTerminalController extends GetxController{
         variableController.loading.value = false;
 
         List<ResTransactionDetail> customerList =
-        JsonUtils.parseCustomerData(res);
+            JsonUtils.parseCustomerData(res);
         reimbursementVirtualTerminalList.addAll(customerList);
 
         if (reimbursementVirtualTerminalList.isEmpty) {
-          MyToast.toast("No Transaction found.");
+          // MyToast.toast("No Transaction found.");
         }
       } else {
         MyToast.toast("Something went wrong. Please try again.");
@@ -417,8 +449,7 @@ class ReimbursementVirtualTerminalController extends GetxController{
 }
 
 class JsonUtils {
-  static List<ResTransactionDetail> parseCustomerData(
-      dynamic jsonResponse) {
+  static List<ResTransactionDetail> parseCustomerData(dynamic jsonResponse) {
     if (jsonResponse is String) {
       final parsed = jsonDecode(jsonResponse);
       return (parsed['data'] as List)
@@ -432,5 +463,4 @@ class JsonUtils {
       throw Exception('Unexpected data format');
     }
   }
-
 }

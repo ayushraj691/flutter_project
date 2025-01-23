@@ -15,7 +15,7 @@ class ReqSubscriptionPayment {
 
   ReqSubscriptionPayment(
       {required this.custId,
-     required this.bankId,
+      required this.bankId,
       required this.payTotal,
       required this.checkNo,
       required this.memo,
@@ -29,20 +29,21 @@ class ReqSubscriptionPayment {
       required this.items});
 
   ReqSubscriptionPayment.fromJson(Map<String, dynamic> json) {
-    custId = json['cust_id']??"";
-    bankId = json['bank_id']??"";
-    payTotal = json['pay_total']??0;
-    checkNo = json['check_no']??"";
-    memo = json['memo']??"";
-    subscriptionIsInvoice = json['subscription_is_invoice']??false;
-    subscriptionInvoicePreapproved = json['subscription_invoice_preapproved']??false;
-    isSusbcription = json['is_susbcription']??false;
-    subscriptionType = json['subscription_type']??"";
-    start = json['start']??"";
-    subsCycle = json['subs_cycle']??"";
-    end = json['end']??"";
+    custId = json['cust_id'] ?? "";
+    bankId = json['bank_id'] ?? "";
+    payTotal = json['pay_total'] ?? 0;
+    checkNo = json['check_no'] ?? "";
+    memo = json['memo'] ?? "";
+    subscriptionIsInvoice = json['subscription_is_invoice'] ?? false;
+    subscriptionInvoicePreapproved =
+        json['subscription_invoice_preapproved'] ?? false;
+    isSusbcription = json['is_susbcription'] ?? false;
+    subscriptionType = json['subscription_type'] ?? "";
+    start = json['start'] ?? "";
+    subsCycle = json['subs_cycle'] ?? "";
+    end = json['end'] ?? "";
     if (json['items'] != null) {
-      items =<Items>[];
+      items = <Items>[];
       json['items'].forEach((v) {
         items.add(Items.fromJson(v));
       });
@@ -88,12 +89,12 @@ class Items {
       required this.proPrice});
 
   Items.fromJson(Map<String, dynamic> json) {
-    id = json['id']??"";
-    sId = json['_id']??"";
-    proId = json['pro_id']??"";
-    proName = json['pro_name']??"";
-    proQty = json['pro_qty']??"";
-    proPrice = json['pro_price']??"";
+    id = json['id'] ?? "";
+    sId = json['_id'] ?? "";
+    proId = json['pro_id'] ?? "";
+    proName = json['pro_name'] ?? "";
+    proQty = json['pro_qty'] ?? "";
+    proPrice = json['pro_price'] ?? "";
   }
 
   Map<String, dynamic> toJson() {

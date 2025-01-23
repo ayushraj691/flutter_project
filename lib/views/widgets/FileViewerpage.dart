@@ -1,10 +1,10 @@
-import 'package:flutter/material.dart';
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
-import 'dart:io';
-
 import 'package:paycron/utils/color_constants.dart';
 
 class FileViewerPage extends StatefulWidget {
@@ -42,7 +42,8 @@ class _FileViewerPageState extends State<FileViewerPage> {
           await file.writeAsBytes(document);
 
           setState(() {
-            _pdfPath = file.path; // Initialize _pdfPath after file is downloaded
+            _pdfPath =
+                file.path; // Initialize _pdfPath after file is downloaded
           });
         } else {
           throw Exception("Failed to load PDF file.");
@@ -86,9 +87,7 @@ class _FileViewerPageState extends State<FileViewerPage> {
           padding: const EdgeInsets.all(16.0),
           child: AnimatedSwitcher(
             duration: Duration(milliseconds: 300),
-            child: isPdf
-                ? _buildPdfViewer()
-                : _buildImageViewer(),
+            child: isPdf ? _buildPdfViewer() : _buildImageViewer(),
           ),
         ),
       ),
@@ -98,34 +97,38 @@ class _FileViewerPageState extends State<FileViewerPage> {
   Widget _buildPdfViewer() {
     return _pdfPath != null
         ? Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.3),
-            blurRadius: 0,
-            offset: Offset(0, 0), // Shadow position
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: PDFView(
-          filePath: _pdfPath,
-        ),
-      ),
-    )
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.3),
+                  blurRadius: 0,
+                  offset: Offset(0, 0), // Shadow position
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: PDFView(
+                filePath: _pdfPath,
+              ),
+            ),
+          )
         : Center(child: CircularProgressIndicator()); // Loading state
   }
 
   Widget _buildImageViewer() {
     return CachedNetworkImage(
       imageUrl: widget.fileUrl,
-      placeholder: (context, url) => Center(child: CircularProgressIndicator()), // Loading indicator
-      errorWidget: (context, url, error) => Center(child: Icon(Icons.error, size: 40, color: Colors.red)),
-      fadeInDuration: Duration(milliseconds: 300), // Smooth fade-in effect
-      fit: BoxFit.contain, // Fit the image inside the viewer
+      placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+      // Loading indicator
+      errorWidget: (context, url, error) =>
+          Center(child: Icon(Icons.error, size: 40, color: Colors.red)),
+      fadeInDuration: Duration(milliseconds: 300),
+      // Smooth fade-in effect
+      fit: BoxFit.contain,
+      // Fit the image inside the viewer
       width: double.infinity,
       height: double.infinity,
       fadeInCurve: Curves.easeIn, // Smooth animation

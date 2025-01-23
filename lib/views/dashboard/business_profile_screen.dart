@@ -15,7 +15,6 @@ class BusinessProfileScreen extends StatefulWidget {
 }
 
 class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
-
   bool isBusinessDetailsExpanded = true;
   bool isPricipalOwnerDetailsExpanded = true;
   bool isBankDetailsExpanded = true;
@@ -26,7 +25,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
 
   @override
   void initState() {
-    Future.delayed(const Duration(seconds: 0),(){
+    Future.delayed(const Duration(seconds: 0), () {
       callMethod();
     });
     super.initState();
@@ -48,6 +47,8 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
         backgroundColor: AppColors.appBackgroundColor,
         leading: IconButton(
           color: AppColors.appBlackColor,
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
@@ -65,131 +66,136 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
         ),
       ),
       body: variableController.loading.value
-          ? Center(child:Padding(
-        padding: EdgeInsets.all(8.0),
-        child: Container(
-          alignment: Alignment.center,
-          height: 50,
-          width: 50,
-          child: Lottie.asset(
-              "assets/lottie/half-circles.json"),
-        ),
-      )):
-      SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              Align(
-                alignment: Alignment.topLeft,
-                child: Padding(
-                  padding: EdgeInsets.only(left: 12.0, top: 20, bottom: 10),
-                  child: Text(
-                    "Business Profile",
-                    style: TextStyle(
-                      fontFamily: Constants.Sofiafontfamily,
-                      color: AppColors.appBlackColor,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 30,
-                    ),
-                  ),
-                ),
+          ? Center(
+              child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                alignment: Alignment.center,
+                height: 50,
+                width: 50,
+                child: Lottie.asset("assets/lottie/half-circles.json"),
               ),
-              Padding(
-                padding: EdgeInsets.only(left: 12.0, top: 20, bottom: 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            ))
+          : SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
                   children: [
-                    Text(
-                      "Details Summary",
-                      style: TextStyle(
-                        fontFamily: Constants.Sofiafontfamily,
-                        color: AppColors.appBlackColor,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
+                    Align(
+                      alignment: Alignment.topLeft,
+                      child: Padding(
+                        padding:
+                            const EdgeInsets.only(left: 12.0),
+                        child: Text(
+                          "Business Profile",
+                          style: TextStyle(
+                            fontFamily: Constants.Sofiafontfamily,
+                            color: AppColors.appBlackColor,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 30,
+                          ),
+                        ),
                       ),
                     ),
                     Padding(
-                      padding: EdgeInsets.only(right: 12.0, top: 20, bottom: 10),
+                      padding: const EdgeInsets.only(left: 12.0, top: 16,bottom: 10),
                       child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Image.asset(
-                            ImageAssets.EditIcon,
-                            width: 24,
-                            height: 24,
-                            color: AppColors.appBlueColor,
-                          ),
-                          const SizedBox(width: 4.0),
                           Text(
-                            "Send edit request",
+                            "Details Summary",
                             style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 14.0,
                               fontFamily: Constants.Sofiafontfamily,
-                              color: AppColors.appBlueColor,
+                              color: AppColors.appBlackColor,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                right: 12.0, bottom: 6),
+                            child: Row(
+                              children: [
+                                Image.asset(
+                                  ImageAssets.EditIcon,
+                                  width: 24,
+                                  height: 24,
+                                  color: AppColors.appBlueColor,
+                                ),
+                                const SizedBox(width: 4.0),
+                                Text(
+                                  "Send edit request",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 14.0,
+                                    fontFamily: Constants.Sofiafontfamily,
+                                    color: AppColors.appBlueColor,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
                       ),
                     ),
+                    _buildCustomerDetailCollapsibleSection(
+                      title: "Business Details",
+                      isExpanded: isBusinessDetailsExpanded,
+                      onToggle: () {
+                        setState(() {
+                          isBusinessDetailsExpanded =
+                              !isBusinessDetailsExpanded;
+                        });
+                      },
+                      child: _buildBusinessDetailsCard(),
+                    ),
+                    const SizedBox(
+                      height: 8.0,
+                    ),
+                    _buildCustomerDetailCollapsibleSection(
+                      title: "Plan Detail",
+                      isExpanded: isPricipalOwnerDetailsExpanded,
+                      onToggle: () {
+                        setState(() {
+                          isPricipalOwnerDetailsExpanded =
+                              !isPricipalOwnerDetailsExpanded;
+                        });
+                      },
+                      child: _buildPrincipalOwnerDetailsCard(),
+                    ),
+                    const SizedBox(
+                      height: 8.0,
+                    ),
+                    _buildCustomerDetailCollapsibleSection(
+                      title: "Bank Details",
+                      isExpanded: isBankDetailsExpanded,
+                      onToggle: () {
+                        setState(() {
+                          isBankDetailsExpanded = !isBankDetailsExpanded;
+                        });
+                      },
+                      child: _buildBankDetailsCard(),
+                    ),
+                    const SizedBox(
+                      height: 8.0,
+                    ),
+                    _buildCustomerDetailCollapsibleSection(
+                      title: "Support Information",
+                      isExpanded: isSupportDetailsExpanded,
+                      onToggle: () {
+                        setState(() {
+                          isSupportDetailsExpanded = !isSupportDetailsExpanded;
+                        });
+                      },
+                      child: _buildSupportInformationCard(),
+                    ),
                   ],
                 ),
               ),
-              _buildCustomerDetailCollapsibleSection(
-                title: "Business Details",
-                isExpanded: isBusinessDetailsExpanded,
-                onToggle: () {
-                  setState(() {
-                    isBusinessDetailsExpanded = !isBusinessDetailsExpanded;
-                  });
-                },
-                child: _buildBusinessDetailsCard(),
-              ),
-              const SizedBox(
-                height: 8.0,
-              ),
-              _buildCustomerDetailCollapsibleSection(
-                title: "Principal Owner",
-                isExpanded: isPricipalOwnerDetailsExpanded,
-                onToggle: () {
-                  setState(() {
-                    isPricipalOwnerDetailsExpanded = !isPricipalOwnerDetailsExpanded;
-                  });
-                },
-                child: _buildPrincipalOwnerDetailsCard(),
-              ),
-              const SizedBox(
-                height: 8.0,
-              ),
-              _buildCustomerDetailCollapsibleSection(
-                title: "Bank Details",
-                isExpanded: isBankDetailsExpanded,
-                onToggle: () {
-                  setState(() {
-                    isBankDetailsExpanded = !isBankDetailsExpanded;
-                  });
-                },
-                child: _buildBankDetailsCard(),
-              ),
-              const SizedBox(
-                height: 8.0,
-              ),
-              _buildCustomerDetailCollapsibleSection(
-                title: "Support Information",
-                isExpanded: isSupportDetailsExpanded,
-                onToggle: () {
-                  setState(() {
-                    isSupportDetailsExpanded = !isSupportDetailsExpanded;
-                  });
-                },
-                child: _buildSupportInformationCard(),
-              ),
-            ],
-          ),
-        ),
-      ),
+            ),
     );
   }
+
   Widget _buildCustomerDetailCollapsibleSection({
     required String title,
     required bool isExpanded,
@@ -210,7 +216,8 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(isExpanded ? Icons.arrow_drop_up : Icons.arrow_drop_down,color: AppColors.appBlackColor),
+                Icon(isExpanded ? Icons.arrow_drop_up : Icons.arrow_drop_down,
+                    color: AppColors.appBlackColor),
               ],
             ),
             onTap: onToggle,
@@ -241,19 +248,20 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
               ),
             ),
           ),
+          const SizedBox(height: 4.0,),
           Align(
-              alignment: Alignment.topLeft,
-              child:
-              Obx(() => Text(
-                  businessProfileController.legalBusinessName.value,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.appBlackColor,
-                    fontSize: 14,
-                    fontFamily: Constants.Sofiafontfamily,
-                  ),
+            alignment: Alignment.topLeft,
+            child: Obx(
+              () => Text(
+                businessProfileController.legalBusinessName.value,
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.appBlackColor,
+                  fontSize: 14,
+                  fontFamily: Constants.Sofiafontfamily,
                 ),
               ),
+            ),
           ),
           const SizedBox(
             height: 16.0,
@@ -270,18 +278,20 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
               ),
             ),
           ),
+          const SizedBox(height: 4.0,),
           Align(
-              alignment: Alignment.topLeft,
-              child:
-              Obx(() => Text(businessProfileController.completeBusinessAddress.value,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.appBlackColor,
-                    fontSize: 14,
-                    fontFamily: Constants.Sofiafontfamily,
-                  ),
+            alignment: Alignment.topLeft,
+            child: Obx(
+              () => Text(
+                businessProfileController.completeBusinessAddress.value,
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.appBlackColor,
+                  fontSize: 14,
+                  fontFamily: Constants.Sofiafontfamily,
                 ),
               ),
+            ),
           ),
           const SizedBox(
             height: 16.0,
@@ -298,13 +308,12 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
               ),
             ),
           ),
+          const SizedBox(height: 4.0,),
           Align(
             alignment: Alignment.topLeft,
-            child:
-            Obx(
-                  () =>
-                      Text(
-                '\$${businessProfileController.businessLicense.value}',
+            child: Obx(
+              () => Text(
+                businessProfileController.businessLicense.value,
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   color: AppColors.appBlackColor,
@@ -314,7 +323,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
               ),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 16.0,
           ),
           Align(
@@ -329,12 +338,11 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
               ),
             ),
           ),
+          const SizedBox(height: 4.0,),
           Align(
               alignment: Alignment.topLeft,
-              child:
-              Obx(
-                    () =>
-                        Text(
+              child: Obx(
+                () => Text(
                   businessProfileController.employerIdentificationNumber.value,
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
@@ -343,8 +351,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
                     fontFamily: Constants.Sofiafontfamily,
                   ),
                 ),
-              )
-          ),
+              )),
           const SizedBox(
             height: 16,
           ),
@@ -360,22 +367,20 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
               ),
             ),
           ),
+          const SizedBox(height: 4.0,),
           Align(
-            alignment: Alignment.topLeft,
-            child:
-            Obx(
-                  () =>
-                      Text(
-                businessProfileController.industry.value,
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.appBlackColor,
-                  fontSize: 14,
-                  fontFamily: Constants.Sofiafontfamily,
+              alignment: Alignment.topLeft,
+              child: Obx(
+                () => Text(
+                  businessProfileController.industry.value,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.appBlackColor,
+                    fontSize: 14,
+                    fontFamily: Constants.Sofiafontfamily,
+                  ),
                 ),
-              ),
-            )
-          ),
+              )),
           const SizedBox(
             height: 16.0,
           ),
@@ -391,22 +396,20 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
               ),
             ),
           ),
+          const SizedBox(height: 4.0,),
           Align(
-            alignment: Alignment.topLeft,
-            child:
-            Obx(
-                  () =>
-                      Text(
-                businessProfileController.businessWebsite.value,
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.appBlackColor,
-                  fontSize: 14,
-                  fontFamily: Constants.Sofiafontfamily,
+              alignment: Alignment.topLeft,
+              child: Obx(
+                () => Text(
+                  businessProfileController.businessWebsite.value,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.appBlackColor,
+                    fontSize: 14,
+                    fontFamily: Constants.Sofiafontfamily,
+                  ),
                 ),
-              ),
-            )
-          ),
+              )),
           const SizedBox(
             height: 16.0,
           ),
@@ -422,22 +425,20 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
               ),
             ),
           ),
+          const SizedBox(height: 4.0,),
           Align(
-            alignment: Alignment.topLeft,
-            child:
-            Obx(
-                  () =>
-                      Text(
-                businessProfileController.productDescription.value,
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.appBlackColor,
-                  fontSize: 14,
-                  fontFamily: Constants.Sofiafontfamily,
+              alignment: Alignment.topLeft,
+              child: Obx(
+                () => Text(
+                  businessProfileController.productDescription.value,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.appBlackColor,
+                    fontSize: 14,
+                    fontFamily: Constants.Sofiafontfamily,
+                  ),
                 ),
-              ),
-            )
-          ),
+              )),
         ],
       ),
     );
@@ -445,7 +446,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
 
   Widget _buildBankDetailsCard() {
     return Padding(
-      padding: EdgeInsets.only(bottom: 16.0, left: 16.0, right: 16.0),
+      padding: const EdgeInsets.only(bottom: 16.0, left: 16.0, right: 16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -463,11 +464,11 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
               ),
             ),
           ),
+          const SizedBox(height: 4.0,),
           Align(
               alignment: Alignment.topLeft,
-              child:
-              Obx(
-                    () => Text(
+              child: Obx(
+                () => Text(
                   businessProfileController.accountHolderName.value,
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
@@ -476,8 +477,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
                     fontFamily: Constants.Sofiafontfamily,
                   ),
                 ),
-              )
-          ),
+              )),
           const SizedBox(
             height: 16.0,
           ),
@@ -493,12 +493,11 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
               ),
             ),
           ),
+          const SizedBox(height: 4.0,),
           Align(
               alignment: Alignment.topLeft,
-              child:
-              Obx(
-                    () =>
-                        Text(
+              child: Obx(
+                () => Text(
                   businessProfileController.accountNumber.value,
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
@@ -507,8 +506,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
                     fontFamily: Constants.Sofiafontfamily,
                   ),
                 ),
-              )
-          ),
+              )),
           const SizedBox(
             height: 16.0,
           ),
@@ -524,13 +522,12 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
               ),
             ),
           ),
+          const SizedBox(height: 4.0,),
           Align(
             alignment: Alignment.topLeft,
-            child:
-            Obx(
-                  () =>
-                      Text(
-                '\$${businessProfileController.routingNumber.value}',
+            child: Obx(
+              () => Text(
+                businessProfileController.routingNumber.value,
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   color: AppColors.appBlackColor,
@@ -565,21 +562,20 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
               ),
             ),
           ),
+          const SizedBox(height: 4.0,),
           Align(
-            alignment: Alignment.topLeft,
-            child:
-            Obx(
-                  () => Text(
-                businessProfileController.officialBusinessEmail.value,
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.appBlackColor,
-                  fontSize: 14,
-                  fontFamily: Constants.Sofiafontfamily,
+              alignment: Alignment.topLeft,
+              child: Obx(
+                () => Text(
+                  businessProfileController.officialBusinessEmail.value,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.appBlackColor,
+                    fontSize: 14,
+                    fontFamily: Constants.Sofiafontfamily,
+                  ),
                 ),
-              ),
-            )
-          ),
+              )),
           const SizedBox(
             height: 16.0,
           ),
@@ -595,22 +591,20 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
               ),
             ),
           ),
+          const SizedBox(height: 4.0,),
           Align(
-            alignment: Alignment.topLeft,
-            child:
-            Obx(
-                  () =>
-                      Text(
-                businessProfileController.officialBusinessPhone.value,
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.appBlackColor,
-                  fontSize: 14,
-                  fontFamily: Constants.Sofiafontfamily,
+              alignment: Alignment.topLeft,
+              child: Obx(
+                () => Text(
+                  businessProfileController.officialBusinessPhone.value,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.appBlackColor,
+                    fontSize: 14,
+                    fontFamily: Constants.Sofiafontfamily,
+                  ),
                 ),
-              ),
-            )
-          ),
+              )),
           const SizedBox(
             height: 16.0,
           ),
@@ -626,10 +620,11 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
               ),
             ),
           ),
+          const SizedBox(height: 4.0,),
           Align(
             alignment: Alignment.topLeft,
-            child:
-            Obx(() => Text(
+            child: Obx(
+              () => Text(
                 businessProfileController.customerSupportEmail.value,
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
@@ -655,12 +650,11 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
               ),
             ),
           ),
+          const SizedBox(height: 4.0,),
           Align(
             alignment: Alignment.topLeft,
-            child:
-            Obx(
-                  () =>
-                      Text(
+            child: Obx(
+              () => Text(
                 businessProfileController.customerSupportPhone.value,
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
@@ -675,7 +669,6 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
       ),
     );
   }
-
 
   Widget _buildPrincipalOwnerDetailsCard() {
     return Padding(
@@ -697,23 +690,21 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
               ),
             ),
           ),
+          const SizedBox(height: 4.0,),
           Align(
-            alignment: Alignment.topLeft,
-            child:
-            Obx(
-                  () => Text(
-                businessProfileController.planName.value,
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.appBlackColor,
-                  fontSize: 14,
-                  fontFamily: Constants.Sofiafontfamily,
+              alignment: Alignment.topLeft,
+              child: Obx(
+                () => Text(
+                  businessProfileController.planName.value,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.appBlackColor,
+                    fontSize: 14,
+                    fontFamily: Constants.Sofiafontfamily,
+                  ),
                 ),
-              ),
-            )
-
-          ),
-          SizedBox(
+              )),
+          const SizedBox(
             height: 16.0,
           ),
           Align(
@@ -722,28 +713,25 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
               "Plan Description",
               style: TextStyle(
                 fontWeight: FontWeight.w400,
-                color: AppColors.appNeutralColor2,
                 fontSize: 14,
                 fontFamily: Constants.Sofiafontfamily,
               ),
             ),
           ),
+          const SizedBox(height: 4.0,),
           Align(
-            alignment: Alignment.topLeft,
-            child:
-            Obx(
-                  () =>
-                      Text(
-                businessProfileController.planDescription.value,
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.appBlackColor,
-                  fontSize: 14,
-                  fontFamily: Constants.Sofiafontfamily,
+              alignment: Alignment.topLeft,
+              child: Obx(
+                () => Text(
+                  businessProfileController.planDescription.value,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.appBlackColor,
+                    fontSize: 14,
+                    fontFamily: Constants.Sofiafontfamily,
+                  ),
                 ),
-              ),
-            )
-          ),
+              )),
           const SizedBox(
             height: 16.0,
           ),
@@ -759,12 +747,11 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
               ),
             ),
           ),
+          const SizedBox(height: 4.0,),
           Align(
             alignment: Alignment.topLeft,
-            child:
-            Obx(
-                  () =>
-                      Text(
+            child: Obx(
+              () => Text(
                 '\$${businessProfileController.monthlyFees.value}',
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
@@ -790,22 +777,20 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
               ),
             ),
           ),
+          const SizedBox(height: 4.0,),
           Align(
-            alignment: Alignment.topLeft,
-            child:
-            Obx(
-                  () =>
-                      Text(
-                businessProfileController.perSwipeFees.value,
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.appBlackColor,
-                  fontSize: 14,
-                  fontFamily: Constants.Sofiafontfamily,
+              alignment: Alignment.topLeft,
+              child: Obx(
+                () => Text(
+                  "\$${businessProfileController.perSwipeFees.value}",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.appBlackColor,
+                    fontSize: 14,
+                    fontFamily: Constants.Sofiafontfamily,
+                  ),
                 ),
-              ),
-            )
-          ),
+              )),
           const SizedBox(
             height: 16,
           ),
@@ -821,22 +806,20 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
               ),
             ),
           ),
+          const SizedBox(height: 4.0,),
           Align(
-            alignment: Alignment.topLeft,
-            child:
-            Obx(
-                  () =>
-                      Text(
-                businessProfileController.setupFees.value,
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.appBlackColor,
-                  fontSize: 14,
-                  fontFamily: Constants.Sofiafontfamily,
+              alignment: Alignment.topLeft,
+              child: Obx(
+                () => Text(
+                  "\$${businessProfileController.setupFees.value}",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.appBlackColor,
+                    fontSize: 14,
+                    fontFamily: Constants.Sofiafontfamily,
+                  ),
                 ),
-              ),
-            )
-          ),
+              )),
           const SizedBox(
             height: 16.0,
           ),
@@ -852,22 +835,20 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
               ),
             ),
           ),
+          const SizedBox(height: 4.0,),
           Align(
-            alignment: Alignment.topLeft,
-            child:
-            Obx(
-                  () =>
-                      Text(
-                businessProfileController.verificationFees.value,
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.appBlackColor,
-                  fontSize: 14,
-                  fontFamily: Constants.Sofiafontfamily,
+              alignment: Alignment.topLeft,
+              child: Obx(
+                () => Text(
+                  businessProfileController.verificationFees.value,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.appBlackColor,
+                    fontSize: 14,
+                    fontFamily: Constants.Sofiafontfamily,
+                  ),
                 ),
-              ),
-            )
-          ),
+              )),
           const SizedBox(
             height: 16.0,
           ),
@@ -883,25 +864,22 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
               ),
             ),
           ),
+          const SizedBox(height: 4.0,),
           Align(
-            alignment: Alignment.topLeft,
-            child:
-            Obx(
-                  () =>
-                      Text(
-                businessProfileController.processingFee.value,
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.appBlackColor,
-                  fontSize: 14,
-                  fontFamily: Constants.Sofiafontfamily,
+              alignment: Alignment.topLeft,
+              child: Obx(
+                () => Text(
+                  businessProfileController.processingFee.value,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.appBlackColor,
+                    fontSize: 14,
+                    fontFamily: Constants.Sofiafontfamily,
+                  ),
                 ),
-              ),
-            )
-          ),
+              )),
         ],
       ),
     );
   }
-
 }

@@ -28,22 +28,27 @@ class _AllCompanyScreenState extends State<AllCompanyScreen> {
 
   @override
   void initState() {
-    Future.delayed(const Duration(seconds: 0),(){
+    Future.delayed(const Duration(seconds: 0), () {
       callMethod();
       searchController.addListener(_filterItems);
     });
     super.initState();
   }
 
-  void callMethod() async{
+  void callMethod() async {
     allBusinessController.allBussinessList.clear();
     await allBusinessController.getAllBUssiness();
     filteredItems = allBusinessController.allBussinessList;
   }
+
   void _filterItems() {
     String query = searchController.text.toLowerCase();
     setState(() {
-      filteredItems = allBusinessController.allBussinessList.where((item) => item.businessDetail.businessName!.toLowerCase().contains(query)).toList();});
+      filteredItems = allBusinessController.allBussinessList
+          .where((item) =>
+              item.businessDetail.businessName!.toLowerCase().contains(query))
+          .toList();
+    });
   }
 
   @override
@@ -64,7 +69,7 @@ class _AllCompanyScreenState extends State<AllCompanyScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
-                        padding: EdgeInsets.only(top: 18),
+                        padding: const EdgeInsets.only(top: 18,left: 10),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -92,18 +97,28 @@ class _AllCompanyScreenState extends State<AllCompanyScreen> {
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: InkWell(
-                          onTap: () => {
-                            Get.to(const ProfileScreen())
-                          },
-                          child: CircleAvatar(
-                            radius: screenHeight / 40,
-                            backgroundImage: AssetImage(ImageAssets.profile),
+                          onTap: () => {Get.to(const ProfileScreen())},
+                          splashColor: Colors.transparent,
+                          highlightColor: Colors.transparent,
+                          child: Container(
+                            width: screenHeight / 20,
+                            height: screenHeight / 20,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              image: DecorationImage(
+                                image: AssetImage(ImageAssets.profile),
+                                fit: BoxFit.fill,
+                                alignment: Alignment.center,
+                              ),
+                            ),
                           ),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 10.0,),
+                  const SizedBox(
+                    height: 10.0,
+                  ),
                   Card(
                     elevation: 2,
                     shape: RoundedRectangleBorder(
@@ -142,18 +157,18 @@ class _AllCompanyScreenState extends State<AllCompanyScreen> {
                           if (allBusinessController.allBussinessList.isEmpty) {
                             return variableController.loading.value
                                 ? Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Container(
-                                alignment: Alignment.center,
-                                height: 50,
-                                width: 50,
-                                child: Lottie.asset(
-                                    "assets/lottie/half-circles.json"),
-                              ),
-                            )
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Container(
+                                      alignment: Alignment.center,
+                                      height: 50,
+                                      width: 50,
+                                      child: Lottie.asset(
+                                          "assets/lottie/half-circles.json"),
+                                    ),
+                                  )
                                 : NoDataFoundCard(); // Your custom widget
                           } else {
-                            return  ListView.builder(
+                            return ListView.builder(
                               shrinkWrap: true,
                               itemCount: filteredItems.length,
                               itemBuilder: (context, index) {
@@ -174,12 +189,12 @@ class _AllCompanyScreenState extends State<AllCompanyScreen> {
       ),
     );
   }
+
   Future<void> _refreshData() async {
     callMethod();
     setState(() {});
   }
 }
-
 
 Widget listItem(List<ResAllBussiness> allBusinessList, int index, context) {
   var allBusinessController = Get.find<AllBussinessController>();
@@ -195,25 +210,28 @@ Widget listItem(List<ResAllBussiness> allBusinessList, int index, context) {
   if (allBusinessList[index].bankDetails.bankDetailstatus == '1') {
     percent += 25;
   }
-  if (allBusinessList[index].businessDetail.plan != null && allBusinessList[index].businessDetail.plan!.isNotEmpty) {
+  if (allBusinessList[index].businessDetail.plan != null &&
+      allBusinessList[index].businessDetail.plan!.isNotEmpty) {
     percent += 25;
   }
   String statusMessage = "Profile: $percent% done";
   return InkWell(
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
       onTap: () async {
-        if(allBusinessList[index].isApproved == '1' ){
-        CommonVariable.businessName.value=allBusinessList[index].businessDetail.businessName??"";
-        CommonVariable.Percentage.value=percent.toString()??"";
-        CommonVariable.businessId.value=allBusinessList[index].sId??"";
-        allBusinessController.getFunds(CommonVariable.businessId.value);
-        Get.to(
-            const CompanyDashboard());
-        }else{
+        if (allBusinessList[index].isApproved == '1') {
+          CommonVariable.businessName.value =
+              allBusinessList[index].businessDetail.businessName ?? "";
+          CommonVariable.Percentage.value = percent.toString() ?? "";
+          CommonVariable.businessId.value = allBusinessList[index].sId ?? "";
+          allBusinessController.getFunds(CommonVariable.businessId.value);
+          Get.to(const CompanyDashboard());
+        } else {
           MyToast.toast('Business not approved');
         }
       },
       child: Padding(
-        padding: const EdgeInsets.only(left: 16.0,right: 16.0),
+        padding: const EdgeInsets.only(left: 16.0, right: 16.0),
         child: Column(
           children: [
             Row(
@@ -222,7 +240,8 @@ Widget listItem(List<ResAllBussiness> allBusinessList, int index, context) {
               children: [
                 CircleAvatar(
                   radius: screenHeight / 30,
-                  backgroundColor: allBusinessController.hexToColor(allBusinessList[index].colorCode),
+                  backgroundColor: allBusinessController
+                      .hexToColor(allBusinessList[index].colorCode),
                   child: Text(
                     allBusinessList[index].prefix.toUpperCase(),
                     style: const TextStyle(
@@ -238,7 +257,8 @@ Widget listItem(List<ResAllBussiness> allBusinessList, int index, context) {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        allBusinessList[index].businessDetail.businessName ?? "",
+                        allBusinessList[index].businessDetail.businessName ??
+                            "",
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 16.0,
@@ -247,7 +267,7 @@ Widget listItem(List<ResAllBussiness> allBusinessList, int index, context) {
                       ),
                       const SizedBox(height: 6.0),
                       Text(
-                        statusMessage,  // Assuming statusMessage is available
+                        statusMessage, // Assuming statusMessage is available
                         style: TextStyle(
                           fontWeight: FontWeight.w400,
                           fontSize: 12.0,
@@ -259,46 +279,77 @@ Widget listItem(List<ResAllBussiness> allBusinessList, int index, context) {
                 ),
                 const SizedBox(width: 10.0),
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 12, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   decoration: BoxDecoration(
-                    color: allBusinessList[index].isApproved == '0' ? AppColors.appLightYellowColor :
-                    allBusinessList[index].isApproved == '1' ? AppColors.appGreenAcceptColor :
-                    allBusinessList[index].isApproved == '2' ? AppColors.appRedLightColor :
-                    allBusinessList[index].isApproved == '3' ? AppColors.appBlueLightColor :
-                    allBusinessList[index].isApproved == '4' ? AppColors.appGreenLightColor :
-                    allBusinessList[index].isApproved == '5' ? AppColors.appSoftSkyBlueColor :
-                    AppColors.appRedLightColor1,
+                    color: allBusinessList[index].isApproved == '0'
+                        ? AppColors.appLightYellowColor
+                        : allBusinessList[index].isApproved == '1'
+                            ? AppColors.appGreenAcceptColor
+                            : allBusinessList[index].isApproved == '2'
+                                ? AppColors.appRedLightColor
+                                : allBusinessList[index].isApproved == '3'
+                                    ? AppColors.appBlueLightColor
+                                    : allBusinessList[index].isApproved == '4'
+                                        ? AppColors.appGreenLightColor
+                                        : allBusinessList[index].isApproved ==
+                                                '5'
+                                            ? AppColors.appSoftSkyBlueColor
+                                            : AppColors.appRedLightColor1,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: FittedBox(
                     child: Text(
-                        allBusinessList[index].isApproved == '0' ? "Pending" :
-                        allBusinessList[index].isApproved == '1' ? "Approved" :
-                        allBusinessList[index].isApproved == '2' ? "Decline" :
-                        allBusinessList[index].isApproved == '3' ? "Review" :
-                        allBusinessList[index].isApproved == '4' ? "Revision" :
-                        allBusinessList[index].isApproved == '5' ? "Added" :
-                        "Discontinue",
+                      allBusinessList[index].isApproved == '0'
+                          ? "Pending"
+                          : allBusinessList[index].isApproved == '1'
+                              ? "Approved"
+                              : allBusinessList[index].isApproved == '2'
+                                  ? "Decline"
+                                  : allBusinessList[index].isApproved == '3'
+                                      ? "Review"
+                                      : allBusinessList[index].isApproved == '4'
+                                          ? "Revision"
+                                          : allBusinessList[index].isApproved ==
+                                                  '5'
+                                              ? "Added"
+                                              : "Discontinue",
                       style: TextStyle(
-                          color: allBusinessList[index].isApproved == '0' ? AppColors.appOrangeTextColor :
-                          allBusinessList[index].isApproved == '1' ? AppColors.appGreenDarkColor :
-                          allBusinessList[index].isApproved == '2' ? AppColors.appRedColor :
-                          allBusinessList[index].isApproved == '3' ? AppColors.appBlueColor :
-                          allBusinessList[index].isApproved == '4' ? AppColors.appGreyColor :
-                          allBusinessList[index].isApproved == '5' ? AppColors.appSkyBlueText :
-                          AppColors.appRedColor,
+                          color: allBusinessList[index].isApproved == '0'
+                              ? AppColors.appOrangeTextColor
+                              : allBusinessList[index].isApproved == '1'
+                                  ? AppColors.appGreenDarkColor
+                                  : allBusinessList[index].isApproved == '2'
+                                      ? AppColors.appRedColor
+                                      : allBusinessList[index].isApproved == '3'
+                                          ? AppColors.appBlueColor
+                                          : allBusinessList[index].isApproved ==
+                                                  '4'
+                                              ? AppColors.appGreyColor
+                                              : allBusinessList[index]
+                                                          .isApproved ==
+                                                      '5'
+                                                  ? AppColors.appSkyBlueText
+                                                  : AppColors.appRedColor,
                           fontSize: 12),
-                    ),),
+                    ),
+                  ),
                 )
               ],
             ),
-            const Padding(
-              padding: EdgeInsets.only(left: 65, ),
-              child: Divider(color: AppColors.appGreyColor),
-            ),
+            Column(
+              children: [
+                (allBusinessList[index] != allBusinessList.last)
+                    ? const Padding(
+                        padding: EdgeInsets.only(left: 65),
+                        child: Divider(color: AppColors.appGreyColor),
+                      )
+                    : const Padding(
+                        padding: EdgeInsets.only(bottom: 12),
+                      ),
+              ],
+            )
           ],
         ),
       ));
 }
-

@@ -19,7 +19,8 @@ class _SignupScreenState extends State<SignupScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.appWhiteColor,
-      resizeToAvoidBottomInset: true,  // Allows the screen to resize when the keyboard is visible
+      resizeToAvoidBottomInset: true,
+      // Allows the screen to resize when the keyboard is visible
       body: SafeArea(
         child: Column(
           children: [
@@ -68,7 +69,7 @@ class _SignupScreenState extends State<SignupScreen> {
                           child: Text(
                             'Fill out your details to get associated with us',
                             style: TextStyle(
-                              fontWeight: FontWeight.w500,
+                              fontWeight: FontWeight.w600,
                               fontSize: 12,
                               fontFamily: 'Sofia Sans',
                               color: AppColors.appGreyColor,
@@ -81,9 +82,11 @@ class _SignupScreenState extends State<SignupScreen> {
                       // Input Fields
                       _buildTextField(context, 'Full Name', 'Enter Your name'),
                       _buildTextField(context, 'Email Id', 'Enter Your email'),
-                      _buildTextField(context, 'Phone number', 'Enter Your phone number'),
+                      _buildTextField(
+                          context, 'Phone number', 'Enter Your phone number'),
                       _buildTextField(context, 'Password', 'Enter Password'),
-                      _buildTextField(context, 'Confirm Password', 'Enter Confirm Password'),
+                      _buildTextField(context, 'Confirm Password',
+                          'Enter Confirm Password'),
                     ],
                   ),
                 ),
@@ -127,14 +130,15 @@ class _SignupScreenState extends State<SignupScreen> {
                           style: TextStyle(
                             fontFamily: 'Sofia Sans',
                             fontSize: 12,
-                            fontWeight: FontWeight.w500,
+                            fontWeight: FontWeight.w600,
                             color: AppColors.appBlueColor,
                           ),
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(height: size.height * 0.02), // Extra padding at the bottom
+                  SizedBox(height: size.height * 0.02),
+                  // Extra padding at the bottom
                 ],
               ),
             ),
@@ -146,7 +150,8 @@ class _SignupScreenState extends State<SignupScreen> {
 
   Widget _buildTextField(BuildContext context, String label, String hint) {
     return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).size.height * 0.02),
+      padding:
+          EdgeInsets.only(bottom: MediaQuery.of(context).size.height * 0.02),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

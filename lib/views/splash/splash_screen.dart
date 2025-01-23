@@ -1,19 +1,21 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:paycron/utils/image_assets.dart';
 import 'package:paycron/views/app_home_screen/home_screen.dart';
 import 'package:paycron/views/auth/app_intro_screen.dart';
-import 'package:paycron/views/auth/login_screen.dart';
 import 'package:paycron/views/dashboard/bottom_floating_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import '../../utils/color_constants.dart';
 import '../../utils/common_variable.dart';
 import '../../utils/string_constants.dart';
+import '../auth/login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({Key? key}) : super(key: key);
+  const SplashScreen({super.key});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -29,12 +31,14 @@ class _SplashScreenState extends State<SplashScreen> {
   callMyMethod() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     CommonVariable.getClientDetails();
-    Timer( const Duration(seconds: 2), () =>
-    (preferences.getString("isLogin") == null)
-        ? Get.off(const AppIntroScreen())
-        :CommonVariable.businessCheck.value==1
-        ?Get.off(const PaycronFloatingBottomBar()):Get.off(const HomeScreen()));
-
+    Timer(
+        const Duration(seconds: 2),
+        () => (preferences.getString("isLogin") == null)
+            ? Get.off(const LoginScreen())
+            : CommonVariable.businessCheck.value == 1
+                ? Get.off(const PaycronFloatingBottomBar())
+                : Get.off(const HomeScreen()));
+    FocusScope.of(context).unfocus();
     // Timer(Duration(seconds: 3), () {
     //   if (preferences.getString("isLogin") == null) {
     //     Get.off(LoginScreen());
@@ -50,14 +54,13 @@ class _SplashScreenState extends State<SplashScreen> {
     //     }
     //   }
     // });
-
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.appWhiteColor,
-      body:Container(
+      body: SizedBox(
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
         child: Column(
@@ -89,7 +92,7 @@ class _SplashScreenState extends State<SplashScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  SizedBox(height: 20), // Padding from the bottom
+                  SizedBox(height: 20),
                 ],
               ),
             ),

@@ -1,23 +1,23 @@
 class ResSingleUser {
- late Location location;
- late Ssn ssn;
- late String? sId;
- late String? fullName;
- late String? email;
- late bool? isVerfied;
- late String? password;
- late String? phone;
- late String? image;
- late String? role;
- late String? position;
- late bool? isDeleted;
- late bool? isDeletedRequest;
- late bool? isDeletedSuper;
- late bool? isAgreed;
- late String? dob;
- late String? lastUpdated;
- late String? createdOn;
- late int? iV;
+  late Location location;
+  late Ssn ssn;
+  late String? sId;
+  late String? fullName;
+  late String? email;
+  late bool? isVerfied;
+  late String? password;
+  late String? phone;
+  late String? image;
+  late String? role;
+  late String? position;
+  late bool? isDeleted;
+  late bool? isDeletedRequest;
+  late bool? isDeletedSuper;
+  late bool? isAgreed;
+  late String? dob;
+  late String? lastUpdated;
+  late String? createdOn;
+  late int? iV;
 
   ResSingleUser(
       {required this.location,
@@ -94,14 +94,18 @@ class ResSingleUser {
 }
 
 class Location {
- late String? address;
- late String? country;
- late String? city;
- late String? state;
- late String? postalcode;
+  late String? address;
+  late String? country;
+  late String? city;
+  late String? state;
+  late String? postalcode;
 
   Location(
-      {required this.address, required this.country, required this.city, required this.state, required this.postalcode});
+      {required this.address,
+      required this.country,
+      required this.city,
+      required this.state,
+      required this.postalcode});
 
   Location.fromJson(Map<String, dynamic> json) {
     address = json['address'];

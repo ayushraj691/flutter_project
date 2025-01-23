@@ -11,7 +11,6 @@ class OverallStatistics extends StatefulWidget {
 
   @override
   State<OverallStatistics> createState() => _OverallStatisticsState();
-
 }
 
 class _OverallStatisticsState extends State<OverallStatistics> {
@@ -74,23 +73,26 @@ class _OverallStatisticsState extends State<OverallStatistics> {
                       ),
                       items: overallStatisticController.filterItems
                           .map((item) => DropdownMenuItem<String>(
-                        value: item,
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 10),
-                          child: Text(
-                            item,
-                            style: const TextStyle(fontSize: 14),
-                          ),
-                        ),
-                      ))
+                                value: item,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left: 10),
+                                  child: Text(
+                                    item,
+                                    style: const TextStyle(fontSize: 14),
+                                  ),
+                                ),
+                              ))
                           .toList(),
                       value: overallStatisticController.filterValue.value,
                       onChanged: (value) {
-                        overallStatisticController.filterValue.value = value as String;
+                        overallStatisticController.filterValue.value =
+                            value as String;
 
-                        final selectedIndex = overallStatisticController.filterItems.indexOf(value);
+                        final selectedIndex = overallStatisticController
+                            .filterItems
+                            .indexOf(value);
                         if (selectedIndex != -1) {
-                          print('Selected index: ${selectedIndex + 1}');
+                          debugPrint('Selected index: ${selectedIndex + 1}');
                         }
                       },
                       buttonStyleData: const ButtonStyleData(
@@ -123,7 +125,7 @@ class _OverallStatisticsState extends State<OverallStatistics> {
                     style: TextStyle(
                       fontFamily: 'Sofia Sans',
                       fontSize: 16,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w600,
                       color: Colors.black,
                     ),
                   ),
@@ -131,9 +133,11 @@ class _OverallStatisticsState extends State<OverallStatistics> {
                   Row(
                     children: [
                       Flexible(
-                        flex: 2, // Ensures the PieChart takes up a reasonable amount of space
+                        flex: 2,
+                        // Ensures the PieChart takes up a reasonable amount of space
                         child: AspectRatio(
-                          aspectRatio: 1, // Keep a square aspect ratio for the PieChart
+                          aspectRatio: 1,
+                          // Keep a square aspect ratio for the PieChart
                           child: PieChart(
                             PieChartData(
                               borderData: FlBorderData(show: false),
@@ -142,23 +146,27 @@ class _OverallStatisticsState extends State<OverallStatistics> {
                               startDegreeOffset: -50,
                               sections: _buildPieChartCurves(),
                               pieTouchData: PieTouchData(
-                                touchCallback: (FlTouchEvent event, pieTouchResponse) {
+                                touchCallback:
+                                    (FlTouchEvent event, pieTouchResponse) {
                                   if (!event.isInterestedForInteractions ||
                                       pieTouchResponse == null ||
                                       pieTouchResponse.touchedSection == null) {
                                     _touchedIndex = -1;
                                     return;
                                   }
-                                  _touchedIndex = pieTouchResponse.touchedSection!.touchedSectionIndex;
+                                  _touchedIndex = pieTouchResponse
+                                      .touchedSection!.touchedSectionIndex;
                                 },
                               ),
                             ),
                           ),
                         ),
                       ),
-                      SizedBox(width: screenWidth * 0.03), // Further reduce the width of the SizedBox
+                      SizedBox(width: screenWidth * 0.03),
+                      // Further reduce the width of the SizedBox
                       const Flexible(
-                        flex: 1, // Ensures the Column takes up the remaining space
+                        flex: 1,
+                        // Ensures the Column takes up the remaining space
                         child: Column(
                           mainAxisSize: MainAxisSize.max,
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -203,7 +211,7 @@ class _OverallStatisticsState extends State<OverallStatistics> {
                     style: TextStyle(
                       fontFamily: 'Sofia Sans',
                       fontSize: 16,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w600,
                       color: Colors.black,
                     ),
                   ),
@@ -212,13 +220,16 @@ class _OverallStatisticsState extends State<OverallStatistics> {
                     children: [
                       Flexible(
                         child: AspectRatio(
-                          aspectRatio: 1, // Use aspect ratio instead of fixed height
+                          aspectRatio: 1,
+                          // Use aspect ratio instead of fixed height
                           child: Padding(
                             padding: const EdgeInsets.only(top: 16),
                             child: LayoutBuilder(
                               builder: (context, constraints) {
-                                final barsSpace = 4.0 * constraints.maxWidth / 80;
-                                final barsWidth = 8.0 * constraints.maxWidth / 200;
+                                final barsSpace =
+                                    4.0 * constraints.maxWidth / 80;
+                                final barsWidth =
+                                    8.0 * constraints.maxWidth / 200;
                                 return BarChart(
                                   BarChartData(
                                     alignment: BarChartAlignment.center,
@@ -236,7 +247,8 @@ class _OverallStatisticsState extends State<OverallStatistics> {
                                         sideTitles: SideTitles(
                                           showTitles: true,
                                           reservedSize: 40,
-                                          getTitlesWidget: (double value, TitleMeta meta) {
+                                          getTitlesWidget:
+                                              (double value, TitleMeta meta) {
                                             final text = '${value.toInt()}\$';
                                             return SideTitleWidget(
                                               axisSide: meta.axisSide,
@@ -255,9 +267,12 @@ class _OverallStatisticsState extends State<OverallStatistics> {
                                     ),
                                     gridData: FlGridData(
                                       show: true,
-                                      checkToShowHorizontalLine: (value) => value % 10 == 0,
-                                      getDrawingHorizontalLine: (value) => FlLine(
-                                        color: AppColors.appGreyColor.withOpacity(0.1),
+                                      checkToShowHorizontalLine: (value) =>
+                                          value % 10 == 0,
+                                      getDrawingHorizontalLine: (value) =>
+                                          FlLine(
+                                        color: AppColors.appGreyColor
+                                            .withOpacity(0.1),
                                         strokeWidth: 1,
                                       ),
                                       drawVerticalLine: false,
@@ -291,7 +306,7 @@ class _OverallStatisticsState extends State<OverallStatistics> {
                     style: TextStyle(
                       fontFamily: 'Sofia Sans',
                       fontSize: 14,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w600,
                       color: Colors.black,
                     ),
                   ),
@@ -303,6 +318,7 @@ class _OverallStatisticsState extends State<OverallStatistics> {
       ),
     );
   }
+
   ///****************************** Pie Chart ******************************
 
   List<PieChartSectionData> _buildPieChartCurves() {
@@ -352,7 +368,11 @@ class _OverallStatisticsState extends State<OverallStatistics> {
           BarChartRodData(
             toY: 10,
             rodStackItems: [
-              BarChartRodStackItem(1, 2, AppColors.appBlueLightColor,),
+              BarChartRodStackItem(
+                1,
+                2,
+                AppColors.appBlueLightColor,
+              ),
               BarChartRodStackItem(2, 3, AppColors.appBlueColor),
               BarChartRodStackItem(3, 4, AppColors.appGreenColor),
               BarChartRodStackItem(4, 5, AppColors.appGreyColor),
@@ -370,7 +390,7 @@ class _OverallStatisticsState extends State<OverallStatistics> {
           BarChartRodData(
             toY: 80,
             rodStackItems: [
-              BarChartRodStackItem(1, 20,AppColors.appBlueLightColor),
+              BarChartRodStackItem(1, 20, AppColors.appBlueLightColor),
               BarChartRodStackItem(20, 30, AppColors.appBlueLightColor),
               BarChartRodStackItem(30, 40, AppColors.appBlueLightColor),
               BarChartRodStackItem(40, 60, AppColors.appBlueLightColor),
@@ -556,7 +576,8 @@ class _OverallStatisticsState extends State<OverallStatistics> {
   }
 
   Widget bottomTitles(double value, TitleMeta meta) {
-    const style = TextStyle(fontSize: 10,fontWeight: FontWeight.w400,fontFamily: 'Sofia Sans');
+    const style = TextStyle(
+        fontSize: 10, fontWeight: FontWeight.w400, fontFamily: 'Sofia Sans');
     String text;
     switch (value.toInt()) {
       case 0:
@@ -605,4 +626,3 @@ class _OverallStatisticsState extends State<OverallStatistics> {
     );
   }
 }
-

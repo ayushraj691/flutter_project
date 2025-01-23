@@ -24,19 +24,19 @@ class _InActiveTabState extends State<InActiveTab> {
   var inActiveTabController = Get.find<InActiveController>();
   var addCustomerController = Get.find<AddCustomerController>();
   var variableController = Get.find<VariableController>();
-  List<ResAllFilterCustomerData> filteredItems = <ResAllFilterCustomerData>[].obs;
-
+  List<ResAllFilterCustomerData> filteredItems =
+      <ResAllFilterCustomerData>[].obs;
 
   @override
   void initState() {
-    Future.delayed(const Duration(seconds: 0),(){
+    Future.delayed(const Duration(seconds: 0), () {
       callMethod();
       searchController.addListener(_filterItems);
     });
     super.initState();
   }
 
-  void callMethod() async{
+  void callMethod() async {
     Map<String, dynamic> sortMap = {
       "": "",
     };
@@ -59,8 +59,7 @@ class _InActiveTabState extends State<InActiveTab> {
     String query = searchController.text.toLowerCase();
     setState(() {
       filteredItems = inActiveTabController.allCustomerDataList
-          .where(
-              (item) => item.info.custName.toLowerCase().contains(query))
+          .where((item) => item.info.custName.toLowerCase().contains(query))
           .toList();
     });
   }
@@ -71,180 +70,173 @@ class _InActiveTabState extends State<InActiveTab> {
     return RefreshIndicator(
       onRefresh: _refreshData,
       child: Padding(
-        padding: const EdgeInsets.only(top: 10.0,bottom: 30),
+        padding: const EdgeInsets.only( bottom: 20),
         child: Column(
           children: [
             Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.appBackgroundGreyColor,
-                                // Button color
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 15, vertical: 10),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(
-                                      30), // Rounded corners
-                                ),
-                                elevation: 0,
-                                shadowColor: Colors.black45,
-                              ),
-                              onPressed: () =>
-                                  inActiveTabController.showSelectDurationBottomSheet(context),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Obx(() {
-                                    return Text(
-                                      inActiveTabController.buttonText.value,
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.w400,
-                                        fontFamily: 'Sofia Sans',
-                                      ),
-                                    );
-                                  }),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: Container(
-                              width: screenWidth / 4 ,
-                              height: 36,
-                              decoration: BoxDecoration(
-                                color: AppColors.appBlackColor,
-                                borderRadius: BorderRadius.circular(30),
-                                border: Border.all(
-                                  color: AppColors.appBlackColor,
-                                  width: 0, // Border thickness
-                                ),
-                              ),
+              child: ListView(
+                children: [
+                  Column(
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 4.0, right: 8.0, bottom: 8.0, top: 8.0),
                               child: ElevatedButton(
-                                onPressed: () async {
-                                  await inActiveTabController.downloadCSV();
-                                },
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.transparent,
-                                  shadowColor: Colors.transparent,
-                                  // padding: const EdgeInsets.symmetric(
-                                  //     vertical: 10),
+                                  backgroundColor:
+                                      AppColors.appBackgroundGreyColor,
+                                  // Button color
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 15, vertical: 10),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                        30), // Rounded corners
+                                  ),
+                                  elevation: 0,
+                                  shadowColor: Colors.black45,
                                 ),
-                                child: const Text(
-                                  'Download',
-                                  style: TextStyle(
-                                    fontFamily: 'Sofia Sans',
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 14,
-                                    color: AppColors.appWhiteColor, // Text color
+                                onPressed: () => inActiveTabController
+                                    .showSelectDurationBottomSheet(context),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Obx(() {
+                                      return Text(
+                                        inActiveTabController.buttonText.value,
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.w400,
+                                          fontFamily: 'Sofia Sans',
+                                        ),
+                                      );
+                                    }),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Container(
+                                width: screenWidth / 4,
+                                height: 36,
+                                decoration: BoxDecoration(
+                                  color: AppColors.appBlackColor,
+                                  borderRadius: BorderRadius.circular(30),
+                                  border: Border.all(
+                                    color: AppColors.appBlackColor,
+                                    width: 0, // Border thickness
+                                  ),
+                                ),
+                                child: ElevatedButton(
+                                  onPressed: () async {
+                                    await inActiveTabController.downloadCSV();
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.transparent,
+                                    shadowColor: Colors.transparent,
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 10),
+                                  ),
+                                  child: const Text(
+                                    'Download',
+                                    style: TextStyle(
+                                      fontFamily: 'Sofia Sans',
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 14,
+                                      color:
+                                          AppColors.appWhiteColor, // Text color
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Card(
-                        elevation: 2.0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25.0),
-                        ),
-                        child: Column(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: TextField(
-                                controller: searchController,
-                                decoration: InputDecoration(
-                                  hintText: 'Search by name or email',
-                                  filled: true,
-                                  fillColor: AppColors.appNeutralColor5,
-                                  prefixIcon: const Icon(Icons.search),
-                                  contentPadding: const EdgeInsets.all(16),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide: const BorderSide(
-                                      color: AppColors.appNeutralColor5,
-                                      width: 0,
+                        ],
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            bottom: 8.0),
+                        child: Card(
+                          elevation: 0.0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(25.0),
+                          ),
+                          child: Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: TextField(
+                                  controller: searchController,
+                                  decoration: InputDecoration(
+                                    hintText: 'Search by name or email',
+                                    filled: true,
+                                    fillColor: AppColors.appNeutralColor5,
+                                    prefixIcon: const Icon(Icons.search),
+                                    hintStyle: const TextStyle(fontSize: 14.0,color: AppColors.appGreyColor
+                                        ,fontWeight: FontWeight.w400
                                     ),
-                                    borderRadius: BorderRadius.circular(30),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide: const BorderSide(
-                                      color: AppColors.appNeutralColor5,
-                                      width: 0,
+                                    contentPadding: const EdgeInsets.all(8),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: const BorderSide(
+                                        color: AppColors.appNeutralColor5,
+                                        width: 0,
+                                      ),
+                                      borderRadius: BorderRadius.circular(30),
                                     ),
-                                    borderRadius: BorderRadius.circular(30),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: const BorderSide(
+                                        color: AppColors.appNeutralColor5,
+                                        width: 0,
+                                      ),
+                                      borderRadius: BorderRadius.circular(30),
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                            Obx(() {
-                              if (inActiveTabController.allCustomerDataList.isEmpty) {
-                                return variableController.loading.value
-                                    ? Padding(
-                                  padding: EdgeInsets.all(8.0),
-                                  child: Container(
-                                    alignment: Alignment.center,
-                                    height: 50,
-                                    width: 50,
-                                    child: Lottie.asset(
-                                        "assets/lottie/half-circles.json"),
-                                  ),
-                                )
-                                    : NoDataFoundCard(); // Your custom widget
-                              } else {
-                                return ListView.builder(
-                                  shrinkWrap: true,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  itemCount:
-                                  filteredItems.length,
-                                  itemBuilder: (context, index) {
-                                    return listItem(
-                                        filteredItems,
-                                        index,
-                                        context);
-                                  },
-                                );
-                              }
-                            }),
-                          ],
+                              Obx(() {
+                                if (inActiveTabController
+                                    .allCustomerDataList.isEmpty) {
+                                  return variableController.loading.value
+                                      ? Padding(
+                                          padding: EdgeInsets.all(8.0),
+                                          child: Container(
+                                            alignment: Alignment.center,
+                                            height: 50,
+                                            width: 50,
+                                            child: Lottie.asset(
+                                                "assets/lottie/half-circles.json"),
+                                          ),
+                                        )
+                                      : NoDataFoundCard(); // Your custom widget
+                                } else {
+                                  return ListView.builder(
+                                    shrinkWrap: true,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    itemCount: filteredItems.length,
+                                    itemBuilder: (context, index) {
+                                      return listItem(
+                                          filteredItems, index, context);
+                                    },
+                                  );
+                                }
+                              }),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                    SizedBox(height: 10),
-                  ],
-                ),
+                      const SizedBox(height: 10),
+                    ],
+                  )
+                ],
               ),
             ),
-            // Padding(
-            //   padding: const EdgeInsets.only(bottom: 5.0),
-            //   child: Center(
-            //     child: CommonButton(
-            //       buttonWidth: screenWidth * 0.9,
-            //       icon: Icons.add,
-            //       buttonName: "Add Customer",
-            //       onPressed: () {
-            //         Get.to(const AddCustomerForm());
-            //         addCustomerController.clearAllAccount();
-            //         addCustomerController.clearAllCustomer();
-            //       },
-            //     ),
-            //   ),
-            // ),
           ],
         ),
       ),
@@ -261,7 +253,8 @@ Widget listItem(List<ResAllFilterCustomerData> allCustomerDataList, int index,
     BuildContext context) {
   final customer = allCustomerDataList[index];
   final customerName = customer.info.custName;
-  final accountNumber = customer.bankId.isNotEmpty ? customer.bankId[0].accountNumber : 'N/A';
+  final accountNumber =
+      customer.bankId.isNotEmpty ? customer.bankId[0].accountNumber : 'N/A';
   final createdDate = customer.createdOn;
   final customerStatus = customer.isDeleted;
   DateTime dateTime = DateTime.parse(createdDate).toLocal();
@@ -269,9 +262,15 @@ Widget listItem(List<ResAllFilterCustomerData> allCustomerDataList, int index,
   String formattedDate = DateFormat('dd MMM, yyyy').format(dateTime);
 
   return InkWell(
-    onTap: customerStatus ? null : () async {
-      Get.to(CustomerDetailsScreen(id: customer.sId,));
-    },
+    onTap: customerStatus
+        ? null
+        : () async {
+            Get.to(CustomerDetailsScreen(
+              id: customer.sId,
+            ));
+          },
+    splashColor: Colors.transparent,
+    highlightColor: Colors.transparent,
     child: Opacity(
       opacity: customerStatus ? 0.5 : 1.0,
       child: Padding(
@@ -309,7 +308,7 @@ Widget listItem(List<ResAllFilterCustomerData> allCustomerDataList, int index,
                           Text(
                             customerName,
                             style: const TextStyle(
-                              fontWeight: FontWeight.w500,
+                              fontWeight: FontWeight.w600,
                               color: Colors.black,
                               fontSize: 16,
                               fontFamily: 'Sofia Sans',
@@ -342,7 +341,7 @@ Widget listItem(List<ResAllFilterCustomerData> allCustomerDataList, int index,
                           ),
                           Text(
                             formattedTime,
-                            style:  const TextStyle(
+                            style: const TextStyle(
                               fontWeight: FontWeight.w400,
                               color: AppColors.appGreyColor,
                               fontSize: 12,

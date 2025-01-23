@@ -8,11 +8,12 @@ import 'package:paycron/utils/theme.dart';
 import 'package:paycron/views/splash/splash_screen.dart';
 
 Future<void> main() async {
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
 
   WidgetsFlutterBinding.ensureInitialized();
   const AndroidInitializationSettings initializationSettingsAndroid =
-  AndroidInitializationSettings('@mipmap/ic_launcher');
+      AndroidInitializationSettings('@mipmap/ic_launcher');
 
   const InitializationSettings initializationSettings = InitializationSettings(
     android: initializationSettingsAndroid,
@@ -91,7 +92,6 @@ class AppLifecycleManagerState extends State<AppLifecycleManager>
         break;
     }
   }
-
 
   @override
   void dispose() {

@@ -16,7 +16,6 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -35,7 +34,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(top: 18),
+                    padding: const EdgeInsets.only(top: 18,left: 10),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -63,12 +62,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: InkWell(
-                      onTap: () => {
-                        Get.to(const ProfileScreen())
-                      },
-                      child: CircleAvatar(
-                        radius: screenHeight / 40,
-                        backgroundImage: AssetImage(ImageAssets.profile),
+                      onTap: () => {Get.to(const ProfileScreen())},
+                      splashColor: Colors.transparent,
+                      highlightColor: Colors.transparent,
+                      child:  Container(
+                        width: screenHeight / 20, // Diameter of the circle
+                        height: screenHeight / 20,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          image: DecorationImage(
+                            image: AssetImage(ImageAssets.profile),
+                            fit: BoxFit.fill,
+                            alignment: Alignment.center,
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -84,7 +91,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           horizontal: horizontalPadding,
                           vertical: verticalPadding,
                         ),
-                        child : SegmentedTabControl(
+                        child: SegmentedTabControl(
                           barDecoration: BoxDecoration(
                             color: AppColors.appTabBackgroundColor,
                             borderRadius: BorderRadius.circular(30.0),
@@ -93,18 +100,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             color: AppColors.appWhiteColor,
                             borderRadius: BorderRadius.circular(30.0),
                           ),
-                          indicatorPadding:  const EdgeInsets.all(6.0),
+                          indicatorPadding: const EdgeInsets.all(6.0),
                           textStyle: const TextStyle(
                             fontWeight: FontWeight.w600,
                             fontFamily: 'Sofia Sans',
                           ),
+                          splashColor: Colors.transparent,
+                          splashHighlightColor: Colors.transparent,
                           tabTextColor: AppColors.appGreyColor,
                           selectedTabTextColor: AppColors.appTextColor,
                           tabPadding: const EdgeInsets.symmetric(
                             vertical: 10.0,
                             horizontal: 20.0,
                           ),
-                          // Define tabs
                           tabs: const [
                             SegmentTab(
                               label: 'Overall Statistics',

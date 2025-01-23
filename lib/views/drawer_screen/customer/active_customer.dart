@@ -26,9 +26,10 @@ class _ActiveTabState extends State<ActiveTab> {
   var variableController = Get.find<VariableController>();
   List<ResAllFilterCustomerData> filteredItems =
       <ResAllFilterCustomerData>[].obs;
+
   @override
   void initState() {
-    Future.delayed(const Duration(seconds: 0),(){
+    Future.delayed(const Duration(seconds: 0), () {
       callMethod();
       searchController.addListener(_filterItems);
     });
@@ -64,25 +65,31 @@ class _ActiveTabState extends State<ActiveTab> {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
+    final screenWidth = MediaQuery
+        .of(context)
+        .size
+        .width;
     return RefreshIndicator(
       onRefresh: _refreshData,
       child: Padding(
-        padding: const EdgeInsets.only(top: 10.0,bottom: 30),
+        padding: const EdgeInsets.only( bottom: 20),
         child: Column(
           children: [
             Expanded(
               child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
                 child: Column(
                   children: [
                     Row(
                       children: [
                         Expanded(
                           child: Padding(
-                            padding: const EdgeInsets.all(8.0),
+                            padding: const EdgeInsets.only(
+                                left: 4.0, right: 8.0, bottom: 8.0, top: 8.0),
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.appBackgroundGreyColor,
+                                backgroundColor: AppColors
+                                    .appBackgroundGreyColor,
                                 // Button color
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 15, vertical: 10),
@@ -93,8 +100,9 @@ class _ActiveTabState extends State<ActiveTab> {
                                 elevation: 0,
                                 shadowColor: Colors.black45,
                               ),
-                              onPressed: () => activeTabController
-                                  .showSelectDurationBottomSheet(context),
+                              onPressed: () =>
+                                  activeTabController
+                                      .showSelectDurationBottomSheet(context),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
@@ -135,8 +143,8 @@ class _ActiveTabState extends State<ActiveTab> {
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.transparent,
                                   shadowColor: Colors.transparent,
-                                  // padding: const EdgeInsets.symmetric(
-                                  //     vertical: 10),
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 10),
                                 ),
                                 child: const Text(
                                   'Download',
@@ -144,7 +152,8 @@ class _ActiveTabState extends State<ActiveTab> {
                                     fontFamily: 'Sofia Sans',
                                     fontWeight: FontWeight.w400,
                                     fontSize: 14,
-                                    color: AppColors.appWhiteColor, // Text color
+                                    color: AppColors
+                                        .appWhiteColor, // Text color
                                   ),
                                 ),
                               ),
@@ -154,16 +163,17 @@ class _ActiveTabState extends State<ActiveTab> {
                       ],
                     ),
                     Padding(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.only(
+                          bottom: 8.0),
                       child: Card(
-                        elevation: 2.0,
+                        elevation: 0.0,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(25.0),
                         ),
                         child: Column(
                           children: [
                             Padding(
-                              padding: const EdgeInsets.all(8.0),
+                              padding: const EdgeInsets.all(16.0),
                               child: TextField(
                                 controller: searchController,
                                 decoration: InputDecoration(
@@ -171,7 +181,10 @@ class _ActiveTabState extends State<ActiveTab> {
                                   filled: true,
                                   fillColor: AppColors.appNeutralColor5,
                                   prefixIcon: const Icon(Icons.search),
-                                  contentPadding: const EdgeInsets.all(16),
+                                  hintStyle: const TextStyle(fontSize: 14.0,color: AppColors.appGreyColor
+                                      ,fontWeight: FontWeight.w400
+                                  ),
+                                  contentPadding: const EdgeInsets.all(8),
                                   enabledBorder: OutlineInputBorder(
                                     borderSide: const BorderSide(
                                       color: AppColors.appNeutralColor5,
@@ -190,7 +203,8 @@ class _ActiveTabState extends State<ActiveTab> {
                               ),
                             ),
                             Obx(() {
-                              if (activeTabController.allCustomerDataList.isEmpty) {
+                              if (activeTabController.allCustomerDataList
+                                  .isEmpty) {
                                 return variableController.loading.value
                                     ? Padding(
                                   padding: EdgeInsets.all(8.0),
@@ -209,7 +223,8 @@ class _ActiveTabState extends State<ActiveTab> {
                                   physics: const NeverScrollableScrollPhysics(),
                                   itemCount: filteredItems.length,
                                   itemBuilder: (context, index) {
-                                    return listItem(filteredItems, index, context);
+                                    return listItem(
+                                        filteredItems, index, context);
                                   },
                                 );
                               }
@@ -218,26 +233,11 @@ class _ActiveTabState extends State<ActiveTab> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                   ],
                 ),
               ),
             ),
-            // Padding(
-            //   padding: const EdgeInsets.only(bottom: 5.0),
-            //   child: Center(
-            //     child: CommonButton(
-            //       buttonWidth: screenWidth * 0.9,
-            //       icon: Icons.add,
-            //       buttonName: "Add Customer",
-            //       onPressed: () {
-            //         Get.to(const AddCustomerForm());
-            //         addCustomerController.clearAllAccount();
-            //         addCustomerController.clearAllCustomer();
-            //       },
-            //     ),
-            //   ),
-            // ),
           ],
         ),
       ),
@@ -254,7 +254,8 @@ Widget listItem(List<ResAllFilterCustomerData> allCustomerDataList, int index,
     BuildContext context) {
   final customer = allCustomerDataList[index];
   final customerName = customer.info.custName;
-  final accountNumber = customer.bankId.isNotEmpty ? customer.bankId[0].accountNumber : 'N/A';
+  final accountNumber = customer.bankId.isNotEmpty ? customer.bankId[0]
+      .accountNumber : 'N/A';
   final createdDate = customer.createdOn;
   final customerStatus = customer.isDeleted;
   DateTime dateTime = DateTime.parse(createdDate).toLocal();
@@ -265,6 +266,8 @@ Widget listItem(List<ResAllFilterCustomerData> allCustomerDataList, int index,
     onTap: customerStatus ? null : () async {
       Get.to(CustomerDetailsScreen(id: customer.sId,));
     },
+    splashColor: Colors.transparent,
+    highlightColor: Colors.transparent,
     child: Opacity(
       opacity: customerStatus ? 0.5 : 1.0,
       child: Padding(
@@ -302,7 +305,7 @@ Widget listItem(List<ResAllFilterCustomerData> allCustomerDataList, int index,
                           Text(
                             customerName,
                             style: const TextStyle(
-                              fontWeight: FontWeight.w500,
+                              fontWeight: FontWeight.w600,
                               color: Colors.black,
                               fontSize: 16,
                               fontFamily: 'Sofia Sans',
@@ -336,7 +339,7 @@ Widget listItem(List<ResAllFilterCustomerData> allCustomerDataList, int index,
                           ),
                           Text(
                             formattedTime,
-                            style:  const TextStyle(
+                            style: const TextStyle(
                               fontWeight: FontWeight.w400,
                               color: AppColors.appGreyColor,
                               fontSize: 12,

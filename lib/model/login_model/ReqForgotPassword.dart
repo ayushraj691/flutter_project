@@ -4,7 +4,7 @@ class ReqForgotPassword {
   ReqForgotPassword({required this.email});
 
   ReqForgotPassword.fromJson(Map<String, dynamic> json) {
-    email = json['email']??"";
+    email = json['email'] ?? "";
   }
 
   Map<String, dynamic> toJson() {
