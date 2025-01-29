@@ -133,7 +133,6 @@ class _AllTransactionScreenState extends State<AllTransactionScreen>
           ),
         ],
       ),
-
       endDrawer: const AppDrawer(),
       body: Padding(
         padding: const EdgeInsets.only(left: 8.0, right: 8.0),
@@ -160,45 +159,76 @@ class _AllTransactionScreenState extends State<AllTransactionScreen>
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     controller: _scrollController,
-                    child: TabBar(
-                      controller: _tabController,
-                      isScrollable: true,
-                      labelColor: AppColors.appBlueColor,
-                      unselectedLabelColor: Colors.grey,
-                      indicatorPadding: EdgeInsets.zero,
-                      labelStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w600,fontFamily: Constants.Sofiafontfamily),
-                      indicator: const BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(
-                            color: AppColors.appBlueColor,
-                            width: 1.0,
-                          ),
-                        ),
-                      ),
-                      tabs: const [
-                        Tab(text: 'All'),
-                        Tab(text: 'New'),
-                        Tab(text: 'Verified'),
-                        Tab(text: 'Downloaded'),
-                        Tab(text: 'Cancelled'),
-                        Tab(text: 'Deleted'),
-                        Tab(text: 'Reimbursement'),
-                      ],
+                    child: AnimatedBuilder(
+                      animation: _tabController.animation!,
+                      builder: (context, child) {
+                        return Row(
+                          children: List.generate(7, (index) {
+                            double animationValue = _tabController.animation!.value;
+                            double activeWeight = 1.0 - (animationValue - index).abs().clamp(0.0, 1.0);
+                            final text = [
+                              'All',
+                              'New',
+                              'Verified',
+                              'Downloaded',
+                              'Cancelled',
+                              'Deleted',
+                              'Reimbursement'
+                            ][index];
+
+                            final textPainter = TextPainter(
+                              text: TextSpan(
+                                text: text,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  fontFamily: Constants.Sofiafontfamily,
+                                ),
+                              ),
+                              textDirection: TextDirection.ltr,
+                            );
+                            textPainter.layout();
+                            final textWidth = textPainter.width;
+
+                            return GestureDetector(
+                              onTap: () {
+                                _tabController.animateTo(index);
+                              },
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      text,
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                        fontFamily: Constants.Sofiafontfamily,
+                                        color: Color.lerp(Colors.grey, AppColors.appBlueColor, activeWeight),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Container(
+                                    height: 1,
+                                    width: textWidth,
+                                    color: _tabController.index == index
+                                        ? Colors.blue
+                                        : Colors.transparent,
+                                  ),
+                                ],
+                              ),
+                            );
+                          }),
+                        );
+                      },
                     ),
                   ),
-                  SizedBox(
-                    height: 1.0,
-                    child: Row(
-                      children: List.generate(7, (index) {
-                        return Expanded(
-                          child: Container(
-                            color: index == _tabController.index
-                                ? Colors.grey
-                                : Colors.grey,
-                          ),
-                        );
-                      }),
-                    ),
+                  const Divider(
+                    height: 1,
+                    color: Colors.grey,
                   ),
                   Expanded(
                     child: TabBarView(

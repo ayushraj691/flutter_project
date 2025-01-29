@@ -132,7 +132,7 @@ class _InvoiceDeletedTabState extends State<InvoiceDeletedTab> {
       body: RefreshIndicator(
         onRefresh: _refreshData,
         child: Padding(
-          padding: const EdgeInsets.only(top: 8.0),
+          padding: const EdgeInsets.only(top: 2.0),
           child: Column(
             children: [
               Expanded(

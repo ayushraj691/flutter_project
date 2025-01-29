@@ -23,6 +23,7 @@ import 'package:paycron/views/widgets/NoDataScreen.dart';
 
 import '../../utils/color_constants.dart';
 import '../../utils/general_methods.dart';
+import '../widgets/demo.dart';
 
 class AppDrawer extends StatefulWidget {
   const AppDrawer({super.key});
@@ -239,7 +240,7 @@ class _AppDrawerState extends State<AppDrawer> {
             text: 'Dashboard',
             index: 0,
             onTap: () {
-              Get.off(const CompanyDashboard());
+              Get.off(CustomTabBarDemo());
               Scaffold.of(context).closeEndDrawer();
               setState(() => selectedIndex = 0);
             }),

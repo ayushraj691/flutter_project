@@ -19,6 +19,12 @@ class _ReportOverviewState extends State<ReportOverview> {
   final reportController = Get.find<ReportOverviewController>();
 
   @override
+  void initState() {
+    
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;

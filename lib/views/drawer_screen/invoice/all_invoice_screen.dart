@@ -74,7 +74,7 @@ class _AllInvoiceTabState extends State<AllInvoiceTab> {
     return RefreshIndicator(
       onRefresh: _refreshData,
       child: Padding(
-        padding: const EdgeInsets.only(top: 8.0),
+        padding: const EdgeInsets.only(top: 2.0),
         child: ListView(
           children: [
             Row(

@@ -1,17 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:paycron/views/drawer_screen/customer/active_customer.dart';
-import 'package:paycron/views/drawer_screen/customer/all_tab_customer.dart';
-import 'package:paycron/views/drawer_screen/customer/inActive_customer.dart';
 
-class DynamicTabExample extends StatefulWidget {
-  const DynamicTabExample({super.key});
-
+class CustomTabBarDemo extends StatefulWidget {
   @override
-  State<DynamicTabExample> createState() =>
-      _DynamicTabExampleState();
+  _CustomTabBarDemoState createState() => _CustomTabBarDemoState();
 }
 
-class _DynamicTabExampleState extends State<DynamicTabExample>
+class _CustomTabBarDemoState extends State<CustomTabBarDemo>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
@@ -19,6 +13,9 @@ class _DynamicTabExampleState extends State<DynamicTabExample>
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    _tabController.addListener(() {
+      setState(() {});
+    });
   }
 
   @override
@@ -29,36 +26,77 @@ class _DynamicTabExampleState extends State<DynamicTabExample>
 
   @override
   Widget build(BuildContext context) {
+    final double tabWidth = MediaQuery.of(context).size.width / 3;
+
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Customers', style: TextStyle(color: Colors.black)),
+        title: const Text('Custom TabBar with Smooth Slide'),
         backgroundColor: Colors.white,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black),
       ),
       body: Column(
         children: [
-          Container(
-            decoration: const BoxDecoration(
-              border: Border(
-                bottom: BorderSide(color: Colors.grey, width: 0.6), // Full-width bottom divider
+          Stack(
+            children: [
+              // Background line for all tabs
+              Container(
+                height: 1,
+                color: Colors.grey.withOpacity(0.2),
+              ),
+              // Animated sliding blue line
+              AnimatedBuilder(
+                animation: _tabController.animation!,
+                builder: (context, child) {
+                  // Calculate the sliding position based on animation value
+                  double animationValue =
+                      _tabController.animation!.value; // Current animation value
+                  double leftOffset = animationValue * tabWidth;
+
+                  return Positioned(
+                    left: leftOffset,
+                    child: Container(
+                      width: tabWidth,
+                      height: 2,
+                      color: Colors.blue,
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: List.generate(
+              3,
+                  (index) => Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    _tabController.animateTo(index);
+                  },
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        ['All', 'Active', 'Inactive'][index],
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: _tabController.index == index
+                              ? Colors.blue
+                              : Colors.grey,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                    ],
+                  ),
+                ),
               ),
             ),
-            child: TabBar(
-              controller: _tabController,
-              labelColor: Colors.blue,
-              unselectedLabelColor: Colors.grey,
-              indicatorColor: Colors.blue,
-              indicatorWeight: 2.0, // Thickness of the selected tab indicator
-              indicatorPadding: const EdgeInsets.symmetric(horizontal: 0),
-              labelStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
-              tabs: const [
-                Tab(text: 'All'),
-                Tab(text: 'Active'),
-                Tab(text: 'Inactive'),
-              ],
-            ),
+          ),
+          const Divider(
+            height: 1,
+            color: Colors.grey,
           ),
           Expanded(
             child: TabBarView(
@@ -73,5 +111,32 @@ class _DynamicTabExampleState extends State<DynamicTabExample>
         ],
       ),
     );
+  }
+}
+
+class AllTab extends StatelessWidget {
+  const AllTab();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(child: Text('All Tab Content'));
+  }
+}
+
+class ActiveTab extends StatelessWidget {
+  const ActiveTab();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(child: Text('Active Tab Content'));
+  }
+}
+
+class InActiveTab extends StatelessWidget {
+  const InActiveTab();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(child: Text('Inactive Tab Content'));
   }
 }

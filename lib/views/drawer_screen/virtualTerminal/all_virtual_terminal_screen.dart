@@ -71,7 +71,7 @@ class _AllVirtualTerminalTabState extends State<AllVirtualTerminalTab> {
     return RefreshIndicator(
       onRefresh: _refreshData,
       child: ListView(
-        padding: const EdgeInsets.only(top: 8.0),
+        padding: const EdgeInsets.only(top: 2.0),
         children: [
           Column(
             children: [

@@ -128,7 +128,7 @@ class _SubscriptionsCancelledTabState extends State<SubscriptionsCancelledTab> {
       body: RefreshIndicator(
         onRefresh: _refreshData,
         child: ListView(
-          padding: const EdgeInsets.only(top: 8.0),
+          padding: const EdgeInsets.only(top: 2.0),
           children: [
             Column(
               children: [

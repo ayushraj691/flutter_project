@@ -128,7 +128,7 @@ class _InvoiceCancelledTabState extends State<InvoiceCancelledTab> {
     return Scaffold(
       backgroundColor: AppColors.appBackgroundColor,
       body: Padding(
-        padding: const EdgeInsets.only(top: 8.0),
+        padding: const EdgeInsets.only(top: 2.0),
         child: Column(
           children: [
             Expanded(

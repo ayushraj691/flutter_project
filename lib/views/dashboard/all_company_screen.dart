@@ -61,6 +61,7 @@ class _AllCompanyScreenState extends State<AllCompanyScreen> {
         onRefresh: _refreshData,
         child: SafeArea(
           child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(

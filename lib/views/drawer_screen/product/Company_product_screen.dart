@@ -46,6 +46,7 @@ class _CompanyDetailProductScreenState extends State<CompanyDetailProductScreen>
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
+    final double tabWidth = MediaQuery.of(context).size.width / 3.2;
 
     return Scaffold(
       backgroundColor: AppColors.appBackgroundColor,
@@ -127,32 +128,68 @@ class _CompanyDetailProductScreenState extends State<CompanyDetailProductScreen>
               ),
             ),
             Container(
-              margin: const EdgeInsets.only(left: 12.0,right: 12.0),
+              margin: const EdgeInsets.only(left: 8.0,right: 8.0),
               child: Column(
                 children: [
-                  TabBar(
-                    controller: tabController,
-                    labelColor: AppColors.appBlueColor,
-                    unselectedLabelColor: Colors.grey,
-                    indicatorPadding: EdgeInsets.zero,
-                    labelStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w600,fontFamily: Constants.Sofiafontfamily),
-                    indicator: const BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(
-                          color: AppColors.appBlueColor,
-                          width: 1.0,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: List.generate(
+                      3,
+                          (index) => Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            tabController.animateTo(index);
+                          },
+                          child: AnimatedBuilder(
+                            animation: tabController.animation!,
+                            builder: (context, child) {
+                              double animationValue = tabController.animation!.value;
+                              double activeWeight =
+                                  1.0 - (animationValue - index).abs().clamp(0.0, 1.0);
+                              return Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Center(
+                                    child: Text(
+                                      ['All', 'Active', 'Inactive'][index],
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                        color: Color.lerp(Colors.grey, Colors.blue, activeWeight),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                ],
+                              );
+                            },
+                          ),
                         ),
                       ),
                     ),
-                    tabs: const [
-                      Tab(text: 'All'),
-                      Tab(text: 'Active'),
-                      Tab(text: 'Inactive'),
-                    ],
                   ),
-                  Container(
-                    height: 1,
-                    color: Colors.grey.withOpacity(0.4),
+                  Stack(
+                    children: [
+                      Container(
+                        height: 1,
+                        color: Colors.grey.withOpacity(0.2),
+                      ),
+                      AnimatedBuilder(
+                        animation: tabController.animation!,
+                        builder: (context, child) {
+                          double animationValue = tabController.animation!.value;
+                          double leftOffset = animationValue * tabWidth;
+                          return Positioned(
+                            left: leftOffset,
+                            child: Container(
+                              width: tabWidth,
+                              height: 1,
+                              color: Colors.blue,
+                            ),
+                          );
+                        },
+                      ),
+                    ],
                   ),
                   SizedBox(
                     height: MediaQuery.of(context).size.height * 0.73,

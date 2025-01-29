@@ -132,7 +132,7 @@ class _VirtualTerminalCancelledTabState
         onRefresh: _refreshData,
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.only(top: 8.0),
+          padding: const EdgeInsets.only(top: 2.0),
           children: [
             Row(
               children: [

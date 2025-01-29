@@ -30,7 +30,7 @@ class _PaycronFloatingBottomBarState extends State<PaycronFloatingBottomBar>
       vsync: this,
       duration: const Duration(milliseconds: 500),
     );
-    _controller.value = 1.0; // Ensure the bar starts visible immediately
+    _controller.value = 1.0;
   }
 
   void onItemTapped(int index) {
@@ -43,16 +43,28 @@ class _PaycronFloatingBottomBarState extends State<PaycronFloatingBottomBar>
   void _onScroll(ScrollNotification notification) {
     if (notification is UserScrollNotification) {
       final direction = notification.direction;
-      if (direction == ScrollDirection.forward && !_isVisible) {
-        setState(() {
-          _isVisible = true;
-          _controller.forward();
-        });
-      } else if (direction == ScrollDirection.reverse && _isVisible) {
-        setState(() {
-          _isVisible = false;
-          _controller.reverse();
-        });
+      // Check if the scroll is vertical
+      if (notification.metrics.axis == Axis.vertical) {
+        if (direction == ScrollDirection.forward && !_isVisible) {
+          setState(() {
+            _isVisible = true;
+            _controller.forward();
+          });
+        } else if (direction == ScrollDirection.reverse && _isVisible) {
+          setState(() {
+            _isVisible = false;
+            _controller.reverse();
+          });
+        }
+      }
+      // Check if the scroll is horizontal
+      else if (notification.metrics.axis == Axis.horizontal) {
+        if (_isVisible) {
+          setState(() {
+            _isVisible = true;
+            _controller.forward();
+          });
+        }
       }
     }
   }
@@ -185,8 +197,7 @@ class _PaycronFloatingBottomBarState extends State<PaycronFloatingBottomBar>
   }
 }
 
-//
-//
+
 // import 'package:flutter/material.dart';
 // import 'package:paycron/utils/color_constants.dart';
 // import 'package:paycron/views/dashboard/all_company_screen.dart';

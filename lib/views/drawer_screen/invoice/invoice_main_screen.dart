@@ -173,55 +173,87 @@ class _InvoiceScreenState extends State<InvoiceScreen>
             Expanded(
               child: Column(
                 children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          controller: _scrollController,
-                          child: TabBar(
-                            controller: _tabController,
-                            isScrollable: true,
-                            labelColor: AppColors.appBlueColor,
-                            unselectedLabelColor: Colors.grey,
-                            indicatorPadding: EdgeInsets.zero,
-                            labelStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w600,fontFamily: Constants.Sofiafontfamily),
-                            indicator: const BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(
-                                  color: AppColors.appBlueColor,
-                                  width: 1.0,
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    controller: _scrollController,
+                    child: AnimatedBuilder(
+                      animation: _tabController.animation!,
+                      builder: (context, child) {
+                        return Row(
+                          children: List.generate(8, (index) {
+                            double animationValue = _tabController.animation!.value;
+                            double activeWeight = 1.0 - (animationValue - index).abs().clamp(0.0, 1.0);
+
+                            // Dynamically calculate text width
+                            final text = [
+                              'All',
+                              'Incomplete',
+                              'Complete',
+                              'Verify',
+                              'Downloaded',
+                              'Cancelled',
+                              'Deleted',
+                              'Reimbursement',
+                            ][index];
+
+                            final textPainter = TextPainter(
+                              text: TextSpan(
+                                text: text,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  fontFamily: Constants.Sofiafontfamily,
                                 ),
                               ),
-                            ),
-                            tabs: const [
-                              Tab(text: 'All'),
-                              Tab(text: 'Incomplete'),
-                              Tab(text: 'Complete'),
-                              Tab(text: 'Verify'),
-                              Tab(text: 'Downloaded'),
-                              Tab(text: 'Cancelled'),
-                              Tab(text: 'Deleted'),
-                              Tab(text: 'Reimbursement'),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 1.0,
-                    child: Row(
-                      children: List.generate(8, (index) {
-                        return Expanded(
-                          child: Container(
-                            color: index == _tabController.index
-                                ? Colors.grey
-                                : Colors.grey,
-                          ),
+                              textDirection: TextDirection.ltr,
+                            );
+                            textPainter.layout();
+                            final textWidth = textPainter.width;
+                            return GestureDetector(
+                              onTap: () {
+                                _tabController.animateTo(index);
+                              },
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      text,
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                        fontFamily: Constants.Sofiafontfamily,
+                                        color: Color.lerp(Colors.grey, AppColors.appBlueColor, activeWeight),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  // Background line (always visible)
+                                  Container(
+                                    height: 1,
+                                    color: Colors.grey.withOpacity(0.2),
+                                  ),
+                                  // Animated indicator line
+                                  Container(
+                                    height: 1,
+                                    width: textWidth,
+                                    color: _tabController.index == index
+                                        ? AppColors.appBlueColor
+                                        : Colors.transparent,
+                                  ),
+                                ],
+                              ),
+                            );
+                          }),
                         );
-                      }),
+                      },
                     ),
+                  ),
+                  const Divider(
+                    height: 1,
+                    color: Colors.grey,
                   ),
                   Expanded(
                     child: TabBarView(

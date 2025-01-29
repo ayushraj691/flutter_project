@@ -138,7 +138,7 @@ class _TransactionReimbursementTabState
           physics: const AlwaysScrollableScrollPhysics(),
           children: [
             Padding(
-              padding: const EdgeInsets.only(top: 8.0),
+              padding: const EdgeInsets.only(top: 2.0),
               child: Column(
                 children: [
                   Row(

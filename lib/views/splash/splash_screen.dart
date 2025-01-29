@@ -1,14 +1,12 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:paycron/utils/image_assets.dart';
 import 'package:paycron/views/app_home_screen/home_screen.dart';
-import 'package:paycron/views/auth/app_intro_screen.dart';
 import 'package:paycron/views/dashboard/bottom_floating_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../../utils/color_constants.dart';
 import '../../utils/common_variable.dart';
 import '../../utils/string_constants.dart';
@@ -72,7 +70,10 @@ class _SplashScreenState extends State<SplashScreen> {
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.asset(ImageAssets.paycronLogo),
+                Image.asset(ImageAssets.paycronLogo)
+                    .animate()
+                    .fadeIn(duration: 1200.ms)
+                    .scale(delay: 600.ms, duration: 800.ms, curve: Curves.easeOutBack),
                 const SizedBox(height: 20),
                 Text(
                   Constants.appName,
@@ -84,7 +85,7 @@ class _SplashScreenState extends State<SplashScreen> {
                       color: AppColors.appWhiteColor,
                     ),
                   ),
-                ),
+                ).animate().fadeIn(duration: 1500.ms).slideY(begin: 0.5, end: 0.0),
               ],
             ),
             const Expanded(
@@ -102,53 +103,3 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 }
-
-// class AppVersionAndUrl extends StatelessWidget {
-//   const AppVersionAndUrl(
-//       {Key? key,
-//       required this.color,
-//       required this.textOne,
-//       required this.textTwo})
-//       : super(key: key);
-//
-//   final dynamic color;
-//   final String textOne;
-//   final String textTwo;
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return SizedBox(
-//       height: 35,
-//       width: MediaQuery.of(context).size.width,
-//       child: Row(
-//         mainAxisAlignment: MainAxisAlignment.center,
-//         crossAxisAlignment: CrossAxisAlignment.center,
-//         children: [
-//           Padding(
-//               padding: const EdgeInsets.only(bottom: 10),
-//               child: Text(
-//                 textOne,
-//                 textScaleFactor: 1.0,
-//                 style: TextStyle(color: Color(color)),
-//               )),
-//           GestureDetector(
-//             onTap: () {
-//               GeneralMethods.launchMyUrl(Constants.compWebUrl);
-//             },
-//             child: Padding(
-//               padding: const EdgeInsets.only(bottom: 10),
-//               child: Text(
-//                 textTwo,
-//                 textScaleFactor: 1.0,
-//                 style: TextStyle(
-//                   color: Color(color),
-//                   decoration: TextDecoration.underline,
-//                 ),
-//               ),
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
